@@ -1,0 +1,154 @@
+START hdp2.6_llap_after_analyze100_query21_sql_2017-04-04-17-09:  Tue Apr 4 17:09:46 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2" -n hive --incremental=true -i test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+Connected to: Apache Hive (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.042 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> select  *
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from(select w_warehouse_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>             ,i_item_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>             ,sum(case when (cast(d_date as date) < cast ('1998-04-08' as date))
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                 then inv_quantity_on_hand 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                       else 0 end) as inv_before
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>             ,sum(case when (cast(d_date as date) >= cast ('1998-04-08' as date))
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                       then inv_quantity_on_hand 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                       else 0 end) as inv_after
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    from inventory
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,warehouse
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    where i_current_price between 0.99 and 1.49
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      and item.i_item_sk          = inventory.inv_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      and inventory.inv_warehouse_sk   = warehouse.w_warehouse_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      and inventory.inv_date_sk    = date_dim.d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      and d_date between '1998-03-09' and '1998-05-07'
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    group by w_warehouse_name, i_item_id) x
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where (case when inv_before > 0 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>              then inv_after / inv_before 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>              else null
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>              end) between 2.0/3.0 and 3.0/2.0
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  order by w_warehouse_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          ,i_item_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  limit 100;
++---------------------+-------------------+---------------+--------------+--+
+| x.w_warehouse_name  |    x.i_item_id    | x.inv_before  | x.inv_after  |
++---------------------+-------------------+---------------+--------------+--+
+|                     | AAAAAAAAAAADCAAA  | 2262          | 2398         |
+|                     | AAAAAAAAAABFBAAA  | 3327          | 2898         |
+|                     | AAAAAAAAAABPBAAA  | 2122          | 2017         |
+|                     | AAAAAAAAAACDAAAA  | 1315          | 1752         |
+|                     | AAAAAAAAAAEIBAAA  | 1834          | 1522         |
+|                     | AAAAAAAAAAFBBAAA  | 1751          | 2538         |
+|                     | AAAAAAAAAAFFBAAA  | 1933          | 2420         |
+|                     | AAAAAAAAAAFKBAAA  | 2387          | 1838         |
+|                     | AAAAAAAAAAFLAAAA  | 3110          | 2731         |
+|                     | AAAAAAAAAAFPAAAA  | 3229          | 2220         |
+|                     | AAAAAAAAAAGJBAAA  | 1678          | 2154         |
+|                     | AAAAAAAAAAHMAAAA  | 3283          | 2641         |
+|                     | AAAAAAAAAAHPBAAA  | 2044          | 2966         |
+|                     | AAAAAAAAAAIIAAAA  | 2113          | 2691         |
+|                     | AAAAAAAAAAJMBAAA  | 2422          | 1848         |
+|                     | AAAAAAAAAALAAAAA  | 2085          | 2020         |
+|                     | AAAAAAAAAALADAAA  | 1968          | 2006         |
+|                     | AAAAAAAAAALCBAAA  | 1984          | 2411         |
+|                     | AAAAAAAAAAMJBAAA  | 1260          | 1460         |
+|                     | AAAAAAAAAANCBAAA  | 2465          | 2811         |
+|                     | AAAAAAAAAANDAAAA  | 1802          | 2159         |
+|                     | AAAAAAAAAANKAAAA  | 2812          | 2215         |
+|                     | AAAAAAAAAAOCAAAA  | 1973          | 2812         |
+|                     | AAAAAAAAAAOHCAAA  | 1844          | 2590         |
+|                     | AAAAAAAAABCFAAAA  | 2038          | 1953         |
+|                     | AAAAAAAAABCPBAAA  | 2859          | 2638         |
+|                     | AAAAAAAAABDHAAAA  | 2206          | 2233         |
+|                     | AAAAAAAAABDHCAAA  | 1858          | 2147         |
+|                     | AAAAAAAAABECBAAA  | 1972          | 1759         |
+|                     | AAAAAAAAABEECAAA  | 2206          | 2686         |
+|                     | AAAAAAAAABENBAAA  | 1932          | 2165         |
+|                     | AAAAAAAAABFABAAA  | 1464          | 2050         |
+|                     | AAAAAAAAABGMAAAA  | 2135          | 2160         |
+|                     | AAAAAAAAABGNAAAA  | 1697          | 1883         |
+|                     | AAAAAAAAABHFBAAA  | 2244          | 2989         |
+|                     | AAAAAAAAABIHAAAA  | 1349          | 1971         |
+|                     | AAAAAAAAABJFCAAA  | 2449          | 1891         |
+|                     | AAAAAAAAABJHCAAA  | 1566          | 1570         |
+|                     | AAAAAAAAABLFAAAA  | 1783          | 1833         |
+|                     | AAAAAAAAABLHBAAA  | 1991          | 1621         |
+|                     | AAAAAAAAABLNAAAA  | 2456          | 2546         |
+|                     | AAAAAAAAABMBCAAA  | 2564          | 2083         |
+|                     | AAAAAAAAABMHCAAA  | 2169          | 2395         |
+|                     | AAAAAAAAABMKCAAA  | 2348          | 3367         |
+|                     | AAAAAAAAABNIBAAA  | 2053          | 2254         |
+|                     | AAAAAAAAABOMBAAA  | 1798          | 1810         |
+|                     | AAAAAAAAABONBAAA  | 2565          | 2593         |
+|                     | AAAAAAAAABPEAAAA  | 1532          | 1834         |
+|                     | AAAAAAAAABPLBAAA  | 2200          | 1664         |
+|                     | AAAAAAAAACCDBAAA  | 2378          | 2752         |
+|                     | AAAAAAAAACDIBAAA  | 1388          | 1893         |
+|                     | AAAAAAAAACDMCAAA  | 1939          | 2867         |
+|                     | AAAAAAAAACEHBAAA  | 2191          | 3246         |
+|                     | AAAAAAAAACFDBAAA  | 2406          | 2547         |
+|                     | AAAAAAAAACGGCAAA  | 1707          | 2212         |
+|                     | AAAAAAAAACGLAAAA  | 2238          | 3153         |
+|                     | AAAAAAAAACGLBAAA  | 1819          | 2446         |
+|                     | AAAAAAAAACGOAAAA  | 1974          | 2796         |
+|                     | AAAAAAAAACHABAAA  | 1893          | 2466         |
+|                     | AAAAAAAAACHACAAA  | 2013          | 2579         |
+|                     | AAAAAAAAACHCAAAA  | 1189          | 1575         |
+|                     | AAAAAAAAACIBCAAA  | 2657          | 3732         |
+|                     | AAAAAAAAACIDBAAA  | 1431          | 1220         |
+|                     | AAAAAAAAACKCAAAA  | 1010          | 977          |
+|                     | AAAAAAAAACKMCAAA  | 1565          | 1245         |
+|                     | AAAAAAAAACLADAAA  | 2226          | 1838         |
+|                     | AAAAAAAAACLDAAAA  | 1906          | 1901         |
+|                     | AAAAAAAAACLECAAA  | 2002          | 2465         |
+|                     | AAAAAAAAACLGAAAA  | 2193          | 3074         |
+|                     | AAAAAAAAACLNAAAA  | 2501          | 2079         |
+|                     | AAAAAAAAACNBBAAA  | 2577          | 1908         |
+|                     | AAAAAAAAACNDBAAA  | 1870          | 1311         |
+|                     | AAAAAAAAACOBAAAA  | 2407          | 1929         |
+|                     | AAAAAAAAACPDAAAA  | 2235          | 2077         |
+|                     | AAAAAAAAACPLBAAA  | 1749          | 2555         |
+|                     | AAAAAAAAADBADAAA  | 2127          | 2825         |
+|                     | AAAAAAAAADCBBAAA  | 2484          | 3282         |
+|                     | AAAAAAAAADCMAAAA  | 1876          | 2564         |
+|                     | AAAAAAAAADCMCAAA  | 2206          | 1817         |
+|                     | AAAAAAAAADDACAAA  | 1384          | 1954         |
+|                     | AAAAAAAAADDMBAAA  | 2223          | 2271         |
+|                     | AAAAAAAAADGACAAA  | 1687          | 2151         |
+|                     | AAAAAAAAADHBCAAA  | 1956          | 1838         |
+|                     | AAAAAAAAADHIBAAA  | 2335          | 1687         |
+|                     | AAAAAAAAADIJAAAA  | 1243          | 1260         |
+|                     | AAAAAAAAADJGCAAA  | 2520          | 2419         |
+|                     | AAAAAAAAADMOAAAA  | 1587          | 2196         |
+|                     | AAAAAAAAADNLBAAA  | 2314          | 2503         |
+|                     | AAAAAAAAADPOAAAA  | 2480          | 1894         |
+|                     | AAAAAAAAAEAGAAAA  | 2689          | 2738         |
+|                     | AAAAAAAAAEBFAAAA  | 1963          | 2709         |
+|                     | AAAAAAAAAEBKBAAA  | 2114          | 2802         |
+|                     | AAAAAAAAAECGCAAA  | 2515          | 2708         |
+|                     | AAAAAAAAAECKBAAA  | 1940          | 2831         |
+|                     | AAAAAAAAAECPBAAA  | 1655          | 2094         |
+|                     | AAAAAAAAAEEKCAAA  | 1876          | 1609         |
+|                     | AAAAAAAAAEGCBAAA  | 1622          | 2239         |
+|                     | AAAAAAAAAEGHCAAA  | 1929          | 2252         |
+|                     | AAAAAAAAAEGLCAAA  | 2478          | 1869         |
+|                     | AAAAAAAAAEHADAAA  | 3236          | 3273         |
++---------------------+-------------------+---------------+--------------+--+
+100 rows selected (4.355 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+STOP hdp2.6_llap_after_analyze100_query21_sql_2017-04-04-17-09:  Tue Apr 4 17:09:54 CDT 2017
+
+ South Results Number of Nodes:  9
+ Avg CPU Busy:   Peak Cpu Avg:  100.000 Count > 90% Busy:  0
+ Avg Disk Busy:   Peak Disk Avg:  0 Count > 90% busy 0
+ Avg Disk Reads per sec:   Avg Write per sec: 
+ Avg Net TX:    Peak TX Avg: 
+ Avg Net RX:    Peak RX Avg: 
+ Mem Utilized: 
+South CSV
+| 100.000 | 0 | | 0 | 0 | | | | | | |

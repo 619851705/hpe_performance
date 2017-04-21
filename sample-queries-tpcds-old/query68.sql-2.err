@@ -1,0 +1,868 @@
+Connecting to jdbc:hive2://h01hn02:10500/tpcds_bin_partitioned_orc_10000
+Connected to: Apache Hive (version 2.1.0.2.5.1.0-43)
+Driver: Hive JDBC (version 1.2.1000.2.5.1.0-43)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script bry.sql
+No rows affected (0.036 seconds)
+No rows affected (0.001 seconds)
+INFO  : Compiling command(queryId=hive_20161019030840_ea52ebe1-a1b8-4bf2-962d-03b232306149): select  c_last_name
+       ,c_first_name
+       ,ca_city
+       ,bought_city
+       ,ss_ticket_number
+       ,extended_price
+       ,extended_tax
+       ,list_price
+ from (select ss_ticket_number
+             ,ss_customer_sk
+             ,ca_city bought_city
+             ,sum(ss_ext_sales_price) extended_price 
+             ,sum(ss_ext_list_price) list_price
+             ,sum(ss_ext_tax) extended_tax 
+       from store_sales
+           ,date_dim
+           ,store
+           ,household_demographics
+           ,customer_address 
+       where store_sales.ss_sold_date_sk = date_dim.d_date_sk
+         and store_sales.ss_store_sk = store.s_store_sk  
+        and store_sales.ss_hdemo_sk = household_demographics.hd_demo_sk
+        and store_sales.ss_addr_sk = customer_address.ca_address_sk
+        and date_dim.d_dom between 1 and 2 
+        and (household_demographics.hd_dep_count = 4 or
+             household_demographics.hd_vehicle_count= 2)
+        and date_dim.d_year in (1998,1998+1,1998+2)
+        and store.s_city in ('Rosedale','Bethlehem')
+       group by ss_ticket_number
+               ,ss_customer_sk
+               ,ss_addr_sk,ca_city) dn
+      ,customer
+      ,customer_address current_addr
+ where dn.ss_customer_sk = customer.c_customer_sk
+   and customer.c_current_addr_sk = current_addr.ca_address_sk
+   and current_addr.ca_city <> bought_city
+ order by c_last_name
+         ,ss_ticket_number
+ limit 100
+INFO  : Semantic Analysis Completed
+INFO  : Returning Hive schema: Schema(fieldSchemas:[FieldSchema(name:c_last_name, type:string, comment:null), FieldSchema(name:c_first_name, type:string, comment:null), FieldSchema(name:ca_city, type:string, comment:null), FieldSchema(name:bought_city, type:string, comment:null), FieldSchema(name:ss_ticket_number, type:int, comment:null), FieldSchema(name:extended_price, type:double, comment:null), FieldSchema(name:extended_tax, type:double, comment:null), FieldSchema(name:list_price, type:double, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=hive_20161019030840_ea52ebe1-a1b8-4bf2-962d-03b232306149); Time taken: 0.638 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=hive_20161019030840_ea52ebe1-a1b8-4bf2-962d-03b232306149): select  c_last_name
+       ,c_first_name
+       ,ca_city
+       ,bought_city
+       ,ss_ticket_number
+       ,extended_price
+       ,extended_tax
+       ,list_price
+ from (select ss_ticket_number
+             ,ss_customer_sk
+             ,ca_city bought_city
+             ,sum(ss_ext_sales_price) extended_price 
+             ,sum(ss_ext_list_price) list_price
+             ,sum(ss_ext_tax) extended_tax 
+       from store_sales
+           ,date_dim
+           ,store
+           ,household_demographics
+           ,customer_address 
+       where store_sales.ss_sold_date_sk = date_dim.d_date_sk
+         and store_sales.ss_store_sk = store.s_store_sk  
+        and store_sales.ss_hdemo_sk = household_demographics.hd_demo_sk
+        and store_sales.ss_addr_sk = customer_address.ca_address_sk
+        and date_dim.d_dom between 1 and 2 
+        and (household_demographics.hd_dep_count = 4 or
+             household_demographics.hd_vehicle_count= 2)
+        and date_dim.d_year in (1998,1998+1,1998+2)
+        and store.s_city in ('Rosedale','Bethlehem')
+       group by ss_ticket_number
+               ,ss_customer_sk
+               ,ss_addr_sk,ca_city) dn
+      ,customer
+      ,customer_address current_addr
+ where dn.ss_customer_sk = customer.c_customer_sk
+   and customer.c_current_addr_sk = current_addr.ca_address_sk
+   and current_addr.ca_city <> bought_city
+ order by c_last_name
+         ,ss_ticket_number
+ limit 100
+INFO  : Query ID = hive_20161019030840_ea52ebe1-a1b8-4bf2-962d-03b232306149
+INFO  : Total jobs = 1
+INFO  : Launching Job 1 out of 1
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Session is already open
+INFO  : Dag name: select  c_last_name
+       ,c_first_na...100(Stage-1)
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Tez session was closed. Reopening...
+INFO  : Session re-established.
+INFO  : 
+
+INFO  : Status: Running (Executing on YARN cluster with App id application_1476716628816_0169)
+
+INFO  : Map 1: -/-	Map 10: -/-	Map 11: -/-	Map 12: -/-	Map 7: -/-	Map 8: -/-	Map 9: -/-	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: -/-	Map 10: 0/48	Map 11: 0/116	Map 12: 0/48	Map 7: 0/1	Map 8: 0/1	Map 9: 0/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: -/-	Map 10: 0(+1)/48	Map 11: 0/116	Map 12: 0(+1)/48	Map 7: 0(+1)/1	Map 8: 0/1	Map 9: 0(+1)/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: -/-	Map 10: 0(+6)/48	Map 11: 0/116	Map 12: 0(+5)/48	Map 7: 0(+1)/1	Map 8: 0(+1)/1	Map 9: 0(+1)/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: -/-	Map 10: 0(+48)/48	Map 11: 0(+116)/116	Map 12: 0(+48)/48	Map 7: 0(+1)/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: -/-	Map 10: 0(+48)/48	Map 11: 0(+116)/116	Map 12: 0(+48)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: -/-	Map 10: 0(+48)/48	Map 11: 0(+116)/116	Map 12: 1(+47)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: -/-	Map 10: 3(+45)/48	Map 11: 1(+115)/116	Map 12: 2(+46)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: -/-	Map 10: 3(+45)/48	Map 11: 1(+115)/116	Map 12: 4(+44)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 0/127	Map 10: 4(+44)/48	Map 11: 1(+115)/116	Map 12: 5(+43)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 0(+38)/127	Map 10: 5(+43)/48	Map 11: 3(+113)/116	Map 12: 6(+42)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 0(+127)/127	Map 10: 7(+41)/48	Map 11: 4(+112)/116	Map 12: 9(+39)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 0(+127)/127	Map 10: 9(+39)/48	Map 11: 5(+111)/116	Map 12: 11(+37)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 0(+127)/127	Map 10: 14(+34)/48	Map 11: 17(+99)/116	Map 12: 15(+33)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 0(+127)/127	Map 10: 15(+33)/48	Map 11: 19(+97)/116	Map 12: 15(+33)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 0(+127)/127	Map 10: 16(+32)/48	Map 11: 20(+96)/116	Map 12: 18(+30)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 0(+127)/127	Map 10: 20(+28)/48	Map 11: 32(+84)/116	Map 12: 24(+24)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 0(+127)/127	Map 10: 29(+19)/48	Map 11: 53(+63)/116	Map 12: 29(+19)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 2(+125)/127	Map 10: 30(+18)/48	Map 11: 63(+53)/116	Map 12: 30(+18)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 2(+125)/127	Map 10: 32(+16)/48	Map 11: 69(+47)/116	Map 12: 30(+18)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 4(+123)/127	Map 10: 33(+15)/48	Map 11: 72(+44)/116	Map 12: 30(+18)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 8(+119)/127	Map 10: 38(+10)/48	Map 11: 89(+27)/116	Map 12: 36(+12)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 11(+116)/127	Map 10: 39(+9)/48	Map 11: 91(+25)/116	Map 12: 39(+9)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 18(+109)/127	Map 10: 39(+9)/48	Map 11: 94(+22)/116	Map 12: 40(+8)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 26(+101)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 32(+95)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+187)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 34(+93)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+342)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 35(+92)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+350)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 41(+86)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+387)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 41(+86)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+390)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 45(+82)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+394)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 49(+78)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+398)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 51(+76)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+400)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 58(+69)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+407)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 60(+67)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+409)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 61(+66)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+410)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 75(+52)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+424)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 77(+50)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+426)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 82(+45)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+431)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 83(+44)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+432)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 84(+43)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+433)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 85(+42)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+434)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 86(+41)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+435)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 90(+37)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+439)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 91(+36)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+440)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 92(+35)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+441)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 93(+34)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 41(+7)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+442)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 93(+34)/127	Map 10: 41(+7)/48	Map 11: 102(+14)/116	Map 12: 43(+5)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+444)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 93(+34)/127	Map 10: 42(+6)/48	Map 11: 102(+14)/116	Map 12: 44(+4)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+446)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 94(+33)/127	Map 10: 42(+6)/48	Map 11: 102(+14)/116	Map 12: 44(+4)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+447)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 96(+31)/127	Map 10: 48/48	Map 11: 105(+11)/116	Map 12: 46(+2)/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+460)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 104(+23)/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+481)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 106(+21)/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+487)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 107(+20)/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+488)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 112(+15)/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+493)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 115(+12)/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+496)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 118(+9)/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+499)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 122(+5)/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+503)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 125(+2)/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+506)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 126(+1)/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+507)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 0(+508)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 14(+508)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 23(+508)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 29(+508)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 59(+508)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 70(+508)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 81(+508)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 119(+505)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 156(+513)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 239(+513)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 250(+515)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 267(+515)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 278(+515)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 307(+515)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 322(+515)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 343(+515)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 412(+515)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 430(+515)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 450(+515)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 459(+515)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 470(+513)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 522(+487)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 572(+437)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 625(+384)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 648(+361)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 670(+339)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 697(+312)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 747(+262)/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 773(+236)/1009	Reducer 3: 0(+65)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 821(+188)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 829(+180)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 830(+179)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 860(+149)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 863(+146)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 864(+145)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 901(+108)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 904(+105)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 905(+104)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 908(+101)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 911(+98)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 914(+95)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 925(+84)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 927(+82)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 929(+80)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 929(+80)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 933(+76)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 946(+63)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 951(+58)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 957(+52)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 958(+51)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 958(+51)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 959(+50)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 979(+30)/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 0(+253)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 4(+249)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 16(+237)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 18(+235)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 20(+233)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 29(+224)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 45(+208)/253	Reducer 4: 0/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 52(+201)/253	Reducer 4: 0(+28)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 60(+193)/253	Reducer 4: 0(+41)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 60(+193)/253	Reducer 4: 0(+188)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 65(+188)/253	Reducer 4: 0(+288)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 71(+182)/253	Reducer 4: 0(+294)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 74(+179)/253	Reducer 4: 0(+325)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 80(+173)/253	Reducer 4: 0(+331)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 81(+172)/253	Reducer 4: 0(+331)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 83(+170)/253	Reducer 4: 0(+334)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 87(+166)/253	Reducer 4: 0(+337)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 87(+166)/253	Reducer 4: 0(+338)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 91(+162)/253	Reducer 4: 0(+342)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 92(+161)/253	Reducer 4: 0(+343)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 108(+145)/253	Reducer 4: 0(+359)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 113(+140)/253	Reducer 4: 0(+365)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 115(+138)/253	Reducer 4: 0(+367)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 117(+136)/253	Reducer 4: 0(+369)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 120(+133)/253	Reducer 4: 0(+372)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 120(+133)/253	Reducer 4: 0(+372)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 122(+131)/253	Reducer 4: 0(+374)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 125(+128)/253	Reducer 4: 0(+377)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 126(+127)/253	Reducer 4: 0(+378)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 128(+125)/253	Reducer 4: 0(+380)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 128(+125)/253	Reducer 4: 0(+380)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 134(+119)/253	Reducer 4: 0(+386)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 142(+111)/253	Reducer 4: 0(+394)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 144(+109)/253	Reducer 4: 0(+396)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 166(+86)/253	Reducer 4: 0(+407)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 168(+85)/253	Reducer 4: 0(+420)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 170(+83)/253	Reducer 4: 0(+422)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 177(+75)/253	Reducer 4: 0(+428)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 183(+70)/253	Reducer 4: 0(+435)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 209(+44)/253	Reducer 4: 0(+461)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 226(+27)/253	Reducer 4: 0(+478)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 226(+27)/253	Reducer 4: 0(+478)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 240(+13)/253	Reducer 4: 0(+492)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 252(+1)/253	Reducer 4: 0(+504)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 252(+1)/253	Reducer 4: 0(+504)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 252(+1)/253	Reducer 4: 0(+504)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 252(+1)/253	Reducer 4: 0(+504)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 252(+1)/253	Reducer 4: 0(+504)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 252(+1)/253	Reducer 4: 0(+504)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 252(+1)/253	Reducer 4: 0(+504)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 252(+1)/253	Reducer 4: 0(+504)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 252(+1)/253	Reducer 4: 0(+504)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 16(+505)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 259(+299)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 448(+182)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 504(+126)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 504(+505)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 505(+504)/1009	Reducer 5: 0/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 507(+502)/1009	Reducer 5: 0(+2)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 509(+500)/1009	Reducer 5: 0(+4)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 511(+498)/1009	Reducer 5: 0(+6)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 512(+497)/1009	Reducer 5: 0(+7)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 513(+496)/1009	Reducer 5: 0(+8)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 516(+493)/1009	Reducer 5: 0(+11)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 520(+489)/1009	Reducer 5: 0(+15)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 522(+487)/1009	Reducer 5: 0(+17)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 525(+484)/1009	Reducer 5: 0(+20)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 528(+481)/1009	Reducer 5: 0(+23)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 529(+480)/1009	Reducer 5: 0(+24)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 531(+478)/1009	Reducer 5: 0(+26)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 535(+474)/1009	Reducer 5: 0(+30)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 537(+472)/1009	Reducer 5: 0(+32)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 541(+468)/1009	Reducer 5: 0(+36)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 555(+454)/1009	Reducer 5: 0(+51)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 559(+450)/1009	Reducer 5: 0(+57)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 562(+447)/1009	Reducer 5: 0(+60)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 574(+435)/1009	Reducer 5: 0(+72)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 582(+427)/1009	Reducer 5: 0(+80)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 591(+418)/1009	Reducer 5: 0(+89)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 605(+404)/1009	Reducer 5: 0(+103)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 607(+402)/1009	Reducer 5: 0(+105)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 607(+402)/1009	Reducer 5: 0(+105)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 610(+399)/1009	Reducer 5: 0(+108)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 624(+376)/1009	Reducer 5: 0(+108)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 641(+368)/1009	Reducer 5: 0(+139)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 644(+365)/1009	Reducer 5: 0(+143)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 656(+353)/1009	Reducer 5: 0(+155)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 657(+352)/1009	Reducer 5: 0(+156)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 657(+352)/1009	Reducer 5: 0(+173)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 669(+340)/1009	Reducer 5: 0(+185)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 673(+336)/1009	Reducer 5: 0(+189)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 682(+327)/1009	Reducer 5: 0(+198)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 700(+309)/1009	Reducer 5: 0(+216)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 706(+303)/1009	Reducer 5: 0(+222)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 722(+287)/1009	Reducer 5: 0(+238)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 733(+276)/1009	Reducer 5: 0(+249)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 743(+266)/1009	Reducer 5: 0(+259)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 754(+254)/1009	Reducer 5: 0(+270)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 801(+208)/1009	Reducer 5: 0(+317)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 806(+203)/1009	Reducer 5: 0(+323)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 815(+194)/1009	Reducer 5: 0(+342)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 816(+193)/1009	Reducer 5: 0(+343)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 819(+190)/1009	Reducer 5: 0(+346)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 833(+176)/1009	Reducer 5: 0(+360)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 839(+170)/1009	Reducer 5: 0(+370)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 843(+166)/1009	Reducer 5: 0(+374)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 845(+164)/1009	Reducer 5: 0(+376)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 846(+163)/1009	Reducer 5: 0(+377)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 848(+161)/1009	Reducer 5: 0(+379)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 850(+159)/1009	Reducer 5: 0(+381)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 876(+133)/1009	Reducer 5: 0(+407)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 890(+119)/1009	Reducer 5: 0(+433)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 891(+118)/1009	Reducer 5: 0(+434)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 891(+118)/1009	Reducer 5: 0(+443)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 916(+93)/1009	Reducer 5: 0(+468)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 916(+93)/1009	Reducer 5: 0(+472)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 916(+93)/1009	Reducer 5: 0(+483)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 916(+93)/1009	Reducer 5: 0(+493)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 934(+75)/1009	Reducer 5: 0(+511)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 934(+75)/1009	Reducer 5: 0(+512)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 935(+74)/1009	Reducer 5: 0(+513)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 938(+71)/1009	Reducer 5: 0(+518)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 944(+65)/1009	Reducer 5: 0(+528)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 960(+49)/1009	Reducer 5: 0(+544)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 986(+23)/1009	Reducer 5: 0(+570)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1001(+8)/1009	Reducer 5: 0(+585)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1002(+7)/1009	Reducer 5: 0(+586)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1004(+5)/1009	Reducer 5: 0(+588)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1005(+4)/1009	Reducer 5: 0(+589)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1006(+3)/1009	Reducer 5: 0(+590)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 151(+593)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 192(+603)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 227(+618)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 228(+623)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 282(+628)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 314(+637)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 330(+644)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 332(+646)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 342(+646)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 345(+646)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 367(+642)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 372(+637)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 375(+634)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 376(+633)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 398(+611)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 422(+587)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 439(+570)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 483(+526)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 495(+514)/1009	Reducer 6: 0/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 511(+498)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 528(+481)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 584(+425)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 591(+418)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 602(+407)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 629(+380)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 651(+358)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 694(+315)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 697(+312)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 728(+281)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 746(+263)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 751(+258)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 795(+214)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 817(+192)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 818(+191)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 844(+165)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 848(+161)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 938(+71)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 965(+44)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 975(+34)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 976(+33)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 978(+31)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 979(+30)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 983(+26)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 988(+21)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 991(+18)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 995(+14)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 996(+13)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 1002(+7)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 1006(+3)/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 1009/1009	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 127/127	Map 10: 48/48	Map 11: 116/116	Map 12: 48/48	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 2: 1009/1009	Reducer 3: 253/253	Reducer 4: 1009/1009	Reducer 5: 1009/1009	Reducer 6: 1/1	
+INFO  : Status: DAG finished successfully in 144.19 seconds
+INFO  : 
+INFO  : Query Execution Summary
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : Compile Query                           0.64s
+INFO  : Prepare Plan                            0.40s
+INFO  : Submit Plan                             8.37s
+INFO  : Start DAG                               0.64s
+INFO  : Run DAG                               144.19s
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : Task Execution Summary
+INFO  : --------------------------------------------------------------------------------------------------------------------------------
+INFO  : --------------------------------------------------------------------------------------------------------------------------------
+INFO  :      Map 1          127                0             0       13024.00             0            0  1,052,952,316       3,794,881
+INFO  :     Map 10           48                0             0       11622.00             0            0     32,500,000      32,500,000
+INFO  :     Map 11          116                0             0       11417.00             0            0     65,000,000      65,000,000
+INFO  :     Map 12           48                0             0       11824.00             0            0     32,500,000      32,500,000
+INFO  :      Map 7            1                0             0         610.00             0            0         10,000              72
+INFO  :      Map 8            1                0             0         204.00             0            0          1,500              24
+INFO  :      Map 9            1                0             0         407.00             0            0          7,200           1,800
+INFO  :  Reducer 2         1009                0            15       34400.00             0            0     36,294,881         300,804
+INFO  :  Reducer 3          253                0             0       66701.00             0            0        300,804         300,804
+INFO  :  Reducer 4         1009                0             1       80983.00             0            0     65,300,804         300,804
+INFO  :  Reducer 5         1009                0           167       53952.00             0            0     32,800,804         100,900
+INFO  :  Reducer 6            1                0             0       18267.00             0            0        100,900               0
+INFO  : --------------------------------------------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : LLAP IO Summary
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :      Map 1    105637      1456          0   18.86GB         0B          0B       0B   542.08s
+INFO  :     Map 10      3331       446          0   64.53MB         0B          0B       0B     4.99s
+INFO  :     Map 11      6667      1112          0  548.95MB         0B          0B       0B    14.87s
+INFO  :     Map 12      3331       446          0   64.53MB         0B          0B       0B     3.43s
+INFO  :      Map 7         1         2          0    6.18KB         0B          0B       0B     0.01s
+INFO  :      Map 8         1         2          0    2.80KB         0B          0B       0B     0.01s
+INFO  :      Map 9         1         2          0      298B         0B          0B       0B     0.01s
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : FileSystem Counters Summary
+INFO  : 
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :      Map 1              0B             0                  0            61.12MB             0
+INFO  :     Map 10              0B             0                  0           338.48MB             0
+INFO  :     Map 11              0B             0                  0             1.43GB             0
+INFO  :     Map 12              0B             0                  0           338.48MB             0
+INFO  :      Map 7              0B             0                  0               351B             0
+INFO  :      Map 8              0B             0                  0               160B             0
+INFO  :      Map 9              0B             0                  0             7.36KB             0
+INFO  :  Reducer 2          2.19GB             0                  0            60.96MB             0
+INFO  :  Reducer 3              0B             0                  0            24.05MB             0
+INFO  :  Reducer 4          2.36GB             0                  0            48.22MB             0
+INFO  :  Reducer 5          1.04GB             0                  0             5.57MB             0
+INFO  :  Reducer 6          3.80MB             0                  0                 0B             0
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :      Map 1              0B             0                  0                 0B             0
+INFO  :     Map 10              0B             0                  0                 0B             0
+INFO  :     Map 11              0B             0                  0                 0B             0
+INFO  :     Map 12              0B             0                  0                 0B             0
+INFO  :      Map 7              0B             0                  0                 0B             0
+INFO  :      Map 8              0B             0                  0                 0B             0
+INFO  :      Map 9              0B             0                  0                 0B             0
+INFO  :  Reducer 2              0B             0                  0                 0B             0
+INFO  :  Reducer 3              0B             0                  0                 0B             0
+INFO  :  Reducer 4              0B             0                  0                 0B             0
+INFO  :  Reducer 5              0B             0                  0                 0B             0
+INFO  :  Reducer 6              0B             2                  0            10.25KB             2
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : org.apache.tez.common.counters.DAGCounter:
+INFO  :    NUM_KILLED_TASKS: 183
+INFO  :    NUM_SUCCEEDED_TASKS: 3623
+INFO  :    TOTAL_LAUNCHED_TASKS: 3806
+INFO  :    DATA_LOCAL_TASKS: 342
+INFO  :    AM_CPU_MILLISECONDS: 96480
+INFO  :    AM_GC_TIME_MILLIS: 710
+INFO  : File System Counters:
+INFO  :    FILE_BYTES_READ: 5605441840
+INFO  :    FILE_BYTES_WRITTEN: 2305851065
+INFO  :    FILE_READ_OPS: 0
+INFO  :    FILE_LARGE_READ_OPS: 0
+INFO  :    FILE_WRITE_OPS: 0
+INFO  :    HDFS_BYTES_READ: 0
+INFO  :    HDFS_BYTES_WRITTEN: 10246
+INFO  :    HDFS_READ_OPS: 2
+INFO  :    HDFS_LARGE_READ_OPS: 0
+INFO  :    HDFS_WRITE_OPS: 2
+INFO  : org.apache.tez.common.counters.TaskCounter:
+INFO  :    REDUCE_INPUT_GROUPS: 401704
+INFO  :    REDUCE_INPUT_RECORDS: 401704
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    SPILLED_RECORDS: 807095
+INFO  :    NUM_SHUFFLED_INPUTS: 1025039
+INFO  :    NUM_SKIPPED_INPUTS: 757527
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 3
+INFO  :    MERGED_MAP_OUTPUTS: 467669
+INFO  :    INPUT_RECORDS_PROCESSED: 135596881
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 63596591266
+INFO  :    OUTPUT_RECORDS: 134800089
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_BYTES: 2741459859
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 4566933177
+INFO  :    OUTPUT_BYTES_PHYSICAL: 2281363929
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 4907663
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 18211973
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    SHUFFLE_CHUNK_COUNT: 2018
+INFO  :    SHUFFLE_BYTES: 2227505701
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 3017316447
+INFO  :    SHUFFLE_BYTES_TO_MEM: 1978448502
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 249057199
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_DISK_TO_DISK_MERGES: 29
+INFO  :    SHUFFLE_PHASE_TIME: 69237527
+INFO  :    MERGE_PHASE_TIME: 6993053
+INFO  :    FIRST_EVENT_RECEIVED: 263431
+INFO  :    LAST_EVENT_RECEIVED: 40702367
+INFO  : HIVE:
+INFO  :    CREATED_FILES: 1
+INFO  :    DESERIALIZE_ERRORS: 0
+INFO  :    RECORDS_IN_Map_1: 1052950420
+INFO  :    RECORDS_IN_Map_10: 32500000
+INFO  :    RECORDS_IN_Map_11: 65000000
+INFO  :    RECORDS_IN_Map_12: 32500000
+INFO  :    RECORDS_IN_Map_7: 10000
+INFO  :    RECORDS_IN_Map_8: 1500
+INFO  :    RECORDS_IN_Map_9: 7200
+INFO  :    RECORDS_OUT_0: 100
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_1: 3794881
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_10: 32500000
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_11: 65000000
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_12: 32500000
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_7: 72
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_8: 24
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_9: 1800
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_2: 300804
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_3: 300804
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_4: 300804
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_5: 100900
+INFO  : Shuffle Errors:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 1
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_3_INPUT_Reducer_2:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 1
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_6_INPUT_Reducer_5:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : TaskCounter_Map_10_INPUT_customer_address:
+INFO  :    INPUT_RECORDS_PROCESSED: 32664
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 663732678
+INFO  : TaskCounter_Map_10_OUTPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 509736315
+INFO  :    OUTPUT_BYTES_PHYSICAL: 338480924
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 949888360
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 32500000
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_11_INPUT_customer:
+INFO  :    INPUT_RECORDS_PROCESSED: 65001
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 3528949144
+INFO  : TaskCounter_Map_11_OUTPUT_Reducer_4:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1561933780
+INFO  :    OUTPUT_BYTES_PHYSICAL: 1428952917
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 2439127182
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 65000000
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_12_INPUT_customer_address:
+INFO  :    INPUT_RECORDS_PROCESSED: 32664
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 663732678
+INFO  : TaskCounter_Map_12_OUTPUT_Reducer_5:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 509736315
+INFO  :    OUTPUT_BYTES_PHYSICAL: 338480924
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 949888360
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 32500000
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_1_INPUT_Map_7:
+INFO  :    FIRST_EVENT_RECEIVED: 478
+INFO  :    INPUT_RECORDS_PROCESSED: 648
+INFO  :    LAST_EVENT_RECEIVED: 478
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 9
+INFO  :    SHUFFLE_BYTES: 2871
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 4590
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 319
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 2552
+INFO  :    SHUFFLE_PHASE_TIME: 3794
+INFO  : TaskCounter_Map_1_INPUT_Map_8:
+INFO  :    FIRST_EVENT_RECEIVED: 733
+INFO  :    INPUT_RECORDS_PROCESSED: 216
+INFO  :    LAST_EVENT_RECEIVED: 733
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 9
+INFO  :    SHUFFLE_BYTES: 1152
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 1566
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 128
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 1024
+INFO  :    SHUFFLE_PHASE_TIME: 5272
+INFO  : TaskCounter_Map_1_INPUT_Map_9:
+INFO  :    FIRST_EVENT_RECEIVED: 9
+INFO  :    INPUT_RECORDS_PROCESSED: 16200
+INFO  :    LAST_EVENT_RECEIVED: 9
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 9
+INFO  :    SHUFFLE_BYTES: 65952
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 113454
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 7328
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 58624
+INFO  :    SHUFFLE_PHASE_TIME: 7360
+INFO  : TaskCounter_Map_1_INPUT_store_sales:
+INFO  :    INPUT_RECORDS_PROCESSED: 1052979
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 58739289020
+INFO  : TaskCounter_Map_1_OUTPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 106454305
+INFO  :    OUTPUT_BYTES_PHYSICAL: 61117963
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 159407135
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 3794881
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_7_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 10
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 759177
+INFO  : TaskCounter_Map_7_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 360
+INFO  :    OUTPUT_BYTES_PHYSICAL: 343
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 510
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 72
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_8_INPUT_store:
+INFO  :    INPUT_RECORDS_PROCESSED: 2
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 127422
+INFO  : TaskCounter_Map_8_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 120
+INFO  :    OUTPUT_BYTES_PHYSICAL: 152
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 174
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 24
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_9_INPUT_household_demographics:
+INFO  :    INPUT_RECORDS_PROCESSED: 8
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 1147
+INFO  : TaskCounter_Map_9_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 9000
+INFO  :    OUTPUT_BYTES_PHYSICAL: 7352
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 12606
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1800
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_2_INPUT_Map_1:
+INFO  :    FIRST_EVENT_RECEIVED: 25986
+INFO  :    INPUT_RECORDS_PROCESSED: 3794881
+INFO  :    LAST_EVENT_RECEIVED: 3914193
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 113489
+INFO  :    SHUFFLE_BYTES: 58042531
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 114725001
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 6584036
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 51458495
+INFO  :    SHUFFLE_PHASE_TIME: 6615719
+INFO  : TaskCounter_Reducer_2_INPUT_Map_10:
+INFO  :    FIRST_EVENT_RECEIVED: 20481
+INFO  :    INPUT_RECORDS_PROCESSED: 32500000
+INFO  :    LAST_EVENT_RECEIVED: 2604561
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 48432
+INFO  :    SHUFFLE_BYTES: 337318556
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 575026907
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 38714314
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 298604242
+INFO  :    SHUFFLE_PHASE_TIME: 5403013
+INFO  : TaskCounter_Reducer_2_OUTPUT_Reducer_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 15546543
+INFO  :    OUTPUT_BYTES_PHYSICAL: 36515964
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 22256637
+INFO  :    OUTPUT_RECORDS: 300804
+INFO  :    SHUFFLE_CHUNK_COUNT: 1009
+INFO  :    SPILLED_RECORDS: 300804
+INFO  : TaskCounter_Reducer_3_INPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 13508666
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 4907663
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 19994
+INFO  :    LAST_EVENT_RECEIVED: 4688371
+INFO  :    MERGED_MAP_OUTPUTS: 466660
+INFO  :    MERGE_PHASE_TIME: 6974977
+INFO  :    NUM_DISK_TO_DISK_MERGES: 29
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 3
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 260554
+INFO  :    NUM_SKIPPED_INPUTS: 757527
+INFO  :    REDUCE_INPUT_GROUPS: 300804
+INFO  :    REDUCE_INPUT_RECORDS: 300804
+INFO  :    SHUFFLE_BYTES: 21365424
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 17711475
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 2579445
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 18785979
+INFO  :    SHUFFLE_PHASE_TIME: 6902411
+INFO  :    SPILLED_RECORDS: 302691
+INFO  : TaskCounter_Reducer_3_OUTPUT_Reducer_4:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 13739244
+INFO  :    OUTPUT_BYTES_PHYSICAL: 24052652
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 17781443
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 300804
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_4_INPUT_Map_11:
+INFO  :    FIRST_EVENT_RECEIVED: 44819
+INFO  :    INPUT_RECORDS_PROCESSED: 65000000
+INFO  :    LAST_EVENT_RECEIVED: 144582
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 117044
+INFO  :    SHUFFLE_BYTES: 1426143861
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 1692636044
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 158513235
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 1267630626
+INFO  :    SHUFFLE_PHASE_TIME: 6594861
+INFO  : TaskCounter_Reducer_4_INPUT_Reducer_3:
+INFO  :    FIRST_EVENT_RECEIVED: 34994
+INFO  :    INPUT_RECORDS_PROCESSED: 300804
+INFO  :    LAST_EVENT_RECEIVED: 21020760
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 176292
+INFO  :    SHUFFLE_BYTES: 17926004
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 15398604
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 1994238
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 15931766
+INFO  :    SHUFFLE_PHASE_TIME: 27426040
+INFO  : TaskCounter_Reducer_4_OUTPUT_Reducer_5:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 17816501
+INFO  :    OUTPUT_BYTES_PHYSICAL: 48216363
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 21875540
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 300804
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_5_INPUT_Map_12:
+INFO  :    FIRST_EVENT_RECEIVED: 81644
+INFO  :    INPUT_RECORDS_PROCESSED: 32500000
+INFO  :    LAST_EVENT_RECEIVED: 156882
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 48432
+INFO  :    SHUFFLE_BYTES: 337318556
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 575026907
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 37363618
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 299954938
+INFO  :    SHUFFLE_PHASE_TIME: 5140211
+INFO  : TaskCounter_Reducer_5_INPUT_Reducer_4:
+INFO  :    FIRST_EVENT_RECEIVED: 34292
+INFO  :    INPUT_RECORDS_PROCESSED: 300804
+INFO  :    LAST_EVENT_RECEIVED: 8153842
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 259760
+INFO  :    SHUFFLE_BYTES: 23782419
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 19976669
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 2657478
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 21124941
+INFO  :    SHUFFLE_PHASE_TIME: 11120887
+INFO  : TaskCounter_Reducer_5_OUTPUT_Reducer_6:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 6487376
+INFO  :    OUTPUT_BYTES_PHYSICAL: 5538375
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 6695230
+INFO  :    OUTPUT_RECORDS: 100900
+INFO  :    SHUFFLE_CHUNK_COUNT: 1009
+INFO  :    SPILLED_RECORDS: 100900
+INFO  : TaskCounter_Reducer_6_INPUT_Reducer_5:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 4703307
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 1
+INFO  :    LAST_EVENT_RECEIVED: 17956
+INFO  :    MERGED_MAP_OUTPUTS: 1009
+INFO  :    MERGE_PHASE_TIME: 18076
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 1009
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 100900
+INFO  :    REDUCE_INPUT_RECORDS: 100900
+INFO  :    SHUFFLE_BYTES: 5538375
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 6695230
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 643060
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 4895315
+INFO  :    SHUFFLE_PHASE_TIME: 17959
+INFO  :    SPILLED_RECORDS: 102700
+INFO  : TaskCounter_Reducer_6_OUTPUT_out_Reducer_6:
+INFO  :    OUTPUT_RECORDS: 0
+INFO  : org.apache.hadoop.hive.llap.counters.LlapIOCounters:
+INFO  :    CACHE_HIT_BYTES: 19534457153
+INFO  :    CACHE_MISS_BYTES: 0
+INFO  :    CONSUMER_TIME_NS: 409646668205
+INFO  :    DECODE_TIME_NS: 560567878842
+INFO  :    HDFS_TIME_NS: 60214348
+INFO  :    METADATA_CACHE_HIT: 3466
+INFO  :    NUM_DECODED_BATCHES: 118969
+INFO  :    NUM_VECTOR_BATCHES: 1183329
+INFO  :    ROWS_EMITTED: 1182969120
+INFO  :    SELECTED_ROWGROUPS: 118969
+INFO  :    TOTAL_IO_TIME_NS: 565421969806
+INFO  : Completed executing command(queryId=hive_20161019030840_ea52ebe1-a1b8-4bf2-962d-03b232306149); Time taken: 153.677 seconds
+INFO  : OK
+100 rows selected (154.37 seconds)
+Closing: 0: jdbc:hive2://h01hn02:10500/tpcds_bin_partitioned_orc_10000

@@ -1,0 +1,162 @@
+START hdp2.6_spark21_run_orc_100_2_query67_sql_2017-04-11-11-14:  Tue Apr 11 11:14:33 CDT 2017
+Connecting to jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_orc_100
+17/04/11 11:14:34 INFO Utils: Supplied authorities: h01hn02.hadoop:10016
+17/04/11 11:14:34 INFO Utils: Resolved authority: h01hn02.hadoop:10016
+17/04/11 11:14:34 INFO HiveConnection: Will try to open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_orc_100
+Connected to: Spark SQL (version 2.1.0.2.6.0.3-8)
+Driver: Hive JDBC (version 1.2.1.spark2.hdp)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script settings/spark.settings
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> select  *
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> from (select i_category
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,i_class
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,i_brand
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,i_product_name
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,d_year
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,d_qoy
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,d_moy
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,s_store_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,sumsales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,rank() over (partition by i_category order by sumsales desc) rk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>       from (select i_category
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                   ,i_class
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                   ,i_brand
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                   ,i_product_name
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                   ,d_year
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                   ,d_qoy
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                   ,d_moy
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                   ,s_store_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                   ,sum(coalesce(ss_sales_price*ss_quantity,0)) sumsales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             from store_sales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                 ,date_dim
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                 ,store
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                 ,item
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        where  store_sales.ss_sold_date_sk=date_dim.d_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           and store_sales.ss_item_sk=item.i_item_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           and store_sales.ss_store_sk = store.s_store_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           and d_month_seq between 1193 and 1193+11
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        group by i_category, i_class, i_brand, i_product_name, d_year, d_qoy, d_moy,s_store_id with rollup)dw1) d w2
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> where rk <= 100
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> order by i_category
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,i_class
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,i_brand
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,i_product_name
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,d_year
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,d_qoy
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,d_moy
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,s_store_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,sumsales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,rk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> limit 100;
++-----------------+-----------------+-----------------+-----------------+-------------+-------------+-------------+-----------------+-----------------+-------------+--+
+|   i_category    |     i_class     |     i_brand     | i_product_name  |   d_year    |    d_qoy    |    d_moy    |   s_store_id    |    sumsales     |     rk      |
++-----------------+-----------------+-----------------+-----------------+-------------+-------------+-------------+-----------------+-----------------+-------------+--+
+| NULL            | NULL            | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1.0109351222473895E11 | 1           |
+|                 | NULL            | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2.4965708785862517E8 | 1           |
+|                 |                 | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1.2502850792024735E8 | 2           |
+|                 |                 |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 6.128891702346364E7 | 3           |
+|                 |                 |                 |                 | NULL        | NULL        | NULL        | NULL            | 2.7702812699982822E7 | 4           |
+|                 |                 |                 |                 | 1999        | NULL        | NULL        | NULL            | 2.002325345473689E7 | 5           |
+|                 |                 |                 |                 | 1999        | 3           | NULL        | NULL            | 7139764.29525429 | 8           |
+|                 |                 |                 |                 | 1999        | 3           | 8           | NULL            | 3000433.4475964606 | 25          |
+|                 |                 |                 |                 | 1999        | 3           | 9           | NULL            | 2868089.4599034786 | 27          |
+|                 |                 |                 |                 | 1999        | 4           | NULL        | NULL            | 1.1585055650947213E7 | 6           |
+|                 |                 |                 |                 | 1999        | 4           | 10          | NULL            | 2675204.278724432 | 33          |
+|                 |                 |                 |                 | 1999        | 4           | 11          | NULL            | 4311611.4641397 | 16          |
+|                 |                 |                 |                 | 1999        | 4           | 12          | NULL            | 4598239.908083081 | 13          |
+|                 |                 |                 |                 | 2000        | NULL        | NULL        | NULL            | 7679559.2452459335 | 7           |
+|                 |                 |                 |                 | 2000        | 1           | NULL        | NULL            | 4637270.044229746 | 12          |
+|                 |                 |                 |                 | 2000        | 1           | 1           | NULL            | 1831099.3515338898 | 73          |
+|                 |                 |                 |                 | 2000        | 2           | NULL        | NULL            | 3042289.2010161877 | 24          |
+|                 |                 |                 |                 | 2000        | 2           | 4           | NULL            | 1554883.8640153408 | 91          |
+|                 |                 |                 |                 | 2000        | 2           | 5           | NULL            | 1487405.3370008469 | 97          |
+|                 |                 | amalgedu pack #2 | NULL            | NULL        | NULL        | NULL        | NULL            | 2000265.6083544493 | 57          |
+|                 |                 | amalgscholar #2 | NULL            | NULL        | NULL        | NULL        | NULL            | 2105751.0564718246 | 47          |
+|                 |                 | edu packamalgamalg #17 | NULL            | NULL        | NULL        | NULL        | NULL            | 1909825.6256562471 | 66          |
+|                 |                 | edu packamalgamalg #17 |                 | NULL        | NULL        | NULL        | NULL            | 1909825.6256562471 | 66          |
+|                 |                 | edu packbrand #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 1813736.8617986739 | 75          |
+|                 |                 | edu packexporti #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 1702740.0787329674 | 80          |
+|                 |                 | edu packexporti #1 |                 | NULL        | NULL        | NULL        | NULL            | 1702740.0787329674 | 80          |
+|                 |                 | exportiedu pack #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 2071571.0135399103 | 50          |
+|                 |                 | exportiedu pack #1 |                 | NULL        | NULL        | NULL        | NULL            | 2071571.0135399103 | 50          |
+|                 |                 | exportiedu pack #1 |                 | 1999        | NULL        | NULL        | NULL            | 1496421.3013658524 | 96          |
+|                 |                 | exportiimporto #2 | NULL            | NULL        | NULL        | NULL        | NULL            | 2051127.701104641 | 54          |
+|                 |                 | importoedu pack #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 1984818.430828452 | 60          |
+|                 |                 | importoedu pack #1 |                 | NULL        | NULL        | NULL        | NULL            | 1984818.430828452 | 60          |
+|                 |                 | importoedu pack #1 |                 | 1999        | NULL        | NULL        | NULL            | 1577854.2994517088 | 88          |
+|                 |                 | importoscholar #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 1607561.402304411 | 85          |
+|                 |                 | importoscholar #1 |                 | NULL        | NULL        | NULL        | NULL            | 1607561.402304411 | 85          |
+|                 |                 | importoscholar #1 |                 | 1999        | NULL        | NULL        | NULL            | 1588470.9224231243 | 87          |
+|                 | accessories     | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1941272.5817637444 | 63          |
+|                 | athletic        | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 5842429.508033156 | 11          |
+|                 | athletic        |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 4546856.4977709055 | 14          |
+|                 | basketball      | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2763280.125256717 | 29          |
+|                 | classical       | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2223373.852823496 | 44          |
+|                 | country         | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 4519370.734731087 | 15          |
+|                 | country         |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 1558960.9021657798 | 90          |
+|                 | country         | importoscholar #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 1686921.3470402956 | 82          |
+|                 | custom          | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2064805.9296012223 | 52          |
+|                 | diamonds        | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2003792.4150494337 | 56          |
+|                 | diamonds        |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 1760643.843608737 | 79          |
+|                 | dresses         | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 6600772.597686134 | 9           |
+|                 | dresses         |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 2859650.6975126863 | 28          |
+|                 | dresses         |                 |                 | NULL        | NULL        | NULL        | NULL            | 1916415.1370626688 | 65          |
+|                 | dresses         |                 |                 | 1999        | NULL        | NULL        | NULL            | 1463756.317696333 | 99          |
+|                 | dresses         | amalgamalg #1   | NULL            | NULL        | NULL        | NULL        | NULL            | 1452009.9526771307 | 100         |
+|                 | dresses         | amalgamalg #2   | NULL            | NULL        | NULL        | NULL        | NULL            | 2289111.9474963173 | 41          |
+|                 | earings         | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2896897.332683444 | 26          |
+|                 | earings         |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 2080705.3195990324 | 48          |
+|                 | earings         |                 |                 | NULL        | NULL        | NULL        | NULL            | 2080705.3195990324 | 48          |
+|                 | earings         |                 |                 | 1999        | NULL        | NULL        | NULL            | 1527720.3015104532 | 93          |
+|                 | fragrances      | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 4258214.146279573 | 18          |
+|                 | fragrances      | importoamalg #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 2058238.8482472897 | 53          |
+|                 | history         | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2740116.4876641333 | 30          |
+|                 | history         |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 1875012.838377148 | 69          |
+|                 | history         |                 |                 | NULL        | NULL        | NULL        | NULL            | 1875012.838377148 | 69          |
+|                 | infants         | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2698842.9819725156 | 31          |
+|                 | infants         | importoexporti #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 1572174.0914489627 | 89          |
+|                 | maternity       | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1808775.7063651085 | 76          |
+|                 | maternity       |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 1808775.7063651085 | 76          |
+|                 | memory          | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 3603869.0306628346 | 22          |
+|                 | memory          |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 1824268.8719514012 | 74          |
+|                 | mens            | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1512983.5247769356 | 95          |
+|                 | mystery         | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1624802.5682032108 | 84          |
+|                 | newborn         | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2542815.861255765 | 36          |
+|                 | newborn         |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 2322033.0002310276 | 40          |
+|                 | pants           | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 4146517.9130618274 | 19          |
+|                 | pants           | exportiimporto #2 | NULL            | NULL        | NULL        | NULL        | NULL            | 2283021.003538072 | 42          |
+|                 | pendants        | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1960762.5780884922 | 62          |
+|                 | pop             | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2017369.1376538277 | 55          |
+|                 | portable        | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1634851.0567271113 | 83          |
+|                 | reference       | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1882435.4067058563 | 68          |
+|                 | rock            | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 4277731.078028321 | 17          |
+|                 | rock            |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 3552358.226404786 | 23          |
+|                 | rock            |                 |                 | NULL        | NULL        | NULL        | NULL            | 2529977.467147827 | 37          |
+|                 | rock            |                 |                 | 1999        | NULL        | NULL        | NULL            | 2192168.906982422 | 45          |
+|                 | school-uniforms | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2344412.4530199766 | 39          |
+|                 | school-uniforms |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 2149214.341874957 | 46          |
+|                 | science         | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2410673.7922257334 | 38          |
+|                 | shirts          | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 6325673.41835238 | 10          |
+|                 | shirts          |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 2693966.0435730517 | 32          |
+|                 | shirts          |                 |                 | NULL        | NULL        | NULL        | NULL            | 1856193.211054206 | 71          |
+|                 | shirts          | importoimporto #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 2583887.87595585 | 34          |
+|                 | shirts          | importoimporto #1 |                 | NULL        | NULL        | NULL        | NULL            | 1536277.3290562928 | 92          |
+|                 | shirts          | importoimporto #1 |                 | 1999        | NULL        | NULL        | NULL            | 1525124.3493199646 | 94          |
+|                 | sports-apparel  | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2254799.928284645 | 43          |
+|                 | sports-apparel  |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 1987259.687617302 | 59          |
+|                 | swimwear        | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 3613902.729565859 | 21          |
+|                 | swimwear        |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 1481381.1823242903 | 98          |
+|                 | swimwear        | edu packamalg #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 1852066.4667395353 | 72          |
+|                 | toddlers        | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 3929088.057727039 | 20          |
+|                 | toddlers        |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 1999279.5671845376 | 58          |
+|                 | toddlers        | exportiexporti #2 | NULL            | NULL        | NULL        | NULL        | NULL            | 1929808.4905425012 | 64          |
+|                 | womens          | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2546634.574530363 | 35          |
++-----------------+-----------------+-----------------+-----------------+-------------+-------------+-------------+-----------------+-----------------+-------------+--+
+100 rows selected (33.734 seconds)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+Closing: 0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_orc_100
+STOP hdp2.6_spark21_run_orc_100_2_query67_sql_2017-04-11-11-14:  Tue Apr 11 11:15:08 CDT 2017

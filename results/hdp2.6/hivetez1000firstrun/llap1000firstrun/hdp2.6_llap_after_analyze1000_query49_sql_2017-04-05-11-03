@@ -1,0 +1,255 @@
+START hdp2.6_llap_after_analyze1000_query49_sql_2017-04-05-11-03:  Wed Apr 5 11:03:32 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2" -n hive --incremental=true -i test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_1000;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+Connected to: Apache Hive (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.042 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> select  
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  'web' as channel
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,web.item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,web.return_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,web.return_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,web.currency_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from (
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,return_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,currency_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,rank() over (order by return_ratio) as return_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,rank() over (order by currency_ratio) as currency_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  (select ws.ws_item_sk as item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,(cast(sum(coalesce(wr.wr_return_quantity,0)) as decimal(15,4))/
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  cast(sum(coalesce(ws.ws_quantity,0)) as decimal(15,4) )) as retur n_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,(cast(sum(coalesce(wr.wr_return_amt,0)) as decimal(15,4))/
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  cast(sum(coalesce(ws.ws_net_paid,0)) as decimal(15,4) )) as curre ncy_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   web_sales ws left outer join web_returns wr 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  on (ws.ws_order_number = wr.wr_order_number and 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ws.ws_item_sk = wr.wr_item_sk)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                  ,date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  wr.wr_return_amt > 10000 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and ws.ws_net_profit > 1
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and ws.ws_net_paid > 0
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and ws.ws_quantity > 0
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and ws.ws_sold_date_sk = date_dim.d_date_ sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and d_year = 2000
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and d_moy = 12
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  group by ws.ws_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ) in_web
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ) web
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  (
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  web.return_rank <= 10
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  or
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  web.currency_rank <= 10
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  )
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  union all
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  'catalog' as channel
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,catalog.item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,catalog.return_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,catalog.return_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,catalog.currency_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from (
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,return_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,currency_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,rank() over (order by return_ratio) as return_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,rank() over (order by currency_ratio) as currency_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  (select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  cs.cs_item_sk as item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,(cast(sum(coalesce(cr.cr_return_quantity,0)) as decimal(15,4))/
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  cast(sum(coalesce(cs.cs_quantity,0)) as decimal(15,4) )) as retur n_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,(cast(sum(coalesce(cr.cr_return_amount,0)) as decimal(15,4))/
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  cast(sum(coalesce(cs.cs_net_paid,0)) as decimal(15,4) )) as curre ncy_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  catalog_sales cs left outer join catalog_returns cr
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  on (cs.cs_order_number = cr.cr_order_number and 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  cs.cs_item_sk = cr.cr_item_sk)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                 ,date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  cr.cr_return_amount > 10000 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and cs.cs_net_profit > 1
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and cs.cs_net_paid > 0
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and cs.cs_quantity > 0
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and cs_sold_date_sk = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and d_year = 2000
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and d_moy = 12
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                  group by cs.cs_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ) in_cat
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ) catalog
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  (
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  catalog.return_rank <= 10
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  or
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  catalog.currency_rank <=10
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  )
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  union all
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  'store' as channel
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,store.item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,store.return_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,store.return_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,store.currency_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from (
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,return_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,currency_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,rank() over (order by return_ratio) as return_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,rank() over (order by currency_ratio) as currency_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  (select sts.ss_item_sk as item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,(cast(sum(coalesce(sr.sr_return_quantity,0)) as decimal(15,4))/c ast(sum(coalesce(sts.ss_quantity,0)) as decimal(15,4) )) as return_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,(cast(sum(coalesce(sr.sr_return_amt,0)) as decimal(15,4))/cast(s um(coalesce(sts.ss_net_paid,0)) as decimal(15,4) )) as currency_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  store_sales sts left outer join store_returns sr
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  on (sts.ss_ticket_number = sr.sr_ticket_number and sts.ss_item_sk  = sr.sr_item_sk)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                 ,date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  sr.sr_return_amt > 10000 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and sts.ss_net_profit > 1
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and sts.ss_net_paid > 0 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and sts.ss_quantity > 0
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and ss_sold_date_sk = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and d_year = 2000
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and d_moy = 12
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  group by sts.ss_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ) in_store
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ) store
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where  (
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  store.return_rank <= 10
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  or 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  store.currency_rank <= 10
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  )
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  order by 1,4,5
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  limit 100;
++--------------+-----------+-------------------+------------------+--------------------+--+
+| _u2.channel  | _u2.item  | _u2.return_ratio  | _u2.return_rank  | _u2.currency_rank  |
++--------------+-----------+-------------------+------------------+--------------------+--+
+| catalog      | 244886    | 0E-20             | 1                | 138                |
+| catalog      | 87151     | 0E-20             | 1                | 679                |
+| catalog      | 229094    | 0E-20             | 1                | 713                |
+| catalog      | 27251     | 0E-20             | 1                | 762                |
+| catalog      | 106111    | 0E-20             | 1                | 830                |
+| catalog      | 157799    | 0E-20             | 1                | 1128               |
+| catalog      | 258647    | 0E-20             | 1                | 1149               |
+| catalog      | 73910     | 0E-20             | 1                | 1352               |
+| catalog      | 167873    | 0E-20             | 1                | 1388               |
+| catalog      | 288473    | 0E-20             | 1                | 1563               |
+| catalog      | 148436    | 0E-20             | 1                | 1577               |
+| catalog      | 241753    | 0E-20             | 1                | 1586               |
+| catalog      | 177401    | 0E-20             | 1                | 1751               |
+| catalog      | 137273    | 0E-20             | 1                | 1768               |
+| catalog      | 94652     | 0E-20             | 1                | 1772               |
+| catalog      | 267131    | 0E-20             | 1                | 1852               |
+| catalog      | 8401      | 0E-20             | 1                | 1919               |
+| catalog      | 252197    | 0E-20             | 1                | 2045               |
+| catalog      | 295934    | 0E-20             | 1                | 2069               |
+| catalog      | 119041    | 0E-20             | 1                | 2074               |
+| catalog      | 5300      | 0E-20             | 1                | 2125               |
+| catalog      | 194005    | 0E-20             | 1                | 2145               |
+| catalog      | 4469      | 0E-20             | 1                | 2157               |
+| catalog      | 183679    | 0E-20             | 1                | 2165               |
+| catalog      | 56519     | 0E-20             | 1                | 2354               |
+| catalog      | 32863     | 0E-20             | 1                | 2411               |
+| catalog      | 205208    | 0E-20             | 1                | 2596               |
+| catalog      | 263009    | 0E-20             | 1                | 2674               |
+| catalog      | 179564    | 0E-20             | 1                | 2768               |
+| catalog      | 165089    | 0E-20             | 1                | 2790               |
+| catalog      | 103589    | 0E-20             | 1                | 3069               |
+| catalog      | 36847     | 0E-20             | 1                | 3094               |
+| catalog      | 269618    | 0E-20             | 1                | 3130               |
+| catalog      | 231959    | 0E-20             | 1                | 3497               |
+| catalog      | 34843     | 0E-20             | 1                | 3554               |
+| catalog      | 268403    | 0E-20             | 1                | 3576               |
+| catalog      | 274585    | 0E-20             | 1                | 3639               |
+| catalog      | 166028    | 0E-20             | 1                | 4054               |
+| catalog      | 216134    | 0E-20             | 1                | 4120               |
+| catalog      | 248641    | 0E-20             | 1                | 4309               |
+| catalog      | 54986     | 0E-20             | 1                | 4311               |
+| catalog      | 172496    | 0E-20             | 1                | 4363               |
+| catalog      | 219337    | 0E-20             | 1                | 4555               |
+| catalog      | 70093     | 0E-20             | 1                | 4667               |
+| catalog      | 259303    | 0E-20             | 1                | 4714               |
+| catalog      | 244184    | 0E-20             | 1                | 4737               |
+| catalog      | 63275     | 0E-20             | 1                | 4799               |
+| catalog      | 43991     | 0E-20             | 1                | 4855               |
+| catalog      | 137299    | 0E-20             | 1                | 5060               |
+| catalog      | 94661     | 0E-20             | 1                | 5329               |
+| catalog      | 55753     | 0E-20             | 1                | 5380               |
+| catalog      | 177932    | 0E-20             | 1                | 5433               |
+| catalog      | 141710    | 0E-20             | 1                | 5711               |
+| catalog      | 232379    | 0E-20             | 1                | 5863               |
+| catalog      | 152513    | 0E-20             | 1                | 5929               |
+| catalog      | 269447    | 0E-20             | 1                | 5949               |
+| catalog      | 27619     | 0E-20             | 1                | 6331               |
+| catalog      | 30193     | 0E-20             | 1                | 6436               |
+| catalog      | 158909    | 0E-20             | 1                | 6741               |
+| catalog      | 127741    | 0E-20             | 1                | 6754               |
+| catalog      | 51025     | 0E-20             | 1                | 6876               |
+| catalog      | 107155    | 0E-20             | 1                | 7044               |
+| catalog      | 169105    | 0E-20             | 1                | 7072               |
+| catalog      | 232279    | 0E-20             | 1                | 7152               |
+| catalog      | 134636    | 0E-20             | 1                | 7270               |
+| catalog      | 278287    | 0E-20             | 1                | 7397               |
+| catalog      | 107915    | 0E-20             | 1                | 7500               |
+| catalog      | 162745    | 0E-20             | 1                | 7598               |
+| catalog      | 85370     | 0E-20             | 1                | 7828               |
+| catalog      | 59450     | 0E-20             | 1                | 7869               |
+| catalog      | 144320    | 0E-20             | 1                | 7981               |
+| catalog      | 89335     | 0E-20             | 1                | 8035               |
+| catalog      | 20267     | 0E-20             | 1                | 8231               |
+| catalog      | 78979     | 0E-20             | 1                | 8327               |
+| catalog      | 179180    | 0E-20             | 1                | 8430               |
+| catalog      | 75545     | 0E-20             | 1                | 8509               |
+| catalog      | 183548    | 0E-20             | 1                | 8846               |
+| catalog      | 230378    | 0E-20             | 1                | 8849               |
+| catalog      | 239687    | 0E-20             | 1                | 8936               |
+| catalog      | 23792     | 0E-20             | 1                | 9021               |
+| catalog      | 77864     | 0E-20             | 1                | 9029               |
+| catalog      | 73775     | 0E-20             | 1                | 9056               |
+| catalog      | 226106    | 0E-20             | 1                | 9078               |
+| catalog      | 68519     | 0E-20             | 1                | 9253               |
+| catalog      | 179888    | 0E-20             | 1                | 9497               |
+| catalog      | 244925    | 0E-20             | 1                | 9585               |
+| catalog      | 105515    | 0E-20             | 1                | 9651               |
+| catalog      | 229727    | 0E-20             | 1                | 9899               |
+| catalog      | 25789     | 0E-20             | 1                | 9911               |
+| catalog      | 8023      | 0E-20             | 1                | 9954               |
+| catalog      | 81571     | 0E-20             | 1                | 10018              |
+| catalog      | 27614     | 0E-20             | 1                | 10160              |
+| catalog      | 17413     | 0E-20             | 1                | 10248              |
+| catalog      | 14804     | 0E-20             | 1                | 10304              |
+| catalog      | 113011    | 0E-20             | 1                | 10385              |
+| catalog      | 284531    | 0E-20             | 1                | 10393              |
+| catalog      | 11177     | 0E-20             | 1                | 10476              |
+| catalog      | 173360    | 0E-20             | 1                | 10640              |
+| catalog      | 21698     | 0E-20             | 1                | 10667              |
+| catalog      | 124052    | 0E-20             | 1                | 10752              |
++--------------+-----------+-------------------+------------------+--------------------+--+
+100 rows selected (65.416 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_1000;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+STOP hdp2.6_llap_after_analyze1000_query49_sql_2017-04-05-11-03:  Wed Apr 5 11:04:41 CDT 2017
+
+ South Results Number of Nodes:  9
+ Avg CPU Busy:  4.660  Peak Cpu Avg:  74.440 Count > 90% Busy:  0
+ Avg Disk Busy:  1.159  Peak Disk Avg:  4.672 Count > 90% busy 0
+ Avg Disk Reads per sec:  318.345  Avg Write per sec:  121.323
+ Avg Net TX:   778.952  Peak TX Avg:  366.296
+ Avg Net RX:   970.920  Peak RX Avg:  464.872
+ Mem Utilized:  96.670
+South CSV
+4.660 | 74.440 | 0 | 1.159 | 4.672 | 0 | 318.345 | 121.323 | 778.952 | 366.296 | 970.920 | 464.872 | 96.670

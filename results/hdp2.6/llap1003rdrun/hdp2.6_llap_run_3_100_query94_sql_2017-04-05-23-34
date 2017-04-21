@@ -1,0 +1,1532 @@
+START hdp2.6_llap_run_3_100_query94_sql_2017-04-05-23-34:  Wed Apr 5 23:34:51 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2" -n hive --incremental=true -i test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+Connected to: Apache Hive (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.042 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.exec.reducers.bytes.per.reducer=67108864;
+No rows affected (0.002 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> SELECT count(distinct ws_order_number) as order_count,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                sum(ws_ext_ship_cost) as total_shipping_cost,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                sum(ws_net_profit) as total_net_profit
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> FROM web_sales ws1
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> JOIN customer_address ca ON (ws1.ws_ship_addr_sk = ca.ca_address_sk)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> JOIN web_site s ON (ws1.ws_web_site_sk = s.web_site_sk)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> JOIN date_dim d ON (ws1.ws_ship_date_sk = d.d_date_sk)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> LEFT SEMI JOIN (SELECT ws2.ws_order_number as ws_order_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                                FROM web_sales ws2 JOIN web_sales ws3
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                                ON (ws2.ws_order_number = ws3.ws_order_number)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                                WHERE ws2.ws_warehouse_sk <> ws3.ws_warehouse_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> ) ws_wh1
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> ON (ws1.ws_order_number = ws_wh1.ws_order_number)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> LEFT OUTER JOIN web_returns wr1 ON (ws1.ws_order_number = wr1.wr_order_number)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> WHERE d.d_date between '1999-05-01' and '1999-07-01' and
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                ca.ca_state = 'TX' and
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                s.web_company_name = 'pri' and
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                wr1.wr_order_number is null
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> limit 100;
+INFO  : Compiling command(queryId=hive_20170405233455_7b9ee31d-8d34-4460-9ef0-252153993df9): SELECT count(distinct ws_order_number) as order_count,
+               sum(ws_ext_ship_cost) as total_shipping_cost,
+               sum(ws_net_profit) as total_net_profit
+FROM web_sales ws1
+JOIN customer_address ca ON (ws1.ws_ship_addr_sk = ca.ca_address_sk)
+JOIN web_site s ON (ws1.ws_web_site_sk = s.web_site_sk)
+JOIN date_dim d ON (ws1.ws_ship_date_sk = d.d_date_sk)
+LEFT SEMI JOIN (SELECT ws2.ws_order_number as ws_order_number
+                               FROM web_sales ws2 JOIN web_sales ws3
+                               ON (ws2.ws_order_number = ws3.ws_order_number)
+                               WHERE ws2.ws_warehouse_sk <> ws3.ws_warehouse_sk
+) ws_wh1
+ON (ws1.ws_order_number = ws_wh1.ws_order_number)
+LEFT OUTER JOIN web_returns wr1 ON (ws1.ws_order_number = wr1.wr_order_number)
+WHERE d.d_date between '1999-05-01' and '1999-07-01' and
+               ca.ca_state = 'TX' and
+               s.web_company_name = 'pri' and
+               wr1.wr_order_number is null
+limit 100
+INFO  : We are setting the hadoop caller context from HIVE_SSN_ID:164aad4a-2dbe-4463-bb26-da46fe9d2918 to hive_20170405233455_7b9ee31d-8d34-4460-9ef0-252153993df9
+INFO  : Semantic Analysis Completed
+INFO  : Returning Hive schema: Schema(fieldSchemas:[FieldSchema(name:order_count, type:bigint, comment:null), FieldSchema(name:total_shipping_cost, type:double, comment:null), FieldSchema(name:total_net_profit, type:double, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=hive_20170405233455_7b9ee31d-8d34-4460-9ef0-252153993df9); Time taken: 2.482 seconds
+INFO  : We are resetting the hadoop caller context to HIVE_SSN_ID:164aad4a-2dbe-4463-bb26-da46fe9d2918
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Setting caller context to query id hive_20170405233455_7b9ee31d-8d34-4460-9ef0-252153993df9
+INFO  : Executing command(queryId=hive_20170405233455_7b9ee31d-8d34-4460-9ef0-252153993df9): SELECT count(distinct ws_order_number) as order_count,
+               sum(ws_ext_ship_cost) as total_shipping_cost,
+               sum(ws_net_profit) as total_net_profit
+FROM web_sales ws1
+JOIN customer_address ca ON (ws1.ws_ship_addr_sk = ca.ca_address_sk)
+JOIN web_site s ON (ws1.ws_web_site_sk = s.web_site_sk)
+JOIN date_dim d ON (ws1.ws_ship_date_sk = d.d_date_sk)
+LEFT SEMI JOIN (SELECT ws2.ws_order_number as ws_order_number
+                               FROM web_sales ws2 JOIN web_sales ws3
+                               ON (ws2.ws_order_number = ws3.ws_order_number)
+                               WHERE ws2.ws_warehouse_sk <> ws3.ws_warehouse_sk
+) ws_wh1
+ON (ws1.ws_order_number = ws_wh1.ws_order_number)
+LEFT OUTER JOIN web_returns wr1 ON (ws1.ws_order_number = wr1.wr_order_number)
+WHERE d.d_date between '1999-05-01' and '1999-07-01' and
+               ca.ca_state = 'TX' and
+               s.web_company_name = 'pri' and
+               wr1.wr_order_number is null
+limit 100
+INFO  : Query ID = hive_20170405233455_7b9ee31d-8d34-4460-9ef0-252153993df9
+INFO  : Total jobs = 1
+INFO  : Launching Job 1 out of 1
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Session is already open
+INFO  : Dag name: SELECT count(distinct ws_order_number)...100(Stage-1)
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Status: Running (Executing on YARN cluster with App id application_1491366857972_0109)
+
+INFO  : Map 1: -/-	Map 11: 0(+1)/1	Map 13: 0/30	Map 4: -/-	Map 6: 0(+1)/292	Map 7: 0(+1)/1	Map 9: 0(+5)/5	Reducer 10: 0/1	Reducer 12: 0/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 0/1	
+[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  INITED        292        0        0     292       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13                  llap  RUNNING         30        0       30       0       0
+Map 4                   llap  RUNNING        292        0      241      51       0
+Map 6 .                 llap  RUNNING        292       56      236       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10              llap  RUNNING          1        0        1       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8               llap  RUNNING          1        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 04/13  [=>>-------------------------] 6%    ELAPSED TIME: 0.58 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  INITED        292        0        0     292       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 ...              llap  RUNNING         30       12       18       0       0
+Map 4                   llap  RUNNING        292        0      274      18       0
+Map 6 .......           llap  RUNNING        292      217       75       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10              llap  RUNNING          1        0        1       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 05/13  [======>>--------------------] 23%   ELAPSED TIME: 1.09 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  INITED        292        0        0     292       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 ......           llap  RUNNING         30       21        9       0       0
+Map 4                   llap  RUNNING        292        0      289       3       0
+Map 6 .........         llap  RUNNING        292      266       26       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10              llap  RUNNING          1        0        1       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 05/13  [=======>>-------------------] 29%   ELAPSED TIME: 1.59 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      242      50       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .......          llap  RUNNING         30       24        6       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 07/13  [========>>------------------] 32%   ELAPSED TIME: 2.09 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      242      50       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .......          llap  RUNNING         30       24        6       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 07/13  [========>>------------------] 32%   ELAPSED TIME: 2.59 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      242      50       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .......          llap  RUNNING         30       24        6       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 07/13  [========>>------------------] 32%   ELAPSED TIME: 3.09 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      243      49       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .......          llap  RUNNING         30       25        5       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 07/13  [========>>------------------] 32%   ELAPSED TIME: 3.60 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      243      49       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .......          llap  RUNNING         30       26        4       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 07/13  [========>>------------------] 32%   ELAPSED TIME: 4.10 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      246      46       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 4.60 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      246      46       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 5.10 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      246      46       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 5.60 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      246      46       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 6.11 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      246      46       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 6.61 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      246      46       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 7.61 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      248      44       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 8.61 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      248      44       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 9.61 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      248      44       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 10.61 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      248      44       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 11.62 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      248      44       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 12.62 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      248      44       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 13.62 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      248      44       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 14.62 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      248      44       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 15.62 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      248      44       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 16.63 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      248      44       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 18.13 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      248      44       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 19.63 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      248      44       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 21.13 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      248      44       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 22.63 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      248      44       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        0      292       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 32%   ELAPSED TIME: 24.14 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      251      41       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        3      289       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 33%   ELAPSED TIME: 25.64 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      252      40       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4                   llap  RUNNING        292        4      288       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [========>>------------------] 33%   ELAPSED TIME: 27.14 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      284       8       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4 .                 llap  RUNNING        292       36      256       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  INITED          1        0        0       1       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [=========>>-----------------] 36%   ELAPSED TIME: 29.14 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      292       0       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4 ..                llap  RUNNING        292       78      214       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  RUNNING          1        0        1       0       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [==========>>----------------] 40%   ELAPSED TIME: 31.14 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      292       0       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4 .....             llap  RUNNING        292      172      120       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  RUNNING          1        0        1       0       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [=============>>-------------] 50%   ELAPSED TIME: 33.15 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                   llap  RUNNING        292        0      292       0       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4 ........          llap  RUNNING        292      246       46       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  INITED         90        0        0      90       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5               llap  RUNNING          1        0        1       0       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/13  [==============>>------------] 57%   ELAPSED TIME: 35.15 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ........          llap  RUNNING        292      246       46       0       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  RUNNING         90        0       90       0       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 10/13  [======================>>----] 86%   ELAPSED TIME: 37.15 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2               llap  RUNNING         90        0       90       0       0
+Reducer 3               llap  INITED          1        0        0       1       0
+Reducer 5 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 11/13  [=======================>>---] 90%   ELAPSED TIME: 39.65 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[19A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 13 .........        llap  SUCCEEDED         30       30        0       0       0
+Map 4 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 6 ..........        llap  SUCCEEDED        292      292        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2 ......        llap  SUCCEEDED         90       90        0       0       0
+Reducer 3 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 5 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 13/13  [==========================>>] 100%  ELAPSED TIME: 42.03 s    
+[22;0m[2K--------------------------------------------------------------------------------
+INFO  : Map 1: 0/292	Map 11: 1/1	Map 13: 0(+30)/30	Map 4: 0(+231)/292	Map 6: 14(+278)/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 0(+1)/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 0(+1)/1	
+INFO  : Map 1: 0/292	Map 11: 1/1	Map 13: 0(+30)/30	Map 4: 0(+241)/292	Map 6: 56(+236)/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 0(+1)/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 0(+1)/1	
+INFO  : Map 1: 0/292	Map 11: 1/1	Map 13: 1(+29)/30	Map 4: 0(+267)/292	Map 6: 110(+182)/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 0(+1)/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0/292	Map 11: 1/1	Map 13: 1(+29)/30	Map 4: 0(+273)/292	Map 6: 181(+111)/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 0(+1)/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0/292	Map 11: 1/1	Map 13: 12(+18)/30	Map 4: 0(+274)/292	Map 6: 217(+75)/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 0(+1)/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0/292	Map 11: 1/1	Map 13: 17(+13)/30	Map 4: 0(+283)/292	Map 6: 247(+45)/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 0(+1)/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0/292	Map 11: 1/1	Map 13: 21(+9)/30	Map 4: 0(+289)/292	Map 6: 266(+26)/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 0(+1)/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+234)/292	Map 11: 1/1	Map 13: 23(+7)/30	Map 4: 0(+292)/292	Map 6: 285(+7)/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+240)/292	Map 11: 1/1	Map 13: 23(+7)/30	Map 4: 0(+292)/292	Map 6: 291(+1)/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+242)/292	Map 11: 1/1	Map 13: 24(+6)/30	Map 4: 0(+292)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+243)/292	Map 11: 1/1	Map 13: 25(+5)/30	Map 4: 0(+292)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+243)/292	Map 11: 1/1	Map 13: 26(+4)/30	Map 4: 0(+292)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+246)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 0(+292)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+246)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 0(+292)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+248)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 0(+292)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+248)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 0(+292)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+248)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 0(+292)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+248)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 0(+292)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+248)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 0(+292)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+248)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 0(+292)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+249)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 1(+291)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+251)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 3(+289)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+252)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 4(+288)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+253)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 5(+287)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+255)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 7(+285)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+257)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 9(+283)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+263)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 15(+277)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+270)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 22(+270)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+284)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 36(+256)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+286)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 38(+254)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+288)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 40(+252)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 48(+244)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 52(+240)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 58(+234)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 68(+224)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 76(+216)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 78(+214)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 85(+207)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 107(+185)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 114(+178)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 124(+168)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 141(+151)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 144(+148)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 151(+141)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 167(+125)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 168(+124)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 172(+120)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 177(+115)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 188(+104)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 195(+97)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 203(+89)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 207(+85)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 214(+78)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 218(+74)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 224(+68)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 231(+61)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 246(+46)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 255(+37)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 272(+20)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 279(+13)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 286(+6)/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 0(+292)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 0(+1)/1	Reducer 8: 1/1	
+INFO  : Map 1: 3(+289)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0/90	Reducer 3: 0/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Map 1: 64(+228)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0(+8)/90	Reducer 3: 0/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Map 1: 146(+146)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0(+90)/90	Reducer 3: 0/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Map 1: 214(+78)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0(+90)/90	Reducer 3: 0/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Map 1: 246(+46)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0(+90)/90	Reducer 3: 0/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Map 1: 255(+37)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0(+90)/90	Reducer 3: 0/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Map 1: 260(+32)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0(+90)/90	Reducer 3: 0/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Map 1: 270(+22)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0(+90)/90	Reducer 3: 0/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Map 1: 289(+3)/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0(+90)/90	Reducer 3: 0/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Map 1: 292/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 0(+90)/90	Reducer 3: 0/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Map 1: 292/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 6(+84)/90	Reducer 3: 0/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Map 1: 292/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 21(+69)/90	Reducer 3: 0(+1)/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Map 1: 292/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 24(+66)/90	Reducer 3: 0(+1)/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Map 1: 292/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 59(+31)/90	Reducer 3: 0(+1)/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Map 1: 292/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 67(+23)/90	Reducer 3: 0(+1)/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Map 1: 292/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 68(+22)/90	Reducer 3: 0(+1)/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Map 1: 292/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 82(+8)/90	Reducer 3: 0(+1)/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Map 1: 292/292	Map 11: 1/1	Map 13: 30/30	Map 4: 292/292	Map 6: 292/292	Map 7: 1/1	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 2: 90/90	Reducer 3: 1/1	Reducer 5: 1/1	Reducer 8: 1/1	
+INFO  : Status: DAG finished successfully in 41.95 seconds
+INFO  : 
+INFO  : Query Execution Summary
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : OPERATION                            DURATION
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : Compile Query                           2.48s
+INFO  : Prepare Plan                            0.49s
+INFO  : Submit Plan                             0.11s
+INFO  : Start DAG                               0.35s
+INFO  : Run DAG                                41.95s
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : Task Execution Summary
+INFO  : --------------------------------------------------------------------------------------------------------------------------------
+INFO  :   VERTICES  TOTAL_TASKS  FAILED_ATTEMPTS  KILLED_TASKS   DURATION(ms)  CPU_TIME(ms)  GC_TIME(ms)  INPUT_RECORDS  OUTPUT_RECORDS
+INFO  : --------------------------------------------------------------------------------------------------------------------------------
+INFO  :      Map 1          292                0             0       40304.00             0            0     72,001,241          76,196
+INFO  :     Map 11            1                0             0       41950.00             0            0             24               3
+INFO  :     Map 13           30                0             0       41746.00             0            0      7,197,670       7,197,670
+INFO  :      Map 4          292                0             0       41746.00             0            0    144,002,474       6,009,286
+INFO  :      Map 6          292                0             0       41950.00             0            0     72,001,237      72,001,237
+INFO  :      Map 7            1                0             0       41950.00             0            0         73,049              63
+INFO  :      Map 9            5                0             0       41950.00             0            0      1,000,000          79,644
+INFO  : Reducer 10            1                0             1       41746.00             0            0         79,644               1
+INFO  : Reducer 12            1                0             0       41746.00             0            0              3               1
+INFO  :  Reducer 2           90                0             0        5426.00             0            0     13,362,862           2,128
+INFO  :  Reducer 3            1                0             0        1580.00             0            0          2,128               0
+INFO  :  Reducer 5            1                0             0       11528.00             0            0      6,009,286               1
+INFO  :  Reducer 8            1                0             0       41746.00             0            0             63               1
+INFO  : --------------------------------------------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : LLAP IO Summary
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :   VERTICES ROWGROUPS  META_HIT  META_MISS  DATA_HIT  DATA_MISS  ALLOCATION     USED  TOTAL_IO
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :      Map 1      8398      1350       2298   81.67MB   630.35MB      2.50GB 918.91MB   164.46s
+INFO  :     Map 11         1         1          1        7B        57B    393.22KB      48B     0.01s
+INFO  :     Map 13      2213      3440        922   16.13MB     5.23MB    121.63MB   5.39MB    10.64s
+INFO  :      Map 4      8398      3648          0   94.60MB         0B          0B       0B     4.64s
+INFO  :      Map 6      8398      2032       1616   29.11MB    65.49MB    538.97MB 110.70MB    65.09s
+INFO  :      Map 7         8         2          0  172.86KB         0B          0B       0B     0.00s
+INFO  :      Map 9       100        15          1  674.40KB    65.48KB    786.43KB  90.48KB     0.06s
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : FileSystem Counters Summary
+INFO  : 
+INFO  : Scheme: FILE
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :   VERTICES      BYTES_READ      READ_OPS     LARGE_READ_OPS      BYTES_WRITTEN     WRITE_OPS
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :      Map 1        545.26KB             0                  0             2.01MB             0
+INFO  :     Map 11             64B             0                  0               138B             0
+INFO  :     Map 13              0B             0                  0            37.54MB             0
+INFO  :      Map 4         18.69KB             0                  0            38.26MB             0
+INFO  :      Map 6              0B             0                  0           280.12MB             0
+INFO  :      Map 7             64B             0                  0             1.27KB             0
+INFO  :      Map 9            320B             0                  0           446.96KB             0
+INFO  : Reducer 10              0B             0                  0            16.19KB             0
+INFO  : Reducer 12              0B             0                  0                72B             0
+INFO  :  Reducer 2        183.18MB             0                  0            46.95KB             0
+INFO  :  Reducer 3              0B             0                  0                 0B             0
+INFO  :  Reducer 5          2.29MB             0                  0               533B             0
+INFO  :  Reducer 8              0B             0                  0               962B             0
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : Scheme: HDFS
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :   VERTICES      BYTES_READ      READ_OPS     LARGE_READ_OPS      BYTES_WRITTEN     WRITE_OPS
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :      Map 1        640.18MB          4596                  0                 0B             0
+INFO  :     Map 11            478B             2                  0                 0B             0
+INFO  :     Map 13         12.72MB          1844                  0                 0B             0
+INFO  :      Map 4              0B             0                  0                 0B             0
+INFO  :      Map 6         66.53MB          3232                  0                 0B             0
+INFO  :      Map 7              0B             0                  0                 0B             0
+INFO  :      Map 9         65.93KB             2                  0                 0B             0
+INFO  : Reducer 10              0B             0                  0                 0B             0
+INFO  : Reducer 12              0B             0                  0                 0B             0
+INFO  :  Reducer 2              0B             0                  0                 0B             0
+INFO  :  Reducer 3              0B             2                  0               142B             2
+INFO  :  Reducer 5              0B             0                  0                 0B             0
+INFO  :  Reducer 8              0B             0                  0                 0B             0
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : org.apache.tez.common.counters.DAGCounter:
+INFO  :    NUM_KILLED_TASKS: 1
+INFO  :    NUM_SUCCEEDED_TASKS: 1008
+INFO  :    TOTAL_LAUNCHED_TASKS: 1009
+INFO  :    DATA_LOCAL_TASKS: 868
+INFO  :    RACK_LOCAL_TASKS: 45
+INFO  :    AM_CPU_MILLISECONDS: 16040
+INFO  :    AM_GC_TIME_MILLIS: 79
+INFO  : File System Counters:
+INFO  :    FILE_BYTES_READ: 186041250
+INFO  :    FILE_BYTES_WRITTEN: 358443893
+INFO  :    FILE_READ_OPS: 0
+INFO  :    FILE_LARGE_READ_OPS: 0
+INFO  :    FILE_WRITE_OPS: 0
+INFO  :    HDFS_BYTES_READ: 719487472
+INFO  :    HDFS_BYTES_WRITTEN: 142
+INFO  :    HDFS_READ_OPS: 9678
+INFO  :    HDFS_LARGE_READ_OPS: 0
+INFO  :    HDFS_WRITE_OPS: 2
+INFO  : org.apache.tez.common.counters.TaskCounter:
+INFO  :    REDUCE_INPUT_GROUPS: 2132
+INFO  :    REDUCE_INPUT_RECORDS: 2427
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    SPILLED_RECORDS: 4854
+INFO  :    NUM_SHUFFLED_INPUTS: 38164
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    MERGED_MAP_OUTPUTS: 389
+INFO  :    INPUT_RECORDS_PROCESSED: 719821434
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 13827085237
+INFO  :    OUTPUT_RECORDS: 85366231
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_BYTES: 575303180
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 824923575
+INFO  :    OUTPUT_BYTES_PHYSICAL: 358425765
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 2664497
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 3002868
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    SHUFFLE_CHUNK_COUNT: 389
+INFO  :    SHUFFLE_BYTES: 2906784980
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 6347568844
+INFO  :    SHUFFLE_BYTES_TO_MEM: 2583860696
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 322924284
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    SHUFFLE_PHASE_TIME: 6362586
+INFO  :    MERGE_PHASE_TIME: 7841
+INFO  :    FIRST_EVENT_RECEIVED: 6072577
+INFO  :    LAST_EVENT_RECEIVED: 6232586
+INFO  : HIVE:
+INFO  :    CREATED_FILES: 1
+INFO  :    DESERIALIZE_ERRORS: 0
+INFO  :    RECORDS_IN_Map_1: 72001237
+INFO  :    RECORDS_IN_Map_11: 24
+INFO  :    RECORDS_IN_Map_13: 7197670
+INFO  :    RECORDS_IN_Map_4: 72001237
+INFO  :    RECORDS_IN_Map_6: 72001237
+INFO  :    RECORDS_IN_Map_7: 73049
+INFO  :    RECORDS_IN_Map_9: 1000000
+INFO  :    RECORDS_OUT_0: 1
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_1: 76196
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_11: 3
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_13: 7197670
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_4: 6009286
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_6: 72001237
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_7: 63
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_9: 79644
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_10: 1
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_12: 1
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_2: 2128
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_5: 1
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_8: 1
+INFO  : Shuffle Errors:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_10_INPUT_Map_9:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_12_INPUT_Map_11:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_3_INPUT_Reducer_2:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_5_INPUT_Map_4:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_8_INPUT_Map_7:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : TaskCounter_Map_11_INPUT_s:
+INFO  :    INPUT_RECORDS_PROCESSED: 1
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 5756
+INFO  : TaskCounter_Map_11_OUTPUT_Reducer_12:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 18
+INFO  :    OUTPUT_BYTES_PHYSICAL: 40
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 26
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SHUFFLE_CHUNK_COUNT: 1
+INFO  :    SPILLED_RECORDS: 1
+INFO  : TaskCounter_Map_11_OUTPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 10
+INFO  :    OUTPUT_BYTES_PHYSICAL: 58
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 20
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 2
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_13_INPUT_wr1:
+INFO  :    INPUT_RECORDS_PROCESSED: 8187
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 427915148
+INFO  : TaskCounter_Map_13_OUTPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 35988350
+INFO  :    OUTPUT_BYTES_PHYSICAL: 37544156
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 50383870
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 7197670
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_1_INPUT_Reducer_10:
+INFO  :    FIRST_EVENT_RECEIVED: 1349
+INFO  :    INPUT_RECORDS_PROCESSED: 292
+INFO  :    LAST_EVENT_RECEIVED: 1349
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 292
+INFO  :    SHUFFLE_BYTES: 4718136
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 5321700
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 500898
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 4217238
+INFO  :    SHUFFLE_PHASE_TIME: 3814
+INFO  : TaskCounter_Map_1_INPUT_Reducer_12:
+INFO  :    FIRST_EVENT_RECEIVED: 2661
+INFO  :    INPUT_RECORDS_PROCESSED: 292
+INFO  :    LAST_EVENT_RECEIVED: 2661
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 292
+INFO  :    SHUFFLE_BYTES: 11680
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 7592
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 1000
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 10680
+INFO  :    SHUFFLE_PHASE_TIME: 6691
+INFO  : TaskCounter_Map_1_INPUT_Reducer_5:
+INFO  :    FIRST_EVENT_RECEIVED: 6066810
+INFO  :    INPUT_RECORDS_PROCESSED: 292
+INFO  :    LAST_EVENT_RECEIVED: 6066810
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 292
+INFO  :    SHUFFLE_BYTES: 146292
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 2873572
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 14529
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 131763
+INFO  :    SHUFFLE_PHASE_TIME: 6067955
+INFO  : TaskCounter_Map_1_INPUT_Reducer_8:
+INFO  :    FIRST_EVENT_RECEIVED: 898
+INFO  :    INPUT_RECORDS_PROCESSED: 292
+INFO  :    LAST_EVENT_RECEIVED: 898
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 292
+INFO  :    SHUFFLE_BYTES: 271560
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 1662064
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 28830
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 242730
+INFO  :    SHUFFLE_PHASE_TIME: 13049
+INFO  : TaskCounter_Map_1_INPUT_ws1:
+INFO  :    INPUT_RECORDS_PROCESSED: 72775
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 4461991989
+INFO  : TaskCounter_Map_1_OUTPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1823695
+INFO  :    OUTPUT_BYTES_PHYSICAL: 2004906
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 2743040
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 76196
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_4_INPUT_Map_6:
+INFO  :    FIRST_EVENT_RECEIVED: 149
+INFO  :    INPUT_RECORDS_PROCESSED: 648011133
+INFO  :    LAST_EVENT_RECEIVED: 15428
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 2628
+INFO  :    SHUFFLE_BYTES: 2520965520
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 5831955657
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 280107280
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 2240858240
+INFO  :    SHUFFLE_PHASE_TIME: 15484
+INFO  : TaskCounter_Map_4_INPUT_ws2:
+INFO  :    INPUT_RECORDS_PROCESSED: 72775
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 4461991989
+INFO  : TaskCounter_Map_4_OUTPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 30044970
+INFO  :    OUTPUT_BYTES_PHYSICAL: 35373699
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 120179004
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 6008994
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_4_OUTPUT_Reducer_5:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 2870952
+INFO  :    OUTPUT_BYTES_PHYSICAL: 2878838
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 2873872
+INFO  :    OUTPUT_RECORDS: 292
+INFO  :    SHUFFLE_CHUNK_COUNT: 292
+INFO  :    SPILLED_RECORDS: 292
+INFO  : TaskCounter_Map_6_INPUT_ws3:
+INFO  :    INPUT_RECORDS_PROCESSED: 72775
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 4461991989
+INFO  : TaskCounter_Map_6_OUTPUT_Map_4:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 503990847
+INFO  :    OUTPUT_BYTES_PHYSICAL: 280114288
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 647995073
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 72001237
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_7_INPUT_d:
+INFO  :    INPUT_RECORDS_PROCESSED: 73
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 362294
+INFO  : TaskCounter_Map_7_OUTPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 310
+INFO  :    OUTPUT_BYTES_PHYSICAL: 299
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 440
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 62
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_7_OUTPUT_Reducer_8:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 5682
+INFO  :    OUTPUT_BYTES_PHYSICAL: 930
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 5692
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SHUFFLE_CHUNK_COUNT: 1
+INFO  :    SPILLED_RECORDS: 1
+INFO  : TaskCounter_Map_9_INPUT_ca:
+INFO  :    INPUT_RECORDS_PROCESSED: 1000
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 12826072
+INFO  : TaskCounter_Map_9_OUTPUT_Reducer_10:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 91085
+INFO  :    OUTPUT_BYTES_PHYSICAL: 91226
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 91135
+INFO  :    OUTPUT_RECORDS: 5
+INFO  :    SHUFFLE_CHUNK_COUNT: 5
+INFO  :    SPILLED_RECORDS: 5
+INFO  : TaskCounter_Map_9_OUTPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 398195
+INFO  :    OUTPUT_BYTES_PHYSICAL: 355531
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 557503
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 79639
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_10_INPUT_Map_9:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 91156
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 72913
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 1
+INFO  :    LAST_EVENT_RECEIVED: 2
+INFO  :    MERGED_MAP_OUTPUTS: 5
+INFO  :    MERGE_PHASE_TIME: 9
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 5
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 1
+INFO  :    REDUCE_INPUT_RECORDS: 5
+INFO  :    SHUFFLE_BYTES: 91226
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 91135
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 18243
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 72983
+INFO  :    SHUFFLE_PHASE_TIME: 8
+INFO  :    SPILLED_RECORDS: 5
+INFO  : TaskCounter_Reducer_10_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 18215
+INFO  :    OUTPUT_BYTES_PHYSICAL: 16182
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 18225
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_12_INPUT_Map_11:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 40
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 40
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 5
+INFO  :    LAST_EVENT_RECEIVED: 5
+INFO  :    MERGED_MAP_OUTPUTS: 1
+INFO  :    MERGE_PHASE_TIME: 19
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 1
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 1
+INFO  :    REDUCE_INPUT_RECORDS: 1
+INFO  :    SHUFFLE_BYTES: 40
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 26
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 0
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 40
+INFO  :    SHUFFLE_PHASE_TIME: 16
+INFO  :    SPILLED_RECORDS: 1
+INFO  : TaskCounter_Reducer_12_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 18
+INFO  :    OUTPUT_BYTES_PHYSICAL: 64
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 26
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_2_INPUT_Map_1:
+INFO  :    FIRST_EVENT_RECEIVED: 225
+INFO  :    INPUT_RECORDS_PROCESSED: 76196
+INFO  :    LAST_EVENT_RECEIVED: 135615
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 7366
+INFO  :    SHUFFLE_BYTES: 1821306
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 2020283
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 190783
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 1630523
+INFO  :    SHUFFLE_PHASE_TIME: 167302
+INFO  : TaskCounter_Reducer_2_INPUT_Map_11:
+INFO  :    FIRST_EVENT_RECEIVED: 60
+INFO  :    INPUT_RECORDS_PROCESSED: 18
+INFO  :    LAST_EVENT_RECEIVED: 60
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 9
+INFO  :    SHUFFLE_BYTES: 306
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 180
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 34
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 272
+INFO  :    SHUFFLE_PHASE_TIME: 86
+INFO  : TaskCounter_Reducer_2_INPUT_Map_13:
+INFO  :    FIRST_EVENT_RECEIVED: 58
+INFO  :    INPUT_RECORDS_PROCESSED: 64779030
+INFO  :    LAST_EVENT_RECEIVED: 68
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 270
+INFO  :    SHUFFLE_BYTES: 337890924
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 453454830
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 37543436
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 300347488
+INFO  :    SHUFFLE_PHASE_TIME: 1491
+INFO  : TaskCounter_Reducer_2_INPUT_Map_4:
+INFO  :    FIRST_EVENT_RECEIVED: 250
+INFO  :    INPUT_RECORDS_PROCESSED: 6008994
+INFO  :    LAST_EVENT_RECEIVED: 2365
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 26280
+INFO  :    SHUFFLE_BYTES: 34742979
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 42220638
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 3843437
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 30899542
+INFO  :    SHUFFLE_PHASE_TIME: 77184
+INFO  : TaskCounter_Reducer_2_INPUT_Map_7:
+INFO  :    FIRST_EVENT_RECEIVED: 102
+INFO  :    INPUT_RECORDS_PROCESSED: 558
+INFO  :    LAST_EVENT_RECEIVED: 102
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 9
+INFO  :    SHUFFLE_BYTES: 2475
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 3960
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 275
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 2200
+INFO  :    SHUFFLE_PHASE_TIME: 115
+INFO  : TaskCounter_Reducer_2_INPUT_Map_9:
+INFO  :    FIRST_EVENT_RECEIVED: 6
+INFO  :    INPUT_RECORDS_PROCESSED: 716751
+INFO  :    LAST_EVENT_RECEIVED: 6
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 45
+INFO  :    SHUFFLE_BYTES: 3198699
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 5017527
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 355411
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 2843288
+INFO  :    SHUFFLE_PHASE_TIME: 2161
+INFO  : TaskCounter_Reducer_2_OUTPUT_Reducer_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 55320
+INFO  :    OUTPUT_BYTES_PHYSICAL: 44069
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 60116
+INFO  :    OUTPUT_RECORDS: 2128
+INFO  :    SHUFFLE_CHUNK_COUNT: 90
+INFO  :    SPILLED_RECORDS: 2128
+INFO  : TaskCounter_Reducer_3_INPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 38116
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 33474
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 1
+INFO  :    LAST_EVENT_RECEIVED: 1500
+INFO  :    MERGED_MAP_OUTPUTS: 90
+INFO  :    MERGE_PHASE_TIME: 1511
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 90
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 2128
+INFO  :    REDUCE_INPUT_RECORDS: 2128
+INFO  :    SHUFFLE_BYTES: 44069
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 60116
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 4642
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 39427
+INFO  :    SHUFFLE_PHASE_TIME: 1507
+INFO  :    SPILLED_RECORDS: 2128
+INFO  : TaskCounter_Reducer_3_OUTPUT_out_Reducer_3:
+INFO  :    OUTPUT_RECORDS: 0
+INFO  : TaskCounter_Reducer_5_INPUT_Map_4:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 2872626
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 2557140
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 1
+INFO  :    LAST_EVENT_RECEIVED: 5716
+INFO  :    MERGED_MAP_OUTPUTS: 292
+INFO  :    MERGE_PHASE_TIME: 5731
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 292
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 1
+INFO  :    REDUCE_INPUT_RECORDS: 292
+INFO  :    SHUFFLE_BYTES: 2878838
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 2873872
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 315486
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 2563352
+INFO  :    SHUFFLE_PHASE_TIME: 5720
+INFO  :    SPILLED_RECORDS: 292
+INFO  : TaskCounter_Reducer_5_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 9831
+INFO  :    OUTPUT_BYTES_PHYSICAL: 525
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 9841
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_8_INPUT_Map_7:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 930
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 930
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 1
+INFO  :    LAST_EVENT_RECEIVED: 1
+INFO  :    MERGED_MAP_OUTPUTS: 1
+INFO  :    MERGE_PHASE_TIME: 571
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 1
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 1
+INFO  :    REDUCE_INPUT_RECORDS: 1
+INFO  :    SHUFFLE_BYTES: 930
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 5692
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 0
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 930
+INFO  :    SHUFFLE_PHASE_TIME: 3
+INFO  :    SPILLED_RECORDS: 1
+INFO  : TaskCounter_Reducer_8_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 5682
+INFO  :    OUTPUT_BYTES_PHYSICAL: 954
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 5692
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SPILLED_RECORDS: 0
+INFO  : org.apache.hadoop.hive.llap.counters.LlapIOCounters:
+INFO  :    ALLOCATED_BYTES: 3161325568
+INFO  :    ALLOCATED_USED_BYTES: 1035089375
+INFO  :    CACHE_HIT_BYTES: 222363430
+INFO  :    CACHE_MISS_BYTES: 701129234
+INFO  :    CONSUMER_TIME_NS: 2960340568133
+INFO  :    DECODE_TIME_NS: 29504202929
+INFO  :    HDFS_TIME_NS: 180717660831
+INFO  :    METADATA_CACHE_HIT: 10488
+INFO  :    METADATA_CACHE_MISS: 4838
+INFO  :    NUM_DECODED_BATCHES: 27516
+INFO  :    NUM_VECTOR_BATCHES: 227595
+INFO  :    ROWS_EMITTED: 224274454
+INFO  :    SELECTED_ROWGROUPS: 27516
+INFO  :    TOTAL_IO_TIME_NS: 244902694177
+INFO  : Resetting the caller context to HIVE_SSN_ID:164aad4a-2dbe-4463-bb26-da46fe9d2918
+INFO  : Completed executing command(queryId=hive_20170405233455_7b9ee31d-8d34-4460-9ef0-252153993df9); Time taken: 42.976 seconds
+INFO  : OK
++--------------+----------------------+---------------------+--+
+| order_count  | total_shipping_cost  |  total_net_profit   |
++--------------+----------------------+---------------------+--+
+| 2128         | 3331167.1605474353   | -547717.8387636542  |
++--------------+----------------------+---------------------+--+
+1 row selected (45.515 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+STOP hdp2.6_llap_run_3_100_query94_sql_2017-04-05-23-34:  Wed Apr 5 23:35:40 CDT 2017
+
+ South Results Number of Nodes:  9
+ Avg CPU Busy:   Peak Cpu Avg:  92.166 Count > 90% Busy:  0
+ Avg Disk Busy:   Peak Disk Avg:  1.137 Count > 90% busy 0
+ Avg Disk Reads per sec:   Avg Write per sec: 
+ Avg Net TX:    Peak TX Avg: 
+ Avg Net RX:    Peak RX Avg: 
+ Mem Utilized: 
+South CSV
+| 92.166 | 0 | | 1.137 | 0 | | | | | | |

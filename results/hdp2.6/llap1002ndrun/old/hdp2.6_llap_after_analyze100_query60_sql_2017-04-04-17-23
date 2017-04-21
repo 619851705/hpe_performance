@@ -1,0 +1,203 @@
+START hdp2.6_llap_after_analyze100_query60_sql_2017-04-04-17-23:  Tue Apr 4 17:23:15 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2" -n hive --incremental=true -i test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+Connected to: Apache Hive (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.042 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> with ss as (
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  select
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           i_item_id,sum(ss_ext_sales_price) total_sales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         store_sales,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         date_dim,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          customer_address,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          item.i_item_id in (select
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   i.i_item_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  item i
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> where i_category in ('Children'))
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     ss_item_sk              = i_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     ss_sold_date_sk         = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     d_year                  = 1999
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     d_moy                   = 9
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     ss_addr_sk              = ca_address_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     ca_gmt_offset           = -6 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  group by i_item_id),
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  cs as (
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  select
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           i_item_id,sum(cs_ext_sales_price) total_sales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         catalog_sales,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         date_dim,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          customer_address,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          item.i_item_id               in (select
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   i.i_item_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  item i
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> where i_category in ('Children'))
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     cs_item_sk              = i_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     cs_sold_date_sk         = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     d_year                  = 1999
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     d_moy                   = 9
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     cs_bill_addr_sk         = ca_address_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     ca_gmt_offset           = -6 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  group by i_item_id),
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ws as (
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  select
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           i_item_id,sum(ws_ext_sales_price) total_sales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         web_sales,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         date_dim,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          customer_address,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          item.i_item_id               in (select
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   i.i_item_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  item i
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> where i_category in ('Children'))
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     ws_item_sk              = i_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     ws_sold_date_sk         = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     d_year                  = 1999
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     d_moy                   = 9
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     ws_bill_addr_sk         = ca_address_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and     ca_gmt_offset           = -6
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  group by i_item_id)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   select   
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   i_item_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> ,sum(total_sales) total_sales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from  (select * from ss 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         union all
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         select * from cs 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         union all
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         select * from ws) tmp1
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  group by i_item_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  order by i_item_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,total_sales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  limit 100;
++-------------------+---------------------+--+
+|     i_item_id     |     total_sales     |
++-------------------+---------------------+--+
+| AAAAAAAAAAAABAAA  | 91937.27999687195   |
+| AAAAAAAAAAAHAAAA  | 121795.62005996704  |
+| AAAAAAAAAAAHBAAA  | 104304.21999359131  |
+| AAAAAAAAAAANAAAA  | 98840.10081577301   |
+| AAAAAAAAAAAOAAAA  | 80791.40032863617   |
+| AAAAAAAAAABAAAAA  | 80652.68054103851   |
+| AAAAAAAAAABLBAAA  | 79147.54008674622   |
+| AAAAAAAAAABMBAAA  | 160864.31773376465  |
+| AAAAAAAAAABOBAAA  | 77242.76959991455   |
+| AAAAAAAAAABOCAAA  | 113695.52935504913  |
+| AAAAAAAAAABPBAAA  | 74919.61005401611   |
+| AAAAAAAAAACEBAAA  | 98065.64953041077   |
+| AAAAAAAAAACECAAA  | 76108.44104766846   |
+| AAAAAAAAAACFBAAA  | 95937.41909122467   |
+| AAAAAAAAAACOAAAA  | 93080.11948013306   |
+| AAAAAAAAAADDCAAA  | 102198.64059257507  |
+| AAAAAAAAAADFAAAA  | 82194.18041801453   |
+| AAAAAAAAAADGBAAA  | 57938.920471191406  |
+| AAAAAAAAAADICAAA  | 151742.61090564728  |
+| AAAAAAAAAADLCAAA  | 77180.3003578186    |
+| AAAAAAAAAAEABAAA  | 106031.96963119507  |
+| AAAAAAAAAAEADAAA  | 97233.29864692688   |
+| AAAAAAAAAAEBDAAA  | 123765.27023124695  |
+| AAAAAAAAAAECCAAA  | 62312.84032821655   |
+| AAAAAAAAAAEECAAA  | 87176.95054244995   |
+| AAAAAAAAAAEIBAAA  | 89827.45001125336   |
+| AAAAAAAAAAEMAAAA  | 106106.54918670654  |
+| AAAAAAAAAAENAAAA  | 131070.40037918091  |
+| AAAAAAAAAAEOBAAA  | 91719.33959960938   |
+| AAAAAAAAAAEPAAAA  | 141013.5096759796   |
+| AAAAAAAAAAFAAAAA  | 54318.790932536125  |
+| AAAAAAAAAAFADAAA  | 94100.12978363037   |
+| AAAAAAAAAAFCAAAA  | 81444.28020954132   |
+| AAAAAAAAAAFFBAAA  | 121831.7590918541   |
+| AAAAAAAAAAFHBAAA  | 80699.44988250732   |
+| AAAAAAAAAAFNBAAA  | 100703.90110874176  |
+| AAAAAAAAAAFNCAAA  | 124709.95930099487  |
+| AAAAAAAAAAFPAAAA  | 136861.44959259033  |
+| AAAAAAAAAAGCCAAA  | 109733.77991104126  |
+| AAAAAAAAAAGEAAAA  | 83720.5291481018    |
+| AAAAAAAAAAGEBAAA  | 87958.6600227356    |
+| AAAAAAAAAAGHBAAA  | 93233.21114778519   |
+| AAAAAAAAAAGJBAAA  | 90877.42028045654   |
+| AAAAAAAAAAGKBAAA  | 118970.88924026489  |
+| AAAAAAAAAAGLAAAA  | 86882.64046478271   |
+| AAAAAAAAAAGMBAAA  | 51124.129534721375  |
+| AAAAAAAAAAHCBAAA  | 67901.7802286148    |
+| AAAAAAAAAAHCCAAA  | 55609.62980937958   |
+| AAAAAAAAAAHIBAAA  | 115047.71115064621  |
+| AAAAAAAAAAHICAAA  | 80634.43996357918   |
+| AAAAAAAAAAHKCAAA  | 126926.85915851593  |
+| AAAAAAAAAAHPBAAA  | 139961.84140491486  |
+| AAAAAAAAAAIAAAAA  | 115164.98002624512  |
+| AAAAAAAAAAIACAAA  | 88234.16025924683   |
+| AAAAAAAAAAIADAAA  | 97708.84006547928   |
+| AAAAAAAAAAIBCAAA  | 80339.9998626709    |
+| AAAAAAAAAAIDCAAA  | 97963.3706703186    |
+| AAAAAAAAAAIFBAAA  | 85997.8191088736    |
+| AAAAAAAAAAIHBAAA  | 147182.37119364738  |
+| AAAAAAAAAAIHCAAA  | 38930.060287475586  |
+| AAAAAAAAAAIIAAAA  | 92651.41969680786   |
+| AAAAAAAAAAIKCAAA  | 105330.21956777573  |
+| AAAAAAAAAAIMCAAA  | 107110.7193031311   |
+| AAAAAAAAAAJABAAA  | 104820.68166828156  |
+| AAAAAAAAAAJBAAAA  | 94972.62030220032   |
+| AAAAAAAAAAJBDAAA  | 107246.72984313965  |
+| AAAAAAAAAAJCAAAA  | 85424.41004180908   |
+| AAAAAAAAAAJDBAAA  | 100652.53996992111  |
+| AAAAAAAAAAJDCAAA  | 56757.250354766846  |
+| AAAAAAAAAAJEBAAA  | 65030.82002353668   |
+| AAAAAAAAAAJGBAAA  | 115864.36038780212  |
+| AAAAAAAAAAJICAAA  | 113626.14045333862  |
+| AAAAAAAAAAKGBAAA  | 74419.90035247803   |
+| AAAAAAAAAAKHCAAA  | 122111.30902481079  |
+| AAAAAAAAAAKJBAAA  | 112726.89033508301  |
+| AAAAAAAAAAKKAAAA  | 126478.70106887817  |
+| AAAAAAAAAAKLBAAA  | 89574.08973383904   |
+| AAAAAAAAAAKMBAAA  | 64320.41019821167   |
+| AAAAAAAAAAKNAAAA  | 94067.75995182991   |
+| AAAAAAAAAALBBAAA  | 73266.63990688324   |
+| AAAAAAAAAALEBAAA  | 112598.95998191833  |
+| AAAAAAAAAALGCAAA  | 94814.15019893646   |
+| AAAAAAAAAALIAAAA  | 118096.1697216034   |
+| AAAAAAAAAALNBAAA  | 88554.32064819336   |
+| AAAAAAAAAALOAAAA  | 106130.00016641617  |
+| AAAAAAAAAALPCAAA  | 106309.70960235596  |
+| AAAAAAAAAAMBAAAA  | 133382.9901561737   |
+| AAAAAAAAAAMGBAAA  | 114265.12009906769  |
+| AAAAAAAAAAMIAAAA  | 128002.01029205322  |
+| AAAAAAAAAAMJBAAA  | 92472.440574646     |
+| AAAAAAAAAAMJCAAA  | 100053.80968901515  |
+| AAAAAAAAAAMKAAAA  | 84967.45969772339   |
+| AAAAAAAAAAMNAAAA  | 128748.73042440414  |
+| AAAAAAAAAAMOCAAA  | 78811.01009941101   |
+| AAAAAAAAAAMPBAAA  | 96938.57048296928   |
+| AAAAAAAAAANAAAAA  | 75514.93078613281   |
+| AAAAAAAAAANKCAAA  | 89337.91944694519   |
+| AAAAAAAAAANNCAAA  | 107416.85899543762  |
+| AAAAAAAAAANOCAAA  | 80708.11960029602   |
+| AAAAAAAAAAOACAAA  | 80220.97978687286   |
++-------------------+---------------------+--+
+100 rows selected (5.199 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+STOP hdp2.6_llap_after_analyze100_query60_sql_2017-04-04-17-23:  Tue Apr 4 17:23:24 CDT 2017
+
+ South Results Number of Nodes:  9
+ Avg CPU Busy:   Peak Cpu Avg:  100.000 Count > 90% Busy:  0
+ Avg Disk Busy:   Peak Disk Avg:  0 Count > 90% busy 0
+ Avg Disk Reads per sec:   Avg Write per sec: 
+ Avg Net TX:    Peak TX Avg: 
+ Avg Net RX:    Peak RX Avg: 
+ Mem Utilized: 
+South CSV
+| 100.000 | 0 | | 0 | 0 | | | | | | |

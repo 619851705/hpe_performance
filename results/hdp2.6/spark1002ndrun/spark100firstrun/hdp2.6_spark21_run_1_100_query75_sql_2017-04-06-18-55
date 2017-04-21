@@ -1,0 +1,80 @@
+START hdp2.6_spark21_run_1_100_query75_sql_2017-04-06-18-55:  Thu Apr 6 18:55:50 CDT 2017
+ /usr/hdp/current/spark2-client/bin/beeline -u "jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_$SF" -n hive --incremental=true  -i settings/spark.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_100
+17/04/06 18:55:51 INFO Utils: Supplied authorities: h01hn02.hadoop:10016
+17/04/06 18:55:51 INFO Utils: Resolved authority: h01hn02.hadoop:10016
+17/04/06 18:55:51 INFO HiveConnection: Will try to open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_100
+Connected to: Spark SQL (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1.spark2.hdp)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script settings/spark.settings
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> WITH all_sales AS (
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  SELECT d_year
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,i_brand_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,i_class_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,i_category_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,i_manufact_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,SUM(sales_cnt) AS sales_cnt
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,SUM(sales_amt) AS sales_amt
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  FROM (SELECT d_year
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,i_brand_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,i_class_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,i_category_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,i_manufact_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,cs_quantity - COALESCE(cr_return_quantity,0) AS sales_cnt
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,cs_ext_sales_price - COALESCE(cr_return_amount,0.0) AS sales_amt
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        FROM catalog_sales JOIN item ON i_item_sk=cs_item_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                           JOIN date_dim ON d_date_sk=cs_sold_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                           LEFT JOIN catalog_returns ON (cs_order_number=cr_order_number 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                                                     AND cs_item_sk=cr_item_sk)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        WHERE i_category='Sports'
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        UNION ALL
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        SELECT d_year
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,i_brand_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,i_class_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,i_category_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,i_manufact_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,ss_quantity - COALESCE(sr_return_quantity,0) AS sales_cnt
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,ss_ext_sales_price - COALESCE(sr_return_amt,0.0) AS sales_amt
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        FROM store_sales JOIN item ON i_item_sk=ss_item_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                         JOIN date_dim ON d_date_sk=ss_sold_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                         LEFT JOIN store_returns ON (ss_ticket_number=sr_ticket_number 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                                                 AND ss_item_sk=sr_item_sk)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        WHERE i_category='Sports'
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        UNION ALL
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        SELECT d_year
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,i_brand_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,i_class_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,i_category_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,i_manufact_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,ws_quantity - COALESCE(wr_return_quantity,0) AS sales_cnt
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,ws_ext_sales_price - COALESCE(wr_return_amt,0.0) AS sales_amt
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        FROM web_sales JOIN item ON i_item_sk=ws_item_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                       JOIN date_dim ON d_date_sk=ws_sold_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                       LEFT JOIN web_returns ON (ws_order_number=wr_order_number 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                                             AND ws_item_sk=wr_item_sk)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        WHERE i_category='Sports') sales_detail
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  GROUP BY d_year, i_brand_id, i_class_id, i_category_id, i_manufact_id)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  SELECT  prev_yr.d_year AS prev_year
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                           ,curr_yr.d_year AS year
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                           ,curr_yr.i_brand_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                           ,curr_yr.i_class_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                           ,curr_yr.i_category_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                           ,curr_yr.i_manufact_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                           ,prev_yr.sales_cnt AS prev_yr_cnt
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                           ,curr_yr.sales_cnt AS curr_yr_cnt
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                           ,curr_yr.sales_cnt-prev_yr.sales_cnt AS sales_cnt_diff
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                           ,curr_yr.sales_amt-prev_yr.sales_amt AS sales_amt_diff
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  FROM all_sales curr_yr, all_sales prev_yr
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  WHERE curr_yr.i_brand_id=prev_yr.i_brand_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>    AND curr_yr.i_class_id=prev_yr.i_class_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>    AND curr_yr.i_category_id=prev_yr.i_category_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>    AND curr_yr.i_manufact_id=prev_yr.i_manufact_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>    AND curr_yr.d_year=2002
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>    AND prev_yr.d_year=2002-1
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>    AND CAST(curr_yr.sales_cnt AS DECIMAL(17,2))/CAST(prev_yr.sales_cnt AS DECIMAL(17,2))<0.9
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  ORDER BY sales_cnt_diff
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  limit 100;
+STOP hdp2.6_spark21_run_1_100_query75_sql_2017-04-06-18-55:  Thu Apr 6 18:55:55 CDT 2017

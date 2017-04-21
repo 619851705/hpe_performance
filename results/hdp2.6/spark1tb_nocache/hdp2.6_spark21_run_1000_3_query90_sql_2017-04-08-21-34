@@ -1,0 +1,76 @@
+START hdp2.6_spark21_run_1000_3_query90_sql_2017-04-08-21-34:  Sat Apr 8 21:34:34 CDT 2017
+ /usr/hdp/current/spark2-client/bin/beeline -u "jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_$SF" -n hive --incremental=true  -i settings/spark.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_1000
+17/04/08 21:34:35 INFO Utils: Supplied authorities: h01hn02.hadoop:10016
+17/04/08 21:34:35 INFO Utils: Resolved authority: h01hn02.hadoop:10016
+17/04/08 21:34:35 INFO HiveConnection: Will try to open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_1000
+Connected to: Spark SQL (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1.spark2.hdp)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script settings/spark.settings
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> select  cast(amc as decimal(15,4))/cast(pmc as decimal(15,4)) am_pm_ratio
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  from ( select count(*) amc
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        from web_sales, household_demographics , time_dim, web_page
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        where ws_sold_time_sk = time_dim.t_time_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and ws_ship_hdemo_sk = household_demographics.hd_demo_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and ws_web_page_sk = web_page.wp_web_page_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and time_dim.t_hour between 6 and 6+1
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and household_demographics.hd_dep_count = 8
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and web_page.wp_char_count between 5000 and 5200) at,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>       ( select count(*) pmc
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        from web_sales, household_demographics , time_dim, web_page
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        where ws_sold_time_sk = time_dim.t_time_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and ws_ship_hdemo_sk = household_demographics.hd_demo_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and ws_web_page_sk = web_page.wp_web_page_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and time_dim.t_hour between 14 and 14+1
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and household_demographics.hd_dep_count = 8
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and web_page.wp_char_count between 5000 and 5200) pt
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  order by am_pm_ratio
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  limit 100;
+Error: org.apache.spark.sql.AnalysisException: Detected cartesian product for INNER join between logical plans
+Aggregate [count(1) AS amc#116480L]
++- Project
+   +- Join Inner, (ws_web_page_sk#116495 = wp_web_page_sk#116532)
+      :- Project [ws_web_page_sk#116495]
+      :  +- Join Inner, (ws_sold_time_sk#116484 = t_time_sk#116522)
+      :     :- Project [ws_sold_time_sk#116484, ws_web_page_sk#116495]
+      :     :  +- Join Inner, (ws_ship_hdemo_sk#116493 = hd_demo_sk#116517)
+      :     :     :- Project [ws_sold_time_sk#116484, ws_ship_hdemo_sk#116493, ws_web_page_sk#116495]
+      :     :     :  +- Filter ((isnotnull(ws_ship_hdemo_sk#116493) && isnotnull(ws_sold_time_sk#116484)) && isnotnull(ws_web_page_sk#116495))
+      :     :     :     +- Relation[ws_sold_time_sk#116484,ws_ship_date_sk#116485,ws_item_sk#116486,ws_bill_customer_sk#116487,ws_bill_cdemo_sk#116488,ws_bill_hdemo_sk#116489,ws_bill_addr_sk#116490,ws_ship_customer_sk#116491,ws_ship_cdemo_sk#116492,ws_ship_hdemo_sk#116493,ws_ship_addr_sk#116494,ws_web_page_sk#116495,ws_web_site_sk#116496,ws_ship_mode_sk#116497,ws_warehouse_sk#116498,ws_promo_sk#116499,ws_order_number#116500,ws_quantity#116501,ws_wholesale_cost#116502,ws_list_price#116503,ws_sales_price#116504,ws_ext_discount_amt#116505,ws_ext_sales_price#116506,ws_ext_wholesale_cost#116507,... 10 more fields] parquet
+      :     :     +- Project [hd_demo_sk#116517]
+      :     :        +- Filter ((isnotnull(hd_dep_count#116520) && (hd_dep_count#116520 = 8)) && isnotnull(hd_demo_sk#116517))
+      :     :           +- Relation[hd_demo_sk#116517,hd_income_band_sk#116518,hd_buy_potential#116519,hd_dep_count#116520,hd_vehicle_count#116521] parquet
+      :     +- Project [t_time_sk#116522]
+      :        +- Filter ((isnotnull(t_hour#116525) && ((t_hour#116525 >= 6) && (t_hour#116525 <= 7))) && isnotnull(t_time_sk#116522))
+      :           +- Relation[t_time_sk#116522,t_time_id#116523,t_time#116524,t_hour#116525,t_minute#116526,t_second#116527,t_am_pm#116528,t_shift#116529,t_sub_shift#116530,t_meal_time#116531] parquet
+      +- Project [wp_web_page_sk#116532]
+         +- Filter ((isnotnull(wp_char_count#116542) && ((wp_char_count#116542 >= 5000) && (wp_char_count#116542 <= 5200))) && isnotnull(wp_web_page_sk#116532))
+            +- Relation[wp_web_page_sk#116532,wp_web_page_id#116533,wp_rec_start_date#116534,wp_rec_end_date#116535,wp_creation_date_sk#116536,wp_access_date_sk#116537,wp_autogen_flag#116538,wp_customer_sk#116539,wp_url#116540,wp_type#116541,wp_char_count#116542,wp_link_count#116543,wp_image_count#116544,wp_max_ad_count#116545] parquet
+and
+Aggregate [count(1) AS pmc#116481L]
++- Project
+   +- Join Inner, (ws_web_page_sk#116558 = wp_web_page_sk#116595)
+      :- Project [ws_web_page_sk#116558]
+      :  +- Join Inner, (ws_sold_time_sk#116547 = t_time_sk#116585)
+      :     :- Project [ws_sold_time_sk#116547, ws_web_page_sk#116558]
+      :     :  +- Join Inner, (ws_ship_hdemo_sk#116556 = hd_demo_sk#116580)
+      :     :     :- Project [ws_sold_time_sk#116547, ws_ship_hdemo_sk#116556, ws_web_page_sk#116558]
+      :     :     :  +- Filter ((isnotnull(ws_ship_hdemo_sk#116556) && isnotnull(ws_sold_time_sk#116547)) && isnotnull(ws_web_page_sk#116558))
+      :     :     :     +- Relation[ws_sold_time_sk#116547,ws_ship_date_sk#116548,ws_item_sk#116549,ws_bill_customer_sk#116550,ws_bill_cdemo_sk#116551,ws_bill_hdemo_sk#116552,ws_bill_addr_sk#116553,ws_ship_customer_sk#116554,ws_ship_cdemo_sk#116555,ws_ship_hdemo_sk#116556,ws_ship_addr_sk#116557,ws_web_page_sk#116558,ws_web_site_sk#116559,ws_ship_mode_sk#116560,ws_warehouse_sk#116561,ws_promo_sk#116562,ws_order_number#116563,ws_quantity#116564,ws_wholesale_cost#116565,ws_list_price#116566,ws_sales_price#116567,ws_ext_discount_amt#116568,ws_ext_sales_price#116569,ws_ext_wholesale_cost#116570,... 10 more fields] parquet
+      :     :     +- Project [hd_demo_sk#116580]
+      :     :        +- Filter ((isnotnull(hd_dep_count#116583) && (hd_dep_count#116583 = 8)) && isnotnull(hd_demo_sk#116580))
+      :     :           +- Relation[hd_demo_sk#116580,hd_income_band_sk#116581,hd_buy_potential#116582,hd_dep_count#116583,hd_vehicle_count#116584] parquet
+      :     +- Project [t_time_sk#116585]
+      :        +- Filter ((isnotnull(t_hour#116588) && ((t_hour#116588 >= 14) && (t_hour#116588 <= 15))) && isnotnull(t_time_sk#116585))
+      :           +- Relation[t_time_sk#116585,t_time_id#116586,t_time#116587,t_hour#116588,t_minute#116589,t_second#116590,t_am_pm#116591,t_shift#116592,t_sub_shift#116593,t_meal_time#116594] parquet
+      +- Project [wp_web_page_sk#116595]
+         +- Filter ((isnotnull(wp_char_count#116605) && ((wp_char_count#116605 >= 5000) && (wp_char_count#116605 <= 5200))) && isnotnull(wp_web_page_sk#116595))
+            +- Relation[wp_web_page_sk#116595,wp_web_page_id#116596,wp_rec_start_date#116597,wp_rec_end_date#116598,wp_creation_date_sk#116599,wp_access_date_sk#116600,wp_autogen_flag#116601,wp_customer_sk#116602,wp_url#116603,wp_type#116604,wp_char_count#116605,wp_link_count#116606,wp_image_count#116607,wp_max_ad_count#116608] parquet
+Join condition is missing or trivial.
+Use the CROSS JOIN syntax to allow cartesian products between these relations.; (state=,code=0)
+
+Closing: 0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_1000
+STOP hdp2.6_spark21_run_1000_3_query90_sql_2017-04-08-21-34:  Sat Apr 8 21:34:36 CDT 2017

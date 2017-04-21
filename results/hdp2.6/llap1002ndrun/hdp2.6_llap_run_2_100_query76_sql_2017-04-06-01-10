@@ -1,0 +1,1083 @@
+START hdp2.6_llap_run_2_100_query76_sql_2017-04-06-01-10:  Thu Apr 6 01:10:23 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2" -n hive --incremental=true -i test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+Connected to: Apache Hive (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.041 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.exec.reducers.bytes.per.reducer=67108864;
+No rows affected (0.002 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> select  channel, col_name, d_year, d_qoy, i_category, COUNT(*) sales_cnt, SUM(ext_sales_price) sales _amt FROM (
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         SELECT 'store' as channel, 'ss_addr_sk' col_name, d_year, d_qoy, i_category, ss_ext_sales_pr ice ext_sales_price
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          FROM store_sales, item, date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          WHERE ss_addr_sk IS NULL
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>            AND store_sales.ss_sold_date_sk=date_dim.d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>            AND store_sales.ss_item_sk=item.i_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         UNION ALL
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         SELECT 'web' as channel, 'ws_web_page_sk' col_name, d_year, d_qoy, i_category, ws_ext_sales_ price ext_sales_price
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          FROM web_sales, item, date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          WHERE ws_web_page_sk IS NULL
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>            AND web_sales.ws_sold_date_sk=date_dim.d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>            AND web_sales.ws_item_sk=item.i_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         UNION ALL
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         SELECT 'catalog' as channel, 'cs_warehouse_sk' col_name, d_year, d_qoy, i_category, cs_ext_s ales_price ext_sales_price
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          FROM catalog_sales, item, date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          WHERE cs_warehouse_sk IS NULL
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>            AND catalog_sales.cs_sold_date_sk=date_dim.d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>            AND catalog_sales.cs_item_sk=item.i_item_sk) foo
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> GROUP BY channel, col_name, d_year, d_qoy, i_category
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> ORDER BY channel, col_name, d_year, d_qoy, i_category
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> limit 100;
+INFO  : Compiling command(queryId=hive_20170406011026_8957bf0a-da3f-46d4-ae43-af311d35aad8): select  channel, col_name, d_year, d_qoy, i_category, COUNT(*) sales_cnt, SUM(ext_sales_price) sales_amt FROM (
+        SELECT 'store' as channel, 'ss_addr_sk' col_name, d_year, d_qoy, i_category, ss_ext_sales_price ext_sales_price
+         FROM store_sales, item, date_dim
+         WHERE ss_addr_sk IS NULL
+           AND store_sales.ss_sold_date_sk=date_dim.d_date_sk
+           AND store_sales.ss_item_sk=item.i_item_sk
+        UNION ALL
+        SELECT 'web' as channel, 'ws_web_page_sk' col_name, d_year, d_qoy, i_category, ws_ext_sales_price ext_sales_price
+         FROM web_sales, item, date_dim
+         WHERE ws_web_page_sk IS NULL
+           AND web_sales.ws_sold_date_sk=date_dim.d_date_sk
+           AND web_sales.ws_item_sk=item.i_item_sk
+        UNION ALL
+        SELECT 'catalog' as channel, 'cs_warehouse_sk' col_name, d_year, d_qoy, i_category, cs_ext_sales_price ext_sales_price
+         FROM catalog_sales, item, date_dim
+         WHERE cs_warehouse_sk IS NULL
+           AND catalog_sales.cs_sold_date_sk=date_dim.d_date_sk
+           AND catalog_sales.cs_item_sk=item.i_item_sk) foo
+GROUP BY channel, col_name, d_year, d_qoy, i_category
+ORDER BY channel, col_name, d_year, d_qoy, i_category
+limit 100
+INFO  : We are setting the hadoop caller context from HIVE_SSN_ID:9f33b495-ef08-4b8a-940b-a43182a1c5c1 to hive_20170406011026_8957bf0a-da3f-46d4-ae43-af311d35aad8
+INFO  : Semantic Analysis Completed
+INFO  : Returning Hive schema: Schema(fieldSchemas:[FieldSchema(name:channel, type:string, comment:null), FieldSchema(name:col_name, type:string, comment:null), FieldSchema(name:d_year, type:int, comment:null), FieldSchema(name:d_qoy, type:int, comment:null), FieldSchema(name:i_category, type:string, comment:null), FieldSchema(name:sales_cnt, type:bigint, comment:null), FieldSchema(name:sales_amt, type:double, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=hive_20170406011026_8957bf0a-da3f-46d4-ae43-af311d35aad8); Time taken: 2.268 seconds
+INFO  : We are resetting the hadoop caller context to HIVE_SSN_ID:9f33b495-ef08-4b8a-940b-a43182a1c5c1
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Setting caller context to query id hive_20170406011026_8957bf0a-da3f-46d4-ae43-af311d35aad8
+INFO  : Executing command(queryId=hive_20170406011026_8957bf0a-da3f-46d4-ae43-af311d35aad8): select  channel, col_name, d_year, d_qoy, i_category, COUNT(*) sales_cnt, SUM(ext_sales_price) sales_amt FROM (
+        SELECT 'store' as channel, 'ss_addr_sk' col_name, d_year, d_qoy, i_category, ss_ext_sales_price ext_sales_price
+         FROM store_sales, item, date_dim
+         WHERE ss_addr_sk IS NULL
+           AND store_sales.ss_sold_date_sk=date_dim.d_date_sk
+           AND store_sales.ss_item_sk=item.i_item_sk
+        UNION ALL
+        SELECT 'web' as channel, 'ws_web_page_sk' col_name, d_year, d_qoy, i_category, ws_ext_sales_price ext_sales_price
+         FROM web_sales, item, date_dim
+         WHERE ws_web_page_sk IS NULL
+           AND web_sales.ws_sold_date_sk=date_dim.d_date_sk
+           AND web_sales.ws_item_sk=item.i_item_sk
+        UNION ALL
+        SELECT 'catalog' as channel, 'cs_warehouse_sk' col_name, d_year, d_qoy, i_category, cs_ext_sales_price ext_sales_price
+         FROM catalog_sales, item, date_dim
+         WHERE cs_warehouse_sk IS NULL
+           AND catalog_sales.cs_sold_date_sk=date_dim.d_date_sk
+           AND catalog_sales.cs_item_sk=item.i_item_sk) foo
+GROUP BY channel, col_name, d_year, d_qoy, i_category
+ORDER BY channel, col_name, d_year, d_qoy, i_category
+limit 100
+INFO  : Query ID = hive_20170406011026_8957bf0a-da3f-46d4-ae43-af311d35aad8
+INFO  : Total jobs = 1
+INFO  : Launching Job 1 out of 1
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Session is already open
+INFO  : Dag name: select  channel, col_name, d_year, d_q...100(Stage-1)
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Status: Running (Executing on YARN cluster with App id application_1491366857972_0105)
+
+INFO  : Map 1: 1(+1)/2	Map 10: -/-	Map 11: 1/1	Map 12: -/-	Map 13: 1(+1)/2	Map 15: 1/1	Map 3: -/-	Map 7: 1/1	Map 8: 0(+2)/2	Reducer 14: 0(+1)/1	Reducer 2: 0(+1)/1	Reducer 5: 0/2	Reducer 6: 0/1	Reducer 9: 0/1	
+INFO  : Map 1: 1(+1)/2	Map 10: -/-	Map 11: 1/1	Map 12: -/-	Map 13: 1(+1)/2	Map 15: 1/1	Map 3: 0(+104)/1022	Map 7: 1/1	Map 8: 1(+1)/2	Reducer 14: 0(+1)/1	Reducer 2: 0(+1)/1	Reducer 5: 0/2	Reducer 6: 0/1	Reducer 9: 0(+1)/1	
+[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........        llap  SUCCEEDED          2        2        0       0       0
+Map 10                  llap  INITED        292        0        0     292       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 12                  llap  INITED        707        0        0     707       0
+Map 13 .........        llap  SUCCEEDED          2        2        0       0       0
+Map 15 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 3                   llap  RUNNING       1022        0      537     485       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 8 ..........        llap  SUCCEEDED          2        2        0       0       0
+Reducer 14 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 5               llap  INITED          2        0        0       2       0
+Reducer 6               llap  INITED          1        0        0       1       0
+Reducer 9               llap  RUNNING          1        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/14  [>>--------------------------] 0%    ELAPSED TIME: 0.74 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[20A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........        llap  SUCCEEDED          2        2        0       0       0
+Map 10                  llap  RUNNING        292        0       81     211       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 12                  llap  INITED        707        0        0     707       0
+Map 13 .........        llap  SUCCEEDED          2        2        0       0       0
+Map 15 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 3                   llap  RUNNING       1022      102      203     717       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 8 ..........        llap  SUCCEEDED          2        2        0       0       0
+Reducer 14 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 5               llap  INITED          2        0        0       2       0
+Reducer 6               llap  INITED          1        0        0       1       0
+Reducer 9 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 09/14  [=>>-------------------------] 5%    ELAPSED TIME: 1.24 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[20A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........        llap  SUCCEEDED          2        2        0       0       0
+Map 10 .                llap  RUNNING        292       41      210      41       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 12                  llap  INITED        707        0        0     707       0
+Map 13 .........        llap  SUCCEEDED          2        2        0       0       0
+Map 15 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 3 ....              llap  RUNNING       1022      460       77     485       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 8 ..........        llap  SUCCEEDED          2        2        0       0       0
+Reducer 14 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 5               llap  INITED          2        0        0       2       0
+Reducer 6               llap  INITED          1        0        0       1       0
+Reducer 9 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 09/14  [======>>--------------------] 25%   ELAPSED TIME: 1.74 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[20A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........        llap  SUCCEEDED          2        2        0       0       0
+Map 10 ..               llap  RUNNING        292       66      203      23       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 12                  llap  INITED        707        0        0     707       0
+Map 13 .........        llap  SUCCEEDED          2        2        0       0       0
+Map 15 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 3 ....              llap  RUNNING       1022      460       77     485       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 8 ..........        llap  SUCCEEDED          2        2        0       0       0
+Reducer 14 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 5               llap  INITED          2        0        0       2       0
+Reducer 6               llap  INITED          1        0        0       1       0
+Reducer 9 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 09/14  [======>>--------------------] 26%   ELAPSED TIME: 2.24 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[20A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........        llap  SUCCEEDED          2        2        0       0       0
+Map 10 .........        llap  SUCCEEDED        292      292        0       0       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 12 ...              llap  RUNNING        707      279      174     254       0
+Map 13 .........        llap  SUCCEEDED          2        2        0       0       0
+Map 15 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 3 ....              llap  RUNNING       1022      460       77     485       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 8 ..........        llap  SUCCEEDED          2        2        0       0       0
+Reducer 14 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 5               llap  INITED          2        0        0       2       0
+Reducer 6               llap  INITED          1        0        0       1       0
+Reducer 9 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 10/14  [=============>>-------------] 51%   ELAPSED TIME: 2.75 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[20A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........        llap  SUCCEEDED          2        2        0       0       0
+Map 10 .........        llap  SUCCEEDED        292      292        0       0       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 12 ......           llap  RUNNING        707      547       80      80       0
+Map 13 .........        llap  SUCCEEDED          2        2        0       0       0
+Map 15 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 3 ....              llap  RUNNING       1022      460       77     485       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 8 ..........        llap  SUCCEEDED          2        2        0       0       0
+Reducer 14 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 5               llap  INITED          2        0        0       2       0
+Reducer 6               llap  INITED          1        0        0       1       0
+Reducer 9 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 10/14  [================>>----------] 64%   ELAPSED TIME: 3.25 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[20A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........        llap  SUCCEEDED          2        2        0       0       0
+Map 10 .........        llap  SUCCEEDED        292      292        0       0       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 12 .........        llap  SUCCEEDED        707      707        0       0       0
+Map 13 .........        llap  SUCCEEDED          2        2        0       0       0
+Map 15 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 3 .....             llap  RUNNING       1022      546      357     119       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 8 ..........        llap  SUCCEEDED          2        2        0       0       0
+Reducer 14 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 5               llap  INITED          2        0        0       2       0
+Reducer 6               llap  INITED          1        0        0       1       0
+Reducer 9 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 11/14  [===================>>-------] 76%   ELAPSED TIME: 3.75 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[20A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........        llap  SUCCEEDED          2        2        0       0       0
+Map 10 .........        llap  SUCCEEDED        292      292        0       0       0
+Map 11 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 12 .........        llap  SUCCEEDED        707      707        0       0       0
+Map 13 .........        llap  SUCCEEDED          2        2        0       0       0
+Map 15 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 3 ..........        llap  SUCCEEDED       1022     1022        0       0       0
+Map 7 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 8 ..........        llap  SUCCEEDED          2        2        0       0       0
+Reducer 14 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 5 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 6 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 9 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 14/14  [==========================>>] 100%  ELAPSED TIME: 4.12 s     
+[22;0m[2K--------------------------------------------------------------------------------
+INFO  : Map 1: 1(+1)/2	Map 10: -/-	Map 11: 1/1	Map 12: -/-	Map 13: 1(+1)/2	Map 15: 1/1	Map 3: 0(+106)/1022	Map 7: 1/1	Map 8: 1(+1)/2	Reducer 14: 0(+1)/1	Reducer 2: 0(+1)/1	Reducer 5: 0/2	Reducer 6: 0/1	Reducer 9: 0(+1)/1	
+INFO  : Map 1: 2/2	Map 10: 0/292	Map 11: 1/1	Map 12: 0/707	Map 13: 2/2	Map 15: 1/1	Map 3: 0(+537)/1022	Map 7: 1/1	Map 8: 2/2	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 5: 0/2	Reducer 6: 0/1	Reducer 9: 0(+1)/1	
+INFO  : Map 1: 2/2	Map 10: 0(+48)/292	Map 11: 1/1	Map 12: 0/707	Map 13: 2/2	Map 15: 1/1	Map 3: 0(+537)/1022	Map 7: 1/1	Map 8: 2/2	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 5: 0/2	Reducer 6: 0/1	Reducer 9: 0(+1)/1	
+INFO  : Map 1: 2/2	Map 10: 0(+81)/292	Map 11: 1/1	Map 12: 0/707	Map 13: 2/2	Map 15: 1/1	Map 3: 102(+203)/1022	Map 7: 1/1	Map 8: 2/2	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 5: 0/2	Reducer 6: 0/1	Reducer 9: 1/1	
+INFO  : Map 1: 2/2	Map 10: 41(+210)/292	Map 11: 1/1	Map 12: 0/707	Map 13: 2/2	Map 15: 1/1	Map 3: 460(+77)/1022	Map 7: 1/1	Map 8: 2/2	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 5: 0/2	Reducer 6: 0/1	Reducer 9: 1/1	
+INFO  : Map 1: 2/2	Map 10: 66(+203)/292	Map 11: 1/1	Map 12: 0/707	Map 13: 2/2	Map 15: 1/1	Map 3: 460(+77)/1022	Map 7: 1/1	Map 8: 2/2	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 5: 0/2	Reducer 6: 0/1	Reducer 9: 1/1	
+INFO  : Map 1: 2/2	Map 10: 251(+0)/292	Map 11: 1/1	Map 12: 46(+45)/707	Map 13: 2/2	Map 15: 1/1	Map 3: 460(+77)/1022	Map 7: 1/1	Map 8: 2/2	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 5: 0/2	Reducer 6: 0/1	Reducer 9: 1/1	
+INFO  : Map 1: 2/2	Map 10: 292/292	Map 11: 1/1	Map 12: 233(+60)/707	Map 13: 2/2	Map 15: 1/1	Map 3: 460(+77)/1022	Map 7: 1/1	Map 8: 2/2	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 5: 0/2	Reducer 6: 0/1	Reducer 9: 1/1	
+INFO  : Map 1: 2/2	Map 10: 292/292	Map 11: 1/1	Map 12: 279(+174)/707	Map 13: 2/2	Map 15: 1/1	Map 3: 460(+77)/1022	Map 7: 1/1	Map 8: 2/2	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 5: 0/2	Reducer 6: 0/1	Reducer 9: 1/1	
+INFO  : Map 1: 2/2	Map 10: 292/292	Map 11: 1/1	Map 12: 547(+80)/707	Map 13: 2/2	Map 15: 1/1	Map 3: 460(+77)/1022	Map 7: 1/1	Map 8: 2/2	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 5: 0/2	Reducer 6: 0/1	Reducer 9: 1/1	
+INFO  : Map 1: 2/2	Map 10: 292/292	Map 11: 1/1	Map 12: 666(+0)/707	Map 13: 2/2	Map 15: 1/1	Map 3: 460(+374)/1022	Map 7: 1/1	Map 8: 2/2	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 5: 0/2	Reducer 6: 0/1	Reducer 9: 1/1	
+INFO  : Map 1: 2/2	Map 10: 292/292	Map 11: 1/1	Map 12: 707/707	Map 13: 2/2	Map 15: 1/1	Map 3: 546(+357)/1022	Map 7: 1/1	Map 8: 2/2	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 5: 0/2	Reducer 6: 0/1	Reducer 9: 1/1	
+INFO  : Map 1: 2/2	Map 10: 292/292	Map 11: 1/1	Map 12: 707/707	Map 13: 2/2	Map 15: 1/1	Map 3: 1001(+21)/1022	Map 7: 1/1	Map 8: 2/2	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 5: 0(+1)/1	Reducer 6: 0/1	Reducer 9: 1/1	
+INFO  : Map 1: 2/2	Map 10: 292/292	Map 11: 1/1	Map 12: 707/707	Map 13: 2/2	Map 15: 1/1	Map 3: 1022/1022	Map 7: 1/1	Map 8: 2/2	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 5: 1/1	Reducer 6: 1/1	Reducer 9: 1/1	
+INFO  : Status: DAG finished successfully in 4.04 seconds
+INFO  : 
+INFO  : Query Execution Summary
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : OPERATION                            DURATION
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : Compile Query                           2.27s
+INFO  : Prepare Plan                            0.42s
+INFO  : Submit Plan                             0.09s
+INFO  : Start DAG                               0.27s
+INFO  : Run DAG                                 4.04s
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : Task Execution Summary
+INFO  : --------------------------------------------------------------------------------------------------------------------------------
+INFO  :   VERTICES  TOTAL_TASKS  FAILED_ATTEMPTS  KILLED_TASKS   DURATION(ms)  CPU_TIME(ms)  GC_TIME(ms)  INPUT_RECORDS  OUTPUT_RECORDS
+INFO  : --------------------------------------------------------------------------------------------------------------------------------
+INFO  :      Map 1            2                0             0        4035.00             0            0        204,000         204,002
+INFO  :     Map 10          292                0             0        3032.00             0            0     72,260,367           6,100
+INFO  :     Map 11            1                0             0        4035.00             0            0         73,049          73,049
+INFO  :     Map 12          707                0             0        1791.00             0            0    143,554,536          16,788
+INFO  :     Map 13            2                0             0        4035.00             0            0        204,000         204,002
+INFO  :     Map 15            1                0             0        4035.00             0            0         73,049          73,049
+INFO  :      Map 3         1022                0            77        3832.00             0            0    275,319,051          18,593
+INFO  :      Map 7            1                0             0        4035.00             0            0         73,049          73,049
+INFO  :      Map 8            2                0             0        4035.00             0            0        204,000         204,002
+INFO  : Reducer 14            1                0             0        4035.00             0            0        204,002               1
+INFO  :  Reducer 2            1                0             0        4035.00             0            0        204,002               1
+INFO  :  Reducer 5            1                0             0         200.00             0            0         41,481             100
+INFO  :  Reducer 6            1                0             0           0.00             0            0            100               0
+INFO  :  Reducer 9            1                0             0        3832.00             0            0        204,002               1
+INFO  : --------------------------------------------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : LLAP IO Summary
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :   VERTICES ROWGROUPS  META_HIT  META_MISS  DATA_HIT  DATA_MISS  ALLOCATION     USED  TOTAL_IO
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :      Map 1        21         8          0   92.58KB         0B          0B       0B     0.01s
+INFO  :     Map 10      8396      3646          0  533.89MB         0B          0B       0B     8.71s
+INFO  :     Map 11         8         2          0      653B         0B          0B       0B     0.00s
+INFO  :     Map 12     15250      3672          0  907.25MB         0B          0B       0B    15.68s
+INFO  :     Map 13        21         8          0   92.58KB         0B          0B       0B     0.01s
+INFO  :     Map 15         8         2          0      653B         0B          0B       0B     0.01s
+INFO  :      Map 3     28119      3646          0    1.82GB         0B          0B       0B    53.55s
+INFO  :      Map 7         8         2          0      653B         0B          0B       0B     0.01s
+INFO  :      Map 8        21         8          0   92.58KB         0B          0B       0B     0.01s
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : FileSystem Counters Summary
+INFO  : 
+INFO  : Scheme: FILE
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :   VERTICES      BYTES_READ      READ_OPS     LARGE_READ_OPS      BYTES_WRITTEN     WRITE_OPS
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :      Map 1            128B             0                  0             1.48MB             0
+INFO  :     Map 10          6.42MB             0                  0           156.16KB             0
+INFO  :     Map 11              0B             0                  0           365.64KB             0
+INFO  :     Map 12         16.89MB             0                  0           439.56KB             0
+INFO  :     Map 13            128B             0                  0             1.48MB             0
+INFO  :     Map 15              0B             0                  0           365.64KB             0
+INFO  :      Map 3         22.67MB             0                  0           542.84KB             0
+INFO  :      Map 7              0B             0                  0           365.64KB             0
+INFO  :      Map 8            128B             0                  0             1.48MB             0
+INFO  : Reducer 14              0B             0                  0           212.79KB             0
+INFO  :  Reducer 2         89.92KB             0                  0           212.79KB             0
+INFO  :  Reducer 5             64B             0                  0             1.80KB             0
+INFO  :  Reducer 6              0B             0                  0                 0B             0
+INFO  :  Reducer 9         89.92KB             0                  0           212.79KB             0
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : Scheme: HDFS
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :   VERTICES      BYTES_READ      READ_OPS     LARGE_READ_OPS      BYTES_WRITTEN     WRITE_OPS
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :      Map 1              0B             0                  0                 0B             0
+INFO  :     Map 10              0B             0                  0                 0B             0
+INFO  :     Map 11              0B             0                  0                 0B             0
+INFO  :     Map 12              0B             0                  0                 0B             0
+INFO  :     Map 13              0B             0                  0                 0B             0
+INFO  :     Map 15              0B             0                  0                 0B             0
+INFO  :      Map 3              0B             0                  0                 0B             0
+INFO  :      Map 7              0B             0                  0                 0B             0
+INFO  :      Map 8              0B             0                  0                 0B             0
+INFO  : Reducer 14              0B             0                  0                 0B             0
+INFO  :  Reducer 2              0B             0                  0                 0B             0
+INFO  :  Reducer 5              0B             0                  0                 0B             0
+INFO  :  Reducer 6              0B             2                  0             7.40KB             2
+INFO  :  Reducer 9              0B             0                  0                 0B             0
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : org.apache.tez.common.counters.DAGCounter:
+INFO  :    NUM_KILLED_TASKS: 77
+INFO  :    NUM_SUCCEEDED_TASKS: 2035
+INFO  :    TOTAL_LAUNCHED_TASKS: 2112
+INFO  :    DATA_LOCAL_TASKS: 2030
+INFO  :    AM_CPU_MILLISECONDS: 26180
+INFO  :    AM_GC_TIME_MILLIS: 1717
+INFO  : File System Counters:
+INFO  :    FILE_BYTES_READ: 46149606
+INFO  :    FILE_BYTES_WRITTEN: 7321491
+INFO  :    FILE_READ_OPS: 0
+INFO  :    FILE_LARGE_READ_OPS: 0
+INFO  :    FILE_WRITE_OPS: 0
+INFO  :    HDFS_BYTES_READ: 0
+INFO  :    HDFS_BYTES_WRITTEN: 7402
+INFO  :    HDFS_READ_OPS: 2
+INFO  :    HDFS_LARGE_READ_OPS: 0
+INFO  :    HDFS_WRITE_OPS: 2
+INFO  : org.apache.tez.common.counters.TaskCounter:
+INFO  :    REDUCE_INPUT_GROUPS: 782
+INFO  :    REDUCE_INPUT_RECORDS: 41587
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    SPILLED_RECORDS: 83952
+INFO  :    NUM_SHUFFLED_INPUTS: 6151
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    MERGED_MAP_OUTPUTS: 19131
+INFO  :    INPUT_RECORDS_PROCESSED: 7975740
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 24730941708
+INFO  :    OUTPUT_RECORDS: 872737
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_BYTES: 14107261
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 15877128
+INFO  :    OUTPUT_BYTES_PHYSICAL: 7207995
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 877512
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 1491742
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    SHUFFLE_CHUNK_COUNT: 2028
+INFO  :    SHUFFLE_BYTES: 472441775
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 539111702
+INFO  :    SHUFFLE_BYTES_TO_MEM: 421892516
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 50549259
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_DISK_TO_DISK_MERGES: 1
+INFO  :    SHUFFLE_PHASE_TIME: 115849
+INFO  :    MERGE_PHASE_TIME: 2078
+INFO  :    FIRST_EVENT_RECEIVED: 84687
+INFO  :    LAST_EVENT_RECEIVED: 86394
+INFO  : HIVE:
+INFO  :    CREATED_FILES: 1
+INFO  :    DESERIALIZE_ERRORS: 0
+INFO  :    RECORDS_IN_Map_1: 204000
+INFO  :    RECORDS_IN_Map_10: 71983315
+INFO  :    RECORDS_IN_Map_11: 73049
+INFO  :    RECORDS_IN_Map_12: 143277484
+INFO  :    RECORDS_IN_Map_13: 204000
+INFO  :    RECORDS_IN_Map_15: 73049
+INFO  :    RECORDS_IN_Map_3: 275041999
+INFO  :    RECORDS_IN_Map_7: 73049
+INFO  :    RECORDS_IN_Map_8: 204000
+INFO  :    RECORDS_OUT_0: 100
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_1: 204002
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_10: 6100
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_11: 73049
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_12: 16788
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_13: 204002
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_15: 73049
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_3: 18593
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_7: 73049
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_8: 204002
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_14: 1
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_2: 1
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_5: 100
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_9: 1
+INFO  : Shuffle Errors:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_14_INPUT_Map_13:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_2_INPUT_Map_1:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_5_INPUT_Map_10:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_5_INPUT_Map_12:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_5_INPUT_Map_3:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_6_INPUT_Reducer_5:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_9_INPUT_Map_8:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : TaskCounter_Map_10_INPUT_Map_11:
+INFO  :    FIRST_EVENT_RECEIVED: 10
+INFO  :    INPUT_RECORDS_PROCESSED: 657441
+INFO  :    LAST_EVENT_RECEIVED: 10
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 9
+INFO  :    SHUFFLE_BYTES: 3290490
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 7889346
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 365610
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 2924880
+INFO  :    SHUFFLE_PHASE_TIME: 80
+INFO  : TaskCounter_Map_10_INPUT_Map_8:
+INFO  :    FIRST_EVENT_RECEIVED: 46
+INFO  :    INPUT_RECORDS_PROCESSED: 1836000
+INFO  :    LAST_EVENT_RECEIVED: 47
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 18
+INFO  :    SHUFFLE_BYTES: 10167669
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 27339435
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 1129741
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 9037928
+INFO  :    SHUFFLE_PHASE_TIME: 138
+INFO  : TaskCounter_Map_10_INPUT_Reducer_9:
+INFO  :    FIRST_EVENT_RECEIVED: 1532
+INFO  :    INPUT_RECORDS_PROCESSED: 292
+INFO  :    LAST_EVENT_RECEIVED: 1532
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 292
+INFO  :    SHUFFLE_BYTES: 62125336
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 62117452
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 6382740
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 55742596
+INFO  :    SHUFFLE_PHASE_TIME: 4312
+INFO  : TaskCounter_Map_10_INPUT_web_sales:
+INFO  :    INPUT_RECORDS_PROCESSED: 72757
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 4461047013
+INFO  : TaskCounter_Map_10_OUTPUT_Reducer_5:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 284875
+INFO  :    OUTPUT_BYTES_PHYSICAL: 139808
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 300579
+INFO  :    OUTPUT_RECORDS: 6100
+INFO  :    SHUFFLE_CHUNK_COUNT: 292
+INFO  :    SPILLED_RECORDS: 6100
+INFO  : TaskCounter_Map_10_OUTPUT_out_Map_10:
+INFO  :    OUTPUT_RECORDS: 0
+INFO  : TaskCounter_Map_11_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 73
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 362294
+INFO  : TaskCounter_Map_11_OUTPUT_Map_10:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 730490
+INFO  :    OUTPUT_BYTES_PHYSICAL: 365634
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 876594
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 73049
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_12_INPUT_Map_13:
+INFO  :    FIRST_EVENT_RECEIVED: 9
+INFO  :    INPUT_RECORDS_PROCESSED: 1836000
+INFO  :    LAST_EVENT_RECEIVED: 11
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 18
+INFO  :    SHUFFLE_BYTES: 10167669
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 27339435
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 1129741
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 9037928
+INFO  :    SHUFFLE_PHASE_TIME: 235
+INFO  : TaskCounter_Map_12_INPUT_Map_15:
+INFO  :    FIRST_EVENT_RECEIVED: 6
+INFO  :    INPUT_RECORDS_PROCESSED: 657441
+INFO  :    LAST_EVENT_RECEIVED: 6
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 9
+INFO  :    SHUFFLE_BYTES: 3290490
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 7889346
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 365610
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 2924880
+INFO  :    SHUFFLE_PHASE_TIME: 31
+INFO  : TaskCounter_Map_12_INPUT_Reducer_14:
+INFO  :    FIRST_EVENT_RECEIVED: 3109
+INFO  :    INPUT_RECORDS_PROCESSED: 707
+INFO  :    LAST_EVENT_RECEIVED: 3109
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 707
+INFO  :    SHUFFLE_BYTES: 150419906
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 150400817
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 16807882
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 133612024
+INFO  :    SHUFFLE_PHASE_TIME: 9081
+INFO  : TaskCounter_Map_12_INPUT_catalog_sales:
+INFO  :    INPUT_RECORDS_PROCESSED: 144129
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 8366908788
+INFO  : TaskCounter_Map_12_OUTPUT_Reducer_5:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 915647
+INFO  :    OUTPUT_BYTES_PHYSICAL: 399970
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 957707
+INFO  :    OUTPUT_RECORDS: 16788
+INFO  :    SHUFFLE_CHUNK_COUNT: 707
+INFO  :    SPILLED_RECORDS: 16788
+INFO  : TaskCounter_Map_12_OUTPUT_out_Map_12:
+INFO  :    OUTPUT_RECORDS: 0
+INFO  : TaskCounter_Map_13_INPUT_item:
+INFO  :    INPUT_RECORDS_PROCESSED: 205
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 13151046
+INFO  : TaskCounter_Map_13_OUTPUT_Map_12:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 2629703
+INFO  :    OUTPUT_BYTES_PHYSICAL: 1129789
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 3037715
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 204000
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_13_OUTPUT_Reducer_14:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 425443
+INFO  :    OUTPUT_BYTES_PHYSICAL: 352076
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 425465
+INFO  :    OUTPUT_RECORDS: 2
+INFO  :    SHUFFLE_CHUNK_COUNT: 2
+INFO  :    SPILLED_RECORDS: 2
+INFO  : TaskCounter_Map_15_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 73
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 362294
+INFO  : TaskCounter_Map_15_OUTPUT_Map_12:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 730490
+INFO  :    OUTPUT_BYTES_PHYSICAL: 365634
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 876594
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 73049
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_1_INPUT_item:
+INFO  :    INPUT_RECORDS_PROCESSED: 205
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 13151046
+INFO  : TaskCounter_Map_1_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 2629703
+INFO  :    OUTPUT_BYTES_PHYSICAL: 1129789
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 3037715
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 204000
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_1_OUTPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 425443
+INFO  :    OUTPUT_BYTES_PHYSICAL: 352076
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 425465
+INFO  :    OUTPUT_RECORDS: 2
+INFO  :    SHUFFLE_CHUNK_COUNT: 2
+INFO  :    SPILLED_RECORDS: 2
+INFO  : TaskCounter_Map_3_INPUT_Map_1:
+INFO  :    FIRST_EVENT_RECEIVED: 23
+INFO  :    INPUT_RECORDS_PROCESSED: 1836000
+INFO  :    LAST_EVENT_RECEIVED: 31
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 18
+INFO  :    SHUFFLE_BYTES: 10167669
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 27339435
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 1129741
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 9037928
+INFO  :    SHUFFLE_PHASE_TIME: 307
+INFO  : TaskCounter_Map_3_INPUT_Map_7:
+INFO  :    FIRST_EVENT_RECEIVED: 71
+INFO  :    INPUT_RECORDS_PROCESSED: 657441
+INFO  :    LAST_EVENT_RECEIVED: 71
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 9
+INFO  :    SHUFFLE_BYTES: 3290490
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 7889346
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 365610
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 2924880
+INFO  :    SHUFFLE_PHASE_TIME: 145
+INFO  : TaskCounter_Map_3_INPUT_Reducer_2:
+INFO  :    FIRST_EVENT_RECEIVED: 79864
+INFO  :    INPUT_RECORDS_PROCESSED: 1022
+INFO  :    LAST_EVENT_RECEIVED: 79864
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 1022
+INFO  :    SHUFFLE_BYTES: 217438676
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 217411082
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 22552348
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 194886328
+INFO  :    SHUFFLE_PHASE_TIME: 99597
+INFO  : TaskCounter_Map_3_INPUT_store_sales:
+INFO  :    INPUT_RECORDS_PROCESSED: 275676
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 11862445887
+INFO  : TaskCounter_Map_3_OUTPUT_Reducer_5:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 906060
+INFO  :    OUTPUT_BYTES_PHYSICAL: 485604
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 955510
+INFO  :    OUTPUT_RECORDS: 18593
+INFO  :    SHUFFLE_CHUNK_COUNT: 1022
+INFO  :    SPILLED_RECORDS: 18593
+INFO  : TaskCounter_Map_3_OUTPUT_out_Map_3:
+INFO  :    OUTPUT_RECORDS: 0
+INFO  : TaskCounter_Map_7_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 73
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 362294
+INFO  : TaskCounter_Map_7_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 730490
+INFO  :    OUTPUT_BYTES_PHYSICAL: 365634
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 876594
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 73049
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_8_INPUT_item:
+INFO  :    INPUT_RECORDS_PROCESSED: 205
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 13151046
+INFO  : TaskCounter_Map_8_OUTPUT_Map_10:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 2629703
+INFO  :    OUTPUT_BYTES_PHYSICAL: 1129789
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 3037715
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 204000
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_8_OUTPUT_Reducer_9:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 425443
+INFO  :    OUTPUT_BYTES_PHYSICAL: 352076
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 425465
+INFO  :    OUTPUT_RECORDS: 2
+INFO  :    SHUFFLE_CHUNK_COUNT: 2
+INFO  :    SPILLED_RECORDS: 2
+INFO  : TaskCounter_Reducer_14_INPUT_Map_13:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 352076
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 139318
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 1
+INFO  :    LAST_EVENT_RECEIVED: 519
+INFO  :    MERGED_MAP_OUTPUTS: 2
+INFO  :    MERGE_PHASE_TIME: 524
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 2
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 1
+INFO  :    REDUCE_INPUT_RECORDS: 2
+INFO  :    SHUFFLE_BYTES: 352076
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 425465
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 212758
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 139318
+INFO  :    SHUFFLE_PHASE_TIME: 520
+INFO  :    SPILLED_RECORDS: 2
+INFO  : TaskCounter_Reducer_14_OUTPUT_Map_12:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 212720
+INFO  :    OUTPUT_BYTES_PHYSICAL: 212782
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 212731
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_2_INPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 352062
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 352062
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 1
+INFO  :    LAST_EVENT_RECEIVED: 537
+INFO  :    MERGED_MAP_OUTPUTS: 2
+INFO  :    MERGE_PHASE_TIME: 544
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 2
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 1
+INFO  :    REDUCE_INPUT_RECORDS: 2
+INFO  :    SHUFFLE_BYTES: 352076
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 425465
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 0
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 352076
+INFO  :    SHUFFLE_PHASE_TIME: 540
+INFO  :    SPILLED_RECORDS: 2
+INFO  : TaskCounter_Reducer_2_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 212720
+INFO  :    OUTPUT_BYTES_PHYSICAL: 212782
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 212731
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_5_INPUT_Map_10:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 41684
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 26846
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 4
+INFO  :    LAST_EVENT_RECEIVED: 11
+INFO  :    MERGED_MAP_OUTPUTS: 584
+INFO  :    MERGE_PHASE_TIME: 53
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 584
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 217
+INFO  :    REDUCE_INPUT_RECORDS: 6100
+INFO  :    SHUFFLE_BYTES: 139808
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 300579
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 14838
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 124970
+INFO  :    SHUFFLE_PHASE_TIME: 39
+INFO  :    SPILLED_RECORDS: 6100
+INFO  : TaskCounter_Reducer_5_INPUT_Map_12:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 180729
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 8
+INFO  :    LAST_EVENT_RECEIVED: 16
+INFO  :    MERGED_MAP_OUTPUTS: 1414
+INFO  :    MERGE_PHASE_TIME: 102
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 1414
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 231
+INFO  :    REDUCE_INPUT_RECORDS: 16788
+INFO  :    SHUFFLE_BYTES: 399970
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 957707
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 43313
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 356657
+INFO  :    SHUFFLE_PHASE_TIME: 66
+INFO  :    SPILLED_RECORDS: 17048
+INFO  : TaskCounter_Reducer_5_INPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 211359
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 5454
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 1
+INFO  :    LAST_EVENT_RECEIVED: 118
+INFO  :    MERGED_MAP_OUTPUTS: 17126
+INFO  :    MERGE_PHASE_TIME: 159
+INFO  :    NUM_DISK_TO_DISK_MERGES: 1
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 2044
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 231
+INFO  :    REDUCE_INPUT_RECORDS: 18593
+INFO  :    SHUFFLE_BYTES: 485604
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 955510
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 49327
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 436277
+INFO  :    SHUFFLE_PHASE_TIME: 127
+INFO  :    SPILLED_RECORDS: 19111
+INFO  : TaskCounter_Reducer_5_OUTPUT_Reducer_6:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 5611
+INFO  :    OUTPUT_BYTES_PHYSICAL: 1770
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 5817
+INFO  :    OUTPUT_RECORDS: 100
+INFO  :    SHUFFLE_CHUNK_COUNT: 1
+INFO  :    SPILLED_RECORDS: 100
+INFO  : TaskCounter_Reducer_6_INPUT_Reducer_5:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 1770
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 1770
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 1
+INFO  :    LAST_EVENT_RECEIVED: 1
+INFO  :    MERGED_MAP_OUTPUTS: 1
+INFO  :    MERGE_PHASE_TIME: 5
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 1
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 100
+INFO  :    REDUCE_INPUT_RECORDS: 100
+INFO  :    SHUFFLE_BYTES: 1770
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 5817
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 0
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 1770
+INFO  :    SHUFFLE_PHASE_TIME: 3
+INFO  :    SPILLED_RECORDS: 100
+INFO  : TaskCounter_Reducer_6_OUTPUT_out_Reducer_6:
+INFO  :    OUTPUT_RECORDS: 0
+INFO  : TaskCounter_Reducer_9_INPUT_Map_8:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 352062
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 352062
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 1
+INFO  :    LAST_EVENT_RECEIVED: 511
+INFO  :    MERGED_MAP_OUTPUTS: 2
+INFO  :    MERGE_PHASE_TIME: 691
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 2
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 1
+INFO  :    REDUCE_INPUT_RECORDS: 2
+INFO  :    SHUFFLE_BYTES: 352076
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 425465
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 0
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 352076
+INFO  :    SHUFFLE_PHASE_TIME: 628
+INFO  :    SPILLED_RECORDS: 2
+INFO  : TaskCounter_Reducer_9_OUTPUT_Map_10:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 212720
+INFO  :    OUTPUT_BYTES_PHYSICAL: 212782
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 212731
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SPILLED_RECORDS: 0
+INFO  : org.apache.hadoop.hive.llap.counters.LlapIOCounters:
+INFO  :    CACHE_HIT_BYTES: 3263969648
+INFO  :    CACHE_MISS_BYTES: 0
+INFO  :    CONSUMER_TIME_NS: 147763074316
+INFO  :    DECODE_TIME_NS: 76199150073
+INFO  :    HDFS_TIME_NS: 50144357
+INFO  :    METADATA_CACHE_HIT: 10994
+INFO  :    NUM_DECODED_BATCHES: 51852
+INFO  :    NUM_VECTOR_BATCHES: 493401
+INFO  :    ROWS_EMITTED: 491133945
+INFO  :    SELECTED_ROWGROUPS: 51852
+INFO  :    TOTAL_IO_TIME_NS: 77968037606
+INFO  : Resetting the caller context to HIVE_SSN_ID:9f33b495-ef08-4b8a-940b-a43182a1c5c1
+INFO  : Completed executing command(queryId=hive_20170406011026_8957bf0a-da3f-46d4-ae43-af311d35aad8); Time taken: 4.896 seconds
+INFO  : OK
++----------+------------------+---------+--------+--------------+------------+---------------------+--+
+| channel  |     col_name     | d_year  | d_qoy  |  i_category  | sales_cnt  |      sales_amt      |
++----------+------------------+---------+--------+--------------+------------+---------------------+--+
+| catalog  | cs_warehouse_sk  | 1998    | 1      |              | 24         | 17377.69012451172   |
+| catalog  | cs_warehouse_sk  | 1998    | 1      | Books        | 988        | 1471310.43075943    |
+| catalog  | cs_warehouse_sk  | 1998    | 1      | Children     | 986        | 1297900.0977293253  |
+| catalog  | cs_warehouse_sk  | 1998    | 1      | Electronics  | 1059       | 1299582.4011551142  |
+| catalog  | cs_warehouse_sk  | 1998    | 1      | Home         | 961        | 1280542.0763669014  |
+| catalog  | cs_warehouse_sk  | 1998    | 1      | Jewelry      | 1013       | 1242775.9200562239  |
+| catalog  | cs_warehouse_sk  | 1998    | 1      | Men          | 1031       | 1343043.3706364632  |
+| catalog  | cs_warehouse_sk  | 1998    | 1      | Music        | 1108       | 1430996.7923029661  |
+| catalog  | cs_warehouse_sk  | 1998    | 1      | Shoes        | 1018       | 1330079.921034813   |
+| catalog  | cs_warehouse_sk  | 1998    | 1      | Sports       | 1016       | 1310913.5804570317  |
+| catalog  | cs_warehouse_sk  | 1998    | 1      | Women        | 1029       | 1319171.1305470467  |
+| catalog  | cs_warehouse_sk  | 1998    | 2      |              | 26         | 44920.6701965332    |
+| catalog  | cs_warehouse_sk  | 1998    | 2      | Books        | 1044       | 1307214.5791553855  |
+| catalog  | cs_warehouse_sk  | 1998    | 2      | Children     | 1020       | 1218465.8994402885  |
+| catalog  | cs_warehouse_sk  | 1998    | 2      | Electronics  | 992        | 1239572.6266803741  |
+| catalog  | cs_warehouse_sk  | 1998    | 2      | Home         | 1073       | 1445936.6207199097  |
+| catalog  | cs_warehouse_sk  | 1998    | 2      | Jewelry      | 1025       | 1153202.6102657318  |
+| catalog  | cs_warehouse_sk  | 1998    | 2      | Men          | 975        | 1206795.98357296    |
+| catalog  | cs_warehouse_sk  | 1998    | 2      | Music        | 1046       | 1348807.2377274036  |
+| catalog  | cs_warehouse_sk  | 1998    | 2      | Shoes        | 1001       | 1266940.254374981   |
+| catalog  | cs_warehouse_sk  | 1998    | 2      | Sports       | 1048       | 1245560.1269797087  |
+| catalog  | cs_warehouse_sk  | 1998    | 2      | Women        | 1051       | 1324817.2697799206  |
+| catalog  | cs_warehouse_sk  | 1998    | 3      |              | 53         | 84630.44915390015   |
+| catalog  | cs_warehouse_sk  | 1998    | 3      | Books        | 1953       | 2479527.9912731647  |
+| catalog  | cs_warehouse_sk  | 1998    | 3      | Children     | 1887       | 2435932.1385391355  |
+| catalog  | cs_warehouse_sk  | 1998    | 3      | Electronics  | 1902       | 2450167.511284411   |
+| catalog  | cs_warehouse_sk  | 1998    | 3      | Home         | 1943       | 2309836.519272208   |
+| catalog  | cs_warehouse_sk  | 1998    | 3      | Jewelry      | 1963       | 2490233.3914203644  |
+| catalog  | cs_warehouse_sk  | 1998    | 3      | Men          | 1865       | 2523101.71328038    |
+| catalog  | cs_warehouse_sk  | 1998    | 3      | Music        | 1941       | 2543493.8796020746  |
+| catalog  | cs_warehouse_sk  | 1998    | 3      | Shoes        | 1929       | 2369749.5030213594  |
+| catalog  | cs_warehouse_sk  | 1998    | 3      | Sports       | 1952       | 2444052.2684619427  |
+| catalog  | cs_warehouse_sk  | 1998    | 3      | Women        | 1839       | 2510109.667475462   |
+| catalog  | cs_warehouse_sk  | 1998    | 4      |              | 70         | 96165.1408405304    |
+| catalog  | cs_warehouse_sk  | 1998    | 4      | Books        | 3127       | 4033423.891100526   |
+| catalog  | cs_warehouse_sk  | 1998    | 4      | Children     | 3119       | 4044465.9465736747  |
+| catalog  | cs_warehouse_sk  | 1998    | 4      | Electronics  | 3178       | 3968521.983440459   |
+| catalog  | cs_warehouse_sk  | 1998    | 4      | Home         | 3140       | 4004318.815920122   |
+| catalog  | cs_warehouse_sk  | 1998    | 4      | Jewelry      | 2999       | 3800838.6764485836  |
+| catalog  | cs_warehouse_sk  | 1998    | 4      | Men          | 3209       | 4213199.086481333   |
+| catalog  | cs_warehouse_sk  | 1998    | 4      | Music        | 3142       | 4215495.280827403   |
+| catalog  | cs_warehouse_sk  | 1998    | 4      | Shoes        | 3223       | 4109759.8889915347  |
+| catalog  | cs_warehouse_sk  | 1998    | 4      | Sports       | 3262       | 4053897.245931819   |
+| catalog  | cs_warehouse_sk  | 1998    | 4      | Women        | 3090       | 4009098.3446456194  |
+| catalog  | cs_warehouse_sk  | 1999    | 1      |              | 26         | 17061.099617004395  |
+| catalog  | cs_warehouse_sk  | 1999    | 1      | Books        | 1026       | 1390158.7888174057  |
+| catalog  | cs_warehouse_sk  | 1999    | 1      | Children     | 1012       | 1310175.947880268   |
+| catalog  | cs_warehouse_sk  | 1999    | 1      | Electronics  | 1034       | 1366199.9450221062  |
+| catalog  | cs_warehouse_sk  | 1999    | 1      | Home         | 1035       | 1275691.4041538239  |
+| catalog  | cs_warehouse_sk  | 1999    | 1      | Jewelry      | 1001       | 1346166.8523859978  |
+| catalog  | cs_warehouse_sk  | 1999    | 1      | Men          | 961        | 1180079.7687319517  |
+| catalog  | cs_warehouse_sk  | 1999    | 1      | Music        | 1004       | 1366866.1541633606  |
+| catalog  | cs_warehouse_sk  | 1999    | 1      | Shoes        | 1041       | 1278432.9249589443  |
+| catalog  | cs_warehouse_sk  | 1999    | 1      | Sports       | 1052       | 1398015.558877468   |
+| catalog  | cs_warehouse_sk  | 1999    | 1      | Women        | 1037       | 1404807.1604725122  |
+| catalog  | cs_warehouse_sk  | 1999    | 2      |              | 22         | 32984.71926879883   |
+| catalog  | cs_warehouse_sk  | 1999    | 2      | Books        | 1013       | 1215146.3108097315  |
+| catalog  | cs_warehouse_sk  | 1999    | 2      | Children     | 1022       | 1344861.4856016636  |
+| catalog  | cs_warehouse_sk  | 1999    | 2      | Electronics  | 1016       | 1246423.3570907712  |
+| catalog  | cs_warehouse_sk  | 1999    | 2      | Home         | 970        | 1229489.2174081802  |
+| catalog  | cs_warehouse_sk  | 1999    | 2      | Jewelry      | 1034       | 1358647.6897382736  |
+| catalog  | cs_warehouse_sk  | 1999    | 2      | Men          | 978        | 1298235.1882076263  |
+| catalog  | cs_warehouse_sk  | 1999    | 2      | Music        | 1099       | 1411857.1893231869  |
+| catalog  | cs_warehouse_sk  | 1999    | 2      | Shoes        | 1039       | 1534061.59529984    |
+| catalog  | cs_warehouse_sk  | 1999    | 2      | Sports       | 1033       | 1291603.047463894   |
+| catalog  | cs_warehouse_sk  | 1999    | 2      | Women        | 1068       | 1299739.378185749   |
+| catalog  | cs_warehouse_sk  | 1999    | 3      |              | 53         | 69379.8603439331    |
+| catalog  | cs_warehouse_sk  | 1999    | 3      | Books        | 1927       | 2396661.944406867   |
+| catalog  | cs_warehouse_sk  | 1999    | 3      | Children     | 1843       | 2265010.7081377506  |
+| catalog  | cs_warehouse_sk  | 1999    | 3      | Electronics  | 1970       | 2473101.148919381   |
+| catalog  | cs_warehouse_sk  | 1999    | 3      | Home         | 1866       | 2438272.6393164396  |
+| catalog  | cs_warehouse_sk  | 1999    | 3      | Jewelry      | 1931       | 2471582.481310129   |
+| catalog  | cs_warehouse_sk  | 1999    | 3      | Men          | 1844       | 2394290.274329841   |
+| catalog  | cs_warehouse_sk  | 1999    | 3      | Music        | 1971       | 2712365.311583638   |
+| catalog  | cs_warehouse_sk  | 1999    | 3      | Shoes        | 1923       | 2138208.038845122   |
+| catalog  | cs_warehouse_sk  | 1999    | 3      | Sports       | 1989       | 2422135.71058172    |
+| catalog  | cs_warehouse_sk  | 1999    | 3      | Women        | 1876       | 2404801.6046561003  |
+| catalog  | cs_warehouse_sk  | 1999    | 4      |              | 80         | 99537.87091827393   |
+| catalog  | cs_warehouse_sk  | 1999    | 4      | Books        | 3158       | 3908241.4428147078  |
+| catalog  | cs_warehouse_sk  | 1999    | 4      | Children     | 3151       | 3706877.2969403863  |
+| catalog  | cs_warehouse_sk  | 1999    | 4      | Electronics  | 3168       | 4011653.5880073905  |
+| catalog  | cs_warehouse_sk  | 1999    | 4      | Home         | 3184       | 4157596.4025450945  |
+| catalog  | cs_warehouse_sk  | 1999    | 4      | Jewelry      | 3150       | 3955176.4646068215  |
+| catalog  | cs_warehouse_sk  | 1999    | 4      | Men          | 3127       | 4000495.4305594563  |
+| catalog  | cs_warehouse_sk  | 1999    | 4      | Music        | 3181       | 3911267.3086001426  |
+| catalog  | cs_warehouse_sk  | 1999    | 4      | Shoes        | 3149       | 4076588.361004114   |
+| catalog  | cs_warehouse_sk  | 1999    | 4      | Sports       | 3228       | 4147113.059085369   |
+| catalog  | cs_warehouse_sk  | 1999    | 4      | Women        | 3094       | 3738100.531541884   |
+| catalog  | cs_warehouse_sk  | 2000    | 1      |              | 30         | 32642.260681152344  |
+| catalog  | cs_warehouse_sk  | 2000    | 1      | Books        | 1012       | 1328142.8130526543  |
+| catalog  | cs_warehouse_sk  | 2000    | 1      | Children     | 1028       | 1229834.0984270573  |
+| catalog  | cs_warehouse_sk  | 2000    | 1      | Electronics  | 992        | 1148194.791782856   |
+| catalog  | cs_warehouse_sk  | 2000    | 1      | Home         | 1046       | 1284027.6295375824  |
+| catalog  | cs_warehouse_sk  | 2000    | 1      | Jewelry      | 1021       | 1325590.2494716644  |
+| catalog  | cs_warehouse_sk  | 2000    | 1      | Men          | 1115       | 1426911.799211681   |
+| catalog  | cs_warehouse_sk  | 2000    | 1      | Music        | 1063       | 1309489.3880074024  |
+| catalog  | cs_warehouse_sk  | 2000    | 1      | Shoes        | 1018       | 1395528.6970398426  |
+| catalog  | cs_warehouse_sk  | 2000    | 1      | Sports       | 1080       | 1305947.2577596903  |
+| catalog  | cs_warehouse_sk  | 2000    | 1      | Women        | 1051       | 1234267.632988453   |
+| catalog  | cs_warehouse_sk  | 2000    | 2      |              | 21         | 21271.380004882812  |
++----------+------------------+---------+--------+--------------+------------+---------------------+--+
+100 rows selected (7.228 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+STOP hdp2.6_llap_run_2_100_query76_sql_2017-04-06-01-10:  Thu Apr 6 01:10:34 CDT 2017
+
+ South Results Number of Nodes:  9
+ Avg CPU Busy:   Peak Cpu Avg:  100.000 Count > 90% Busy:  0
+ Avg Disk Busy:   Peak Disk Avg:  0 Count > 90% busy 0
+ Avg Disk Reads per sec:   Avg Write per sec: 
+ Avg Net TX:    Peak TX Avg: 
+ Avg Net RX:    Peak RX Avg: 
+ Mem Utilized: 
+South CSV
+| 100.000 | 0 | | 0 | 0 | | | | | | |

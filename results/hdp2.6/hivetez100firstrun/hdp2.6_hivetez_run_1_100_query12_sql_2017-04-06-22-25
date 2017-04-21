@@ -1,0 +1,463 @@
+START hdp2.6_hivetez_run_1_100_query12_sql_2017-04-06-22-25:  Thu Apr 6 22:25:55 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2" -n hive --incremental=true -i settings/test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+Connected to: Apache Hive (version 1.2.1000.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.04 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.exec.reducers.bytes.per.reducer=67108864;
+No rows affected (0.002 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> select  i_item_desc 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,i_category 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,i_class 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,i_current_price
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,i_item_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,sum(ws_ext_sales_price) as itemrevenue 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,sum(ws_ext_sales_price)*100/sum(sum(ws_ext_sales_price)) over
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           (partition by i_class) as revenueratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> web_sales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     ,item 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     ,date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> where 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> web_sales.ws_item_sk = item.i_item_sk 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   and item.i_category in ('Jewelry', 'Sports', 'Books')
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   and web_sales.ws_sold_date_sk = date_dim.d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and date_dim.d_date between '2001-01-12' and '2001-02-11'
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> group by 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> i_item_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,i_item_desc 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,i_category
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,i_class
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,i_current_price
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> order by 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> i_category
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,i_class
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,i_item_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,i_item_desc
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,revenueratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> limit 100;
+INFO  : Tez session hasn't been created yet. Opening session
+INFO  : Dag name: select  i_item_desc
+      ,i_category ...100(Stage-1)
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Status: Running (Executing on YARN cluster with App id application_1491366857972_0150)
+
+INFO  : Map 1: -/-	Map 5: 0/1	Map 6: 0/4	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                RUNNING      2          0        2        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED      4          4        0        0       0       0
+Reducer 2             INITED      2          0        0        2       0       0
+Reducer 3             INITED      2          0        0        2       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 02/06  [==========>>----------------] 41%   ELAPSED TIME: 5.28 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[12A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED      2          2        0        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED      4          4        0        0       0       0
+Reducer 2 ......   SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ......   SUCCEEDED      1          1        0        0       0       0
+Reducer 4 ......   SUCCEEDED      1          1        0        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 06/06  [==========================>>] 100%  ELAPSED TIME: 8.48 s     
+[22;0m[2K--------------------------------------------------------------------------------
+INFO  : Map 1: -/-	Map 5: 0(+1)/1	Map 6: 0(+4)/4	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: -/-	Map 5: 1/1	Map 6: 4/4	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 0/2	Map 5: 1/1	Map 6: 4/4	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 0(+2)/2	Map 5: 1/1	Map 6: 4/4	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 1(+1)/2	Map 5: 1/1	Map 6: 4/4	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 2/2	Map 5: 1/1	Map 6: 4/4	Reducer 2: 0(+1)/1	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 2/2	Map 5: 1/1	Map 6: 4/4	Reducer 2: 1/1	Reducer 3: 0(+1)/1	Reducer 4: 0/1	
+INFO  : Map 1: 2/2	Map 5: 1/1	Map 6: 4/4	Reducer 2: 1/1	Reducer 3: 1/1	Reducer 4: 0/1	
+INFO  : Map 1: 2/2	Map 5: 1/1	Map 6: 4/4	Reducer 2: 1/1	Reducer 3: 1/1	Reducer 4: 0(+1)/1	
+INFO  : Map 1: 2/2	Map 5: 1/1	Map 6: 4/4	Reducer 2: 1/1	Reducer 3: 1/1	Reducer 4: 1/1	
+INFO  : Status: DAG finished successfully in 8.44 seconds
+INFO  : 
+INFO  : Query Execution Summary
+INFO  : --------------------------------------------------------------------------------
+INFO  : OPERATION                            DURATION
+INFO  : --------------------------------------------------------------------------------
+INFO  : Compile Query                           0.73s
+INFO  : Prepare Plan                            3.93s
+INFO  : Submit Plan                             0.36s
+INFO  : Start DAG                               0.45s
+INFO  : Run DAG                                 8.44s
+INFO  : --------------------------------------------------------------------------------
+INFO  : 
+INFO  : Task Execution Summary
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  :   VERTICES  TOTAL_TASKS  FAILED_ATTEMPTS  KILLED_TASKS   DURATION(ms)  CPU_TIME(ms)  GC_TIME(ms)  INPUT_RECORDS  OUTPUT_RECORDS
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  :      Map 1            2                0             0        4180.00        17,260           92        766,939          55,936
+INFO  :      Map 5            1                0             0        6400.00         3,760           32         10,000              31
+INFO  :      Map 6            4                0             0        6400.00        18,810          154        204,000          61,071
+INFO  :  Reducer 2            1                0             0        2164.00         4,070            0         55,936          30,545
+INFO  :  Reducer 3            1                0             0        1142.00         2,930            0         30,545             100
+INFO  :  Reducer 4            1                0             0         132.00           470            0            100               0
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : org.apache.tez.common.counters.DAGCounter:
+INFO  :    NUM_SUCCEEDED_TASKS: 10
+INFO  :    TOTAL_LAUNCHED_TASKS: 10
+INFO  :    DATA_LOCAL_TASKS: 3
+INFO  :    RACK_LOCAL_TASKS: 4
+INFO  :    AM_CPU_MILLISECONDS: 7130
+INFO  :    AM_GC_TIME_MILLIS: 26
+INFO  : File System Counters:
+INFO  :    FILE_BYTES_READ: 13326592
+INFO  :    FILE_BYTES_WRITTEN: 16062449
+INFO  :    HDFS_BYTES_READ: 13051220
+INFO  :    HDFS_BYTES_WRITTEN: 16450
+INFO  :    HDFS_READ_OPS: 74
+INFO  :    HDFS_WRITE_OPS: 2
+INFO  :    HDFS_OP_CREATE: 1
+INFO  :    HDFS_OP_GET_FILE_STATUS: 2
+INFO  :    HDFS_OP_OPEN: 72
+INFO  :    HDFS_OP_RENAME: 1
+INFO  : org.apache.tez.common.counters.TaskCounter:
+INFO  :    REDUCE_INPUT_GROUPS: 30694
+INFO  :    REDUCE_INPUT_RECORDS: 86581
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    SPILLED_RECORDS: 173162
+INFO  :    NUM_SHUFFLED_INPUTS: 17
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    MERGED_MAP_OUTPUTS: 7
+INFO  :    GC_TIME_MILLIS: 278
+INFO  :    CPU_MILLISECONDS: 47300
+INFO  :    PHYSICAL_MEMORY_BYTES: 21474836480
+INFO  :    VIRTUAL_MEMORY_BYTES: 56060055552
+INFO  :    COMMITTED_HEAP_BYTES: 21474836480
+INFO  :    INPUT_RECORDS_PROCESSED: 123122
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 57031924
+INFO  :    OUTPUT_RECORDS: 147683
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_BYTES: 21977920
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 21995967
+INFO  :    OUTPUT_BYTES_PHYSICAL: 13179974
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 2882235
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 8078944
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    SHUFFLE_CHUNK_COUNT: 4
+INFO  :    SHUFFLE_BYTES: 18274797
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 30978860
+INFO  :    SHUFFLE_BYTES_TO_MEM: 7983145
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 10291652
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    SHUFFLE_PHASE_TIME: 436
+INFO  :    MERGE_PHASE_TIME: 191
+INFO  :    FIRST_EVENT_RECEIVED: 308
+INFO  :    LAST_EVENT_RECEIVED: 318
+INFO  : HIVE:
+INFO  :    CREATED_FILES: 1
+INFO  :    DESERIALIZE_ERRORS: 0
+INFO  :    RECORDS_IN_Map_1: 705837
+INFO  :    RECORDS_IN_Map_5: 10000
+INFO  :    RECORDS_IN_Map_6: 204000
+INFO  :    RECORDS_OUT_0: 100
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_1: 55936
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_5: 31
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_6: 61071
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_2: 30545
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_3: 100
+INFO  : Shuffle Errors:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_2_INPUT_Map_1:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_3_INPUT_Reducer_2:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_4_INPUT_Reducer_3:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : TaskCounter_Map_1_INPUT_Map_5:
+INFO  :    FIRST_EVENT_RECEIVED: 139
+INFO  :    INPUT_RECORDS_PROCESSED: 62
+INFO  :    LAST_EVENT_RECEIVED: 139
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 2
+INFO  :    SHUFFLE_BYTES: 302
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 446
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 151
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 151
+INFO  :    SHUFFLE_PHASE_TIME: 170
+INFO  : TaskCounter_Map_1_INPUT_Map_6:
+INFO  :    FIRST_EVENT_RECEIVED: 139
+INFO  :    INPUT_RECORDS_PROCESSED: 122142
+INFO  :    LAST_EVENT_RECEIVED: 148
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 8
+INFO  :    SHUFFLE_BYTES: 10189584
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 17965340
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 5094792
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 5094792
+INFO  :    SHUFFLE_PHASE_TIME: 193
+INFO  : TaskCounter_Map_1_INPUT_web_sales:
+INFO  :    INPUT_RECORDS_PROCESSED: 706
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 43524324
+INFO  : TaskCounter_Map_1_OUTPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 8567042
+INFO  :    OUTPUT_BYTES_PHYSICAL: 5283717
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 8711663
+INFO  :    OUTPUT_RECORDS: 55936
+INFO  :    SHUFFLE_CHUNK_COUNT: 2
+INFO  :    SPILLED_RECORDS: 55936
+INFO  : TaskCounter_Map_5_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 10
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 361420
+INFO  : TaskCounter_Map_5_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 155
+INFO  :    OUTPUT_BYTES_PHYSICAL: 175
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 223
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 31
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_6_INPUT_item:
+INFO  :    INPUT_RECORDS_PROCESSED: 202
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 13146180
+INFO  : TaskCounter_Map_6_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 8826393
+INFO  :    OUTPUT_BYTES_PHYSICAL: 5094888
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 8982670
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 61071
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_2_INPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 5277750
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 2871862
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 11
+INFO  :    LAST_EVENT_RECEIVED: 11
+INFO  :    MERGED_MAP_OUTPUTS: 4
+INFO  :    MERGE_PHASE_TIME: 140
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 4
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 30545
+INFO  :    REDUCE_INPUT_RECORDS: 55936
+INFO  :    SHUFFLE_BYTES: 5283717
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 8711663
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 2405888
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 2877829
+INFO  :    SHUFFLE_PHASE_TIME: 42
+INFO  :    SPILLED_RECORDS: 55936
+INFO  : TaskCounter_Reducer_2_OUTPUT_Reducer_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 4569499
+INFO  :    OUTPUT_BYTES_PHYSICAL: 2790821
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 4286320
+INFO  :    OUTPUT_RECORDS: 30545
+INFO  :    SHUFFLE_CHUNK_COUNT: 1
+INFO  :    SPILLED_RECORDS: 30545
+INFO  : TaskCounter_Reducer_3_INPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 2790821
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 10
+INFO  :    LAST_EVENT_RECEIVED: 11
+INFO  :    MERGED_MAP_OUTPUTS: 2
+INFO  :    MERGE_PHASE_TIME: 29
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 2
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 49
+INFO  :    REDUCE_INPUT_RECORDS: 30545
+INFO  :    SHUFFLE_BYTES: 2790821
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 4286320
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 2790821
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 0
+INFO  :    SHUFFLE_PHASE_TIME: 17
+INFO  :    SPILLED_RECORDS: 30545
+INFO  : TaskCounter_Reducer_3_OUTPUT_Reducer_4:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 14831
+INFO  :    OUTPUT_BYTES_PHYSICAL: 10373
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 15091
+INFO  :    OUTPUT_RECORDS: 100
+INFO  :    SHUFFLE_CHUNK_COUNT: 1
+INFO  :    SPILLED_RECORDS: 100
+INFO  : TaskCounter_Reducer_4_INPUT_Reducer_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 10373
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 10373
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 9
+INFO  :    LAST_EVENT_RECEIVED: 9
+INFO  :    MERGED_MAP_OUTPUTS: 1
+INFO  :    MERGE_PHASE_TIME: 22
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 1
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 100
+INFO  :    REDUCE_INPUT_RECORDS: 100
+INFO  :    SHUFFLE_BYTES: 10373
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 15091
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 0
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 10373
+INFO  :    SHUFFLE_PHASE_TIME: 14
+INFO  :    SPILLED_RECORDS: 100
+INFO  : TaskCounter_Reducer_4_OUTPUT_out_Reducer_4:
+INFO  :    OUTPUT_RECORDS: 0
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------+----------+------------------+-------------------+---------------------+-----------------------+--+
+|                                                                                                i_item_desc                                                                                                | i_category  | i_class  | i_current_price  |     i_item_id     |     itemrevenue     |     revenueratio      |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------+----------+------------------+-------------------+---------------------+-----------------------+--+
+|                                                                                                                                                                                                           | Books       |          | NULL             | AAAAAAAACFDMAAAA  | 15517.879943847656  | 2.705237312784268     |
+| Present fields use elements. Creatures could put perhaps rich resources. Final, static properties walk for a factors. Given, other women shall not stop; alr                                              | Books       |          | NULL             | AAAAAAAAEIPLCAAA  | 19823.940490722656  | 3.4559143192224386    |
+|                                                                                                                                                                                                           | Books       |          | NULL             | AAAAAAAAFAFECAAA  | 22924.629707336426  | 3.9964585298030215    |
+| Now other policies will send vertical policies.                                                                                                                                                           | Books       |          | NULL             | AAAAAAAAFKOHBAAA  | 21132.34984588623   | 3.684009769167444     |
+|                                                                                                                                                                                                           | Books       |          | 82.97            | AAAAAAAAGFLDAAAA  | 16330.619750976562  | 2.8469225210592493    |
+| Approximately impossible men increase also special entries. Years would not insist political years. Relationships increase just large, small schools                                                      | Books       |          | NULL             | AAAAAAAAGJLFAAAA  | 10524.830261230469  | 1.8347972555806482    |
+| Hands complete very by a schools. Growing, public animals would support british exhibitions. Armed areas select brilliant streets. Broad, basic hours                                                     | Books       |          | NULL             | AAAAAAAAHLGEAAAA  | 12858.940246582031  | 2.241703446849309     |
+|                                                                                                                                                                                                           | Books       |          | NULL             | AAAAAAAAJILPAAAA  | 4754.1697998046875  | 0.8287960456120679    |
+| Authorities bring in a organisations. Alternatively old years cannot take etc strong other differences. So final attitudes sh                                                                             | Books       |          | NULL             | AAAAAAAAKGLLCAAA  | 14220.399578094482  | 2.4790471172974122    |
+| Important, remarkable millions should attend especially important ideas; right, new conflicts sh                                                                                                          | Books       |          | 0.52             | AAAAAAAAKICPCAAA  | 15410.520385742188  | 2.6865212843369615    |
+|                                                                                                                                                                                                           | Books       |          | NULL             | AAAAAAAAKLNPBAAA  | 21398.02970123291   | 3.730325829127936     |
+| Much vital girls connect more unemployed, able degrees. Too important sources shall declare sites. Local,                                                                                                 | Books       |          | 0.89             | AAAAAAAALJOECAAA  | 32304.960052490234  | 5.631734723959518     |
+| Therefore modern visitors may gain                                                                                                                                                                        | Books       |          | 9.92             | AAAAAAAAMNJHAAAA  | 29801.43992614746   | 5.19529520492754      |
+| Of course common authorities would not preserve just to a ris                                                                                                                                             | Books       |          | 4.17             | AAAAAAAANFJNAAAA  | 28970.720170021057  | 5.050475546000407     |
+|                                                                                                                                                                                                           | Books       |          | NULL             | AAAAAAAAPHPCBAAA  | 15284.850622177124  | 2.664613231515624     |
+| Perhaps old ships will give more. Main poets describe less than. Right, brief words work long ago maj                                                                                                     | Books       | arts     | 1.05             | AAAAAAAAAAHMAAAA  | 7646.7501220703125  | 0.0677169017698157    |
+| Conditions shall occur once again after a products; agricultural, public walls give now a little public sides. Still alternative seats                                                                    | Books       | arts     | 6.5              | AAAAAAAAAANEAAAA  | 23141.300506591797  | 0.20493113390847817   |
+| No longer soft cameras mean select, small policies. Also famous arms could want irish, different connections. Attacks should remove black r                                                               | Books       | arts     | 1.52             | AAAAAAAAABEDAAAA  | 7091.929992675781   | 0.06280361186203016   |
+| Now pleased representations used to require then hundreds; naturally modest computers apply only. Children m                                                                                              | Books       | arts     | 4.93             | AAAAAAAAABEGCAAA  | 19449.729705810547  | 0.17223989471506998   |
+| Reports take more welsh c                                                                                                                                                                                 | Books       | arts     | 2.69             | AAAAAAAAABIGCAAA  | 7381.270065307617   | 0.06536590472680297   |
+| Traditional years get other reasons                                                                                                                                                                       | Books       | arts     | 7.22             | AAAAAAAAABOABAAA  | 10866.410293579102  | 0.09622906812621018   |
+| Far particular products turn specif                                                                                                                                                                       | Books       | arts     | 3.41             | AAAAAAAAABOFAAAA  | 11523.6103515625    | 0.10204899830035453   |
+| Light tears overcome real, vulnerable clothes. Serious, recent dates s                                                                                                                                    | Books       | arts     | 1.88             | AAAAAAAAACBLAAAA  | 19393.239990234375  | 0.17173964186783286   |
+| Carefully private markets could inquire. Sideways new object                                                                                                                                              | Books       | arts     | 1.5              | AAAAAAAAACGNBAAA  | 65121.82065868378   | 0.5766957023857481    |
+| Here elderly units ignore; eyes may reach others. Products include again. Extra, expected ministers look for example. Friendly ears give in a products. Results g                                         | Books       | arts     | 9.1              | AAAAAAAAACJIAAAA  | 8123.740180969238   | 0.07194095623060041   |
+| Results mix both; nearby, contrary workers store. Members suspend previously. Then permanent efforts date only familiar pie                                                                               | Books       | arts     | 1.93             | AAAAAAAAACNLAAAA  | 5239.89990234375    | 0.04640269151028705   |
+| Units strengthen; facilities would admit there as social fortunes. Also old priorities would grow; films target around by a rights. Steadily other pr                                                     | Books       | arts     | 1.83             | AAAAAAAAADKPBAAA  | 27234.42048406601   | 0.24117834991815318   |
+| Irrelevant, only countries get as well wild clients. Words unload other circumstances. Now upper conditions mention later. Already possible days take able, live                                          | Books       | arts     | 2.62             | AAAAAAAAAEBECAAA  | 13193.3701171875    | 0.11683579742717173   |
+| Interests move only different, warm bodies; about chief systems would work much. Perhaps great forms must appoint in order men. Patients may not pass available, physical centres. Hap                    | Books       | arts     | 7.0              | AAAAAAAAAEDGBAAA  | 10912.950134277344  | 0.0966412084172666    |
+| Broken sales must not know relatively like the eyes. Parents may not wash                                                                                                                                 | Books       | arts     | 5.97             | AAAAAAAAAEHHBAAA  | 13144.799896240234  | 0.11640567681013583   |
+| Regional,                                                                                                                                                                                                 | Books       | arts     | 8.32             | AAAAAAAAAEIOCAAA  | 12506.11992263794   | 0.11074975392206511   |
+| Optio                                                                                                                                                                                                     | Books       | arts     | 2.49             | AAAAAAAAAEKACAAA  | 15529.390007019043  | 0.1375227594550652    |
+| Public, quiet sons call. Responses may wish entirely to a hands.                                                                                                                                          | Books       | arts     | 0.51             | AAAAAAAAAFLCCAAA  | 17746.239959716797  | 0.15715439486734029   |
+| National, upper principles fill relatives. Components make. Rarely unusual plants might not deal                                                                                                          | Books       | arts     | 7.27             | AAAAAAAAAFOAAAAA  | 14309.729533672333  | 0.12672187971560997   |
+| Residential questions mean closely very possible aspirations. Human, dead miles can exploit nor                                                                                                           | Books       | arts     | 5.54             | AAAAAAAAAFPGCAAA  | 9487.7998046875     | 0.08402058353277943   |
+| Main, spatial results must draw here probable dishes. Terrible, average churches c                                                                                                                        | Books       | arts     | 9.67             | AAAAAAAAAFPJAAAA  | 30785.70036649704   | 0.27262722259173755   |
+| Badly difficult intervals should not get today new followers. Standards examine. Young, actual departments might knock special, national assumptions. Successful wi                                       | Books       | arts     | 0.29             | AAAAAAAAAGABAAAA  | 18479.819885253906  | 0.16365071800656897   |
+| Frequent, late lights should master other farmers; economic, other buildings complete automatically reliable patterns; authorities hold pric                                                              | Books       | arts     | 2.46             | AAAAAAAAAGDDCAAA  | 8657.119850158691   | 0.0766643770417855    |
+| Statistical elections ought to help men. Following, present changes will find dark services. Victims                                                                                                      | Books       | arts     | 2.2              | AAAAAAAAAGGACAAA  | 27112.770500183105  | 0.24010106088982178   |
+| Enemies could shake political, weak bedrooms. Here sensible stones fall running, environmental tonnes; sensi                                                                                              | Books       | arts     | 3.02             | AAAAAAAAAGKHAAAA  | 5655.5000076293945  | 0.05008309835710232   |
+| Professional words should complete too likely da                                                                                                                                                          | Books       | arts     | 3.36             | AAAAAAAAAHAKCAAA  | 3329.030014038086   | 0.029480706816708554  |
+| Formal, giant fac                                                                                                                                                                                         | Books       | arts     | 3.84             | AAAAAAAAAHFJCAAA  | 7995.709983825684   | 0.07080716630087365   |
+| Ago effective earnin                                                                                                                                                                                      | Books       | arts     | 3.18             | AAAAAAAAAHJBDAAA  | 21985.629364013672  | 0.19469692094337795   |
+| General, elderly grounds explore. Mild patients confuse always socialist systems. Eager, good pages control. Other, total days might not get general                                                      | Books       | arts     | 72.63            | AAAAAAAAAHKCBAAA  | 14849.859992980957  | 0.1315050831251631    |
+| Main events pose characters; close quiet lines write never bright, productive shares. C                                                                                                                   | Books       | arts     | 3.53             | AAAAAAAAAIEHAAAA  | 12363.499633789062  | 0.10948675932485871   |
+| Again democratic layers should suggest best subjects. Prices think as wild rates. Images say so yet re                                                                                                    | Books       | arts     | 3.78             | AAAAAAAAAIHDBAAA  | 25516.18927001953   | 0.22596230486868915   |
+| Quick layers ensure similar, mutual orders. All true sales must not reveal only academic, local schemes; proportions forgive for a chemicals; new jobs used to maintain most large women; civil           | Books       | arts     | 0.38             | AAAAAAAAAIJCBAAA  | 8747.01025390625    | 0.07746041451436535   |
+| Substantial, past qualifications would attack. Independent, fine passen                                                                                                                                   | Books       | arts     | 0.47             | AAAAAAAAAIKOAAAA  | 63648.319732666016  | 0.5636469018009237    |
+| Too different clients might not wear only; positive, supreme products may depend present, british organisations. Things ought to stick never doors. Often soci                                            | Books       | arts     | 63.65            | AAAAAAAAAJCIBAAA  | 32196.099946975708  | 0.28511722008384927   |
+| Brief circles will find often deliberately modern friends. Totally burning results beat. Even unable members join grateful, grey                                                                          | Books       | arts     | 0.95             | AAAAAAAAAJCMCAAA  | 22305.99998474121   | 0.19753400931522447   |
+| Later full days shall not rise; general, availab                                                                                                                                                          | Books       | arts     | 1.72             | AAAAAAAAAJCOAAAA  | 9733.06999206543    | 0.08619260915419974   |
+| Only political bars close more both theoretical thoughts. Less military babies ought to warn perhaps high, early manufacturers; stron                                                                     | Books       | arts     | 9.53             | AAAAAAAAAJFDCAAA  | 19824.77032470703   | 0.175561121163441     |
+| Soon wooden contracts come somehow crucial pieces. Besides final terms can make still taxes. Willing areas find tonight over adequate level                                                               | Books       | arts     | 3.61             | AAAAAAAAAKBNCAAA  | 13048.809928894043  | 0.11555562376983719   |
+| Broad ears might contain active tools; ever local cor                                                                                                                                                     | Books       | arts     | 2.84             | AAAAAAAAAKEOBAAA  | 28874.36962890625   | 0.2557011567806551    |
+| New agencies shall remember just social areas. Very colleagues save available, general surveys. Softly bright subjects go then im                                                                         | Books       | arts     | 7.85             | AAAAAAAAAKKGCAAA  | 30218.659912109375  | 0.26760571382836695   |
+| Regulations go almost. Complex operations may stay at present countries. Widely special modules can rest also in ne                                                                                       | Books       | arts     | 76.12            | AAAAAAAAAKLCAAAA  | 13038.010347366333  | 0.11545998651351358   |
+| Citizens might not get from a questio                                                                                                                                                                     | Books       | arts     | 7.33             | AAAAAAAAAKMBDAAA  | 46191.90121459961   | 0.40905906263132763   |
+| Low real movements play heavily sorts. More light stations tell real, new eggs. Distinguished, ter                                                                                                        | Books       | arts     | 7.88             | AAAAAAAAALBNAAAA  | 6255.150032043457   | 0.05539338588465144   |
+| Armed, everyday guidelines get sooner international planes. Dry thousands would not identify universally useful, above sectors. Very open odds used to get much under a arms. Good beds stay              | Books       | arts     | 3.83             | AAAAAAAAALINAAAA  | 17872.650276184082  | 0.1582738397094308    |
+| Children apply so. White costs use                                                                                                                                                                        | Books       | arts     | 4.47             | AAAAAAAAALMCBAAA  | 17106.85009765625   | 0.15149218545934573   |
+| Parents check free, similar memories. Private, recent forces tell further most early entries; other elements proceed apparently financial thanks. Royal                                                   | Books       | arts     | 4.01             | AAAAAAAAAMJGBAAA  | 9825.67000579834    | 0.08701264196993627   |
+| White, key needs shall not introduce too also commercial restrictions. British courts improve demands. Increa                                                                                             | Books       | arts     | 4.01             | AAAAAAAAAMMFCAAA  | 8571.989837646484   | 0.07591049590235688   |
+| Alone blue babies should show significant leaders. Lucky, wealthy doors make quickly labour readers. General periods go perh                                                                              | Books       | arts     | 0.55             | AAAAAAAAANJCCAAA  | 16054.129760742188  | 0.1421696682451182    |
+| Obviously independent sites could hasten entirely dead, japanese changes. Dark men can mean much busy emplo                                                                                               | Books       | arts     | 0.69             | AAAAAAAAANJFCAAA  | 8452.810195922852   | 0.07485508334633942   |
+| In general average expectations will not hear especially straight soft times. Now formidable weeks might get enough primary demands. Wide, industrial women used to develop so coherent                   | Books       | arts     | 2.89             | AAAAAAAAANOPCAAA  | 18053.480682373047  | 0.159875209527643     |
+| Desirable friends would reflect however other hands. Involved personnel find again. Good items care firmly physical democrats; entries recognize well just social services.                               | Books       | arts     | 5.54             | AAAAAAAAAOIKAAAA  | 17454.759773254395  | 0.15457314991498422   |
+| Small thousands must not monitor more questions. Basic, fortunate folk find ever for a arm                                                                                                                | Books       | arts     | 1.0              | AAAAAAAAAOLIBAAA  | 5396.489980459213   | 0.047789397597003236  |
+| Dry items manage hard, following arms. Per                                                                                                                                                                | Books       | arts     | 2.91             | AAAAAAAAAOLJBAAA  | 25925.899810791016  | 0.22959055582505347   |
+| Huge telecommunications occur new bones. Hard rights may                                                                                                                                                  | Books       | arts     | 0.29             | AAAAAAAAAONKBAAA  | 37152.78005218506   | 0.329011817714298     |
+| Initiatives take on a imports. Nonethe                                                                                                                                                                    | Books       | arts     | 3.94             | AAAAAAAAAPDICAAA  | 43569.80041503906   | 0.38583866972716885   |
+| New, expected possibilities will not determine with a areas. Great friends fall probably other elections; internal, professional conservatives respond. Early planes establish in                         | Books       | arts     | 7.03             | AAAAAAAAAPEDAAAA  | 3052.71004486084    | 0.027033715361370135  |
+| Homes paint response                                                                                                                                                                                      | Books       | arts     | 4.6              | AAAAAAAAAPFLAAAA  | 28013.48956298828   | 0.24807750883496069   |
+| Periods shall                                                                                                                                                                                             | Books       | arts     | 2.27             | AAAAAAAAAPGEAAAA  | 6038.859962463379   | 0.05347799788821782   |
+| Badly fine gifts should allow more clear, modern materials. For example sudden price                                                                                                                      | Books       | arts     | 7.23             | AAAAAAAAAPGPBAAA  | 13262.099983215332  | 0.11744444469720954   |
+| Elements could stand more                                                                                                                                                                                 | Books       | arts     | 4.95             | AAAAAAAAAPLNCAAA  | 10918.049880981445  | 0.09668636996185741   |
+| Badly outside representatives should tax original decisions. Signs trust well front, literary laws. Social sizes can involve for example to a effects. Lists might appear small purposes. Conv            | Books       | arts     | 1.48             | AAAAAAAAAPODAAAA  | 6053.830154418945   | 0.05361056858844307   |
+| However compatible interests should not comment advisory games. High commitments could take problems                                                                                                      | Books       | arts     | 0.44             | AAAAAAAAAPOOBAAA  | 17049.350219726562  | 0.15098298697327217   |
+| Gover                                                                                                                                                                                                     | Books       | arts     | 0.73             | AAAAAAAABDAKCAAA  | 18571.099548339844  | 0.1644590582661692    |
+| Liberal rules would believe actions. Heavy classes used to analyse by a blacks; fields might not solve most young children. Very absolute hands try most able, senior shapes                              | Books       | arts     | 7.77             | AAAAAAAABDIJBAAA  | 12213.519836425781  | 0.10815859153548724   |
+| Desirable, clear patients should forgive in a thousands. Natural quan                                                                                                                                     | Books       | arts     | 7.19             | AAAAAAAABDJECAAA  | 25919.18032836914   | 0.22953105047652733   |
+| Adjacent, clear subjects shall not say deeply else rough boundaries.                                                                                                                                      | Books       | arts     | 4.14             | AAAAAAAABDMADAAA  | 20326.3101272583    | 0.1800025794301356    |
+| Words would advance fo                                                                                                                                                                                    | Books       | arts     | 2.4              | AAAAAAAABEEABAAA  | 12104.239700317383  | 0.10719084548335903   |
+| Weekly shows cannot suppose                                                                                                                                                                               | Books       | arts     | 8.71             | AAAAAAAABELFBAAA  | 40269.33057785034   | 0.35661088168763533   |
+| Whole, different improvements used to distinguish as possible scales. Once flat c                                                                                                                         | Books       | arts     | 0.65             | AAAAAAAABFDGBAAA  | 15743.020208358765  | 0.13941459260355982   |
+| Little days answer in a emotions; players touch.                                                                                                                                                          | Books       | arts     | 2.58             | AAAAAAAABFHDAAAA  | 24524.959915161133  | 0.21718432994041587   |
+| As model thousands respond rather. Pounds ought to dedu                                                                                                                                                   | Books       | arts     | 1.63             | AAAAAAAABFNMAAAA  | 24483.760009765625  | 0.2168194782188275    |
+| Direct, dark years spend now to a programmes. Local, grand employers should alert far games. Used, present friends follow. Written firms used to get eve                                                  | Books       | arts     | 24.48            | AAAAAAAABGFOCAAA  | 32316.150009155273  | 0.28618034077411614   |
+| Minor heads close common children; recently strong firms provide. Useful, young men ought to create changes. Popular, common regulations might decide. Points fit. Obvious, glad officials                | Books       | arts     | 3.88             | AAAAAAAABHDCAAAA  | 28340.63067626953   | 0.2509745542829342    |
+| Video-taped, easy buildings replace actually free, formal stars. Large others could not help. Things deal gently goods. Additional, mediterranean minutes describe no                                     | Books       | arts     | 9.36             | AAAAAAAABIDKAAAA  | 40894.22102355957   | 0.3621446894168634    |
+| Very red months used to help until a drugs. As well remaining transactions choose plea                                                                                                                    | Books       | arts     | 1.99             | AAAAAAAABIHMAAAA  | 11623.089706420898  | 0.10292995211648982   |
+| Companies get personally. Clever customers keep then opinions. Well obvious centres mention further both great f                                                                                          | Books       | arts     | 1.79             | AAAAAAAABJGNCAAA  | 15412.740142822266  | 0.13648974970985636   |
+| Most original children face so. National, dead relationships must participate patients. Strong eyes result huge others. Medical hands can mean so high, proper minutes. Employees may not expect al       | Books       | arts     | 2.04             | AAAAAAAABKBBDAAA  | 1653.6899719238281  | 0.014644490744281896  |
+| French books undergo so technical figures; beings test then friends. Top, constant proceedings will not face too. Weakly public cuts change organic, resp                                                 | Books       | arts     | 2.01             | AAAAAAAABKDIAAAA  | 17169.809692382812  | 0.1520497332572345    |
+| Different, wild members see in a areas. Stairs shall achieve able police. Relat                                                                                                                           | Books       | arts     | 5.34             | AAAAAAAABLOMCAAA  | 8533.519897460938   | 0.07556981978256103   |
+| Yet electronic keys could not serve followers. Very relevant advertisements include neither before new reforms. Local, quiet arms would know other, other candidat                                        | Books       | arts     | 7.4              | AAAAAAAABMIKAAAA  | 18078.630126953125  | 0.16009792407186213   |
+| Key girls cannot come cars. Rumours would imagine                                                                                                                                                         | Books       | arts     | 8.87             | AAAAAAAABMLNAAAA  | 15519.229919433594  | 0.13743278532984685   |
+| Private laws make respectively                                                                                                                                                                            | Books       | arts     | 59.57            | AAAAAAAABNMJCAAA  | 12650.740173339844  | 0.11203045947074537   |
+| Quiet files can return mentally to a drugs. So british colleagues must not let for a cultures. Skills end careful, reasonable masters. Things might finance more than however final votes. Expected, old  | Books       | arts     | 1.11             | AAAAAAAABNNFCAAA  | 34041.35008239746   | 0.3014580995641981    |
+| Most different rules must step away defendants.                                                                                                                                                           | Books       | arts     | 1.04             | AAAAAAAABOBLBAAA  | 12637.620040893555  | 0.1119142722401063    |
+| Local, religious hours turn always other prices. Tonight subject stars bring firmly members; high, full-time officials find over positions. Benefits may not relax far so various bonds. Direct feat      | Books       | arts     | 9.66             | AAAAAAAABOFFAAAA  | 7855.300224304199   | 0.06956374736586789   |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------+----------+------------------+-------------------+---------------------+-----------------------+--+
+100 rows selected (14.005 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+STOP hdp2.6_hivetez_run_1_100_query12_sql_2017-04-06-22-25:  Thu Apr 6 22:26:12 CDT 2017

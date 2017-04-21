@@ -1,0 +1,637 @@
+START hdp2.6_hivetez_run_2_100_query50_sql_2017-04-06-23-13:  Thu Apr 6 23:13:43 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2" -n hive --incremental=true -i settings/test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+Connected to: Apache Hive (version 1.2.1000.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.043 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.exec.reducers.bytes.per.reducer=67108864;
+No rows affected (0.002 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> select  
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    s_store_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_company_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_street_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_street_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_street_type
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_suite_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_city
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_county
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_state
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_zip
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,sum(case when (sr_returned_date_sk - ss_sold_date_sk <= 30 ) then 1 else 0  end)  as 30days 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,sum(case when (sr_returned_date_sk - ss_sold_date_sk > 30) and 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                  (sr_returned_date_sk - ss_sold_date_sk <= 60) then 1 else 0  end )  as 3160days 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,sum(case when (sr_returned_date_sk - ss_sold_date_sk > 60) and 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                  (sr_returned_date_sk - ss_sold_date_sk <= 90) then 1 else 0  end)  as 6190days 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,sum(case when (sr_returned_date_sk - ss_sold_date_sk > 90) and
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                  (sr_returned_date_sk - ss_sold_date_sk <= 120) then 1 else 0  end)  as 91120days 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,sum(case when (sr_returned_date_sk - ss_sold_date_sk  > 120) then 1 else 0  end)  as 120days 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    store_sales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,store_returns
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,store
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,date_dim d1
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,date_dim d2
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> where
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     d2.d_year = 2000
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and d2.d_moy  = 9
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and store_sales.ss_ticket_number = store_returns.sr_ticket_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and store_sales.ss_item_sk = store_returns.sr_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and store_sales.ss_sold_date_sk   = d1.d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and sr_returned_date_sk   = d2.d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and store_sales.ss_customer_sk = store_returns.sr_customer_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and store_sales.ss_store_sk = store.s_store_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> group by
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    s_store_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_company_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_street_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_street_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_street_type
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_suite_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_city
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_county
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_state
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   ,s_zip
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> order by s_store_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,s_company_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,s_street_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,s_street_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,s_street_type
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,s_suite_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,s_city
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,s_county
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,s_state
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,s_zip
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> limit 100;
+INFO  : Tez session hasn't been created yet. Opening session
+INFO  : Dag name: select
+   s_store_name
+  ,s_company_id...100(Stage-1)
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Status: Running (Executing on YARN cluster with App id application_1491366857972_0229)
+
+INFO  : Map 1: -/-	Map 2: -/-	Map 3: -/-	Map 6: -/-	Map 7: -/-	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 2: 0/1	Map 3: -/-	Map 6: 0/1	Map 7: 0/1	Reducer 4: 0/2	Reducer 5: 0/1	
+[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED      2          2        0        0       0       0
+Map 2 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 3                RUNNING   1005          0        5     1000       0       0
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 04/07  [>>--------------------------] 0%    ELAPSED TIME: 5.90 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[13A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED      2          2        0        0       0       0
+Map 2 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 3                RUNNING   1005          3      500      502       0       0
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 04/07  [>>--------------------------] 0%    ELAPSED TIME: 10.90 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[13A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED      2          2        0        0       0       0
+Map 2 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 3                RUNNING   1005          5      503      497       3       0
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 04/07  [>>--------------------------] 0%    ELAPSED TIME: 15.90 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[13A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED      2          2        0        0       0       0
+Map 2 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 3                RUNNING   1005          5      503      497       3       0
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 04/07  [>>--------------------------] 0%    ELAPSED TIME: 20.90 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[13A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED      2          2        0        0       0       0
+Map 2 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 3                RUNNING   1005         66      489      450       5       0
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 04/07  [=>>-------------------------] 7%    ELAPSED TIME: 25.91 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[13A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED      2          2        0        0       0       0
+Map 2 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 3 ...            RUNNING   1005        369      418      218      78      75
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 04/07  [=========>>-----------------] 36%   ELAPSED TIME: 30.91 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[13A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED      2          2        0        0       0       0
+Map 2 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 3 .....          RUNNING   1005        562        0      443     322      75
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 04/07  [==============>>------------] 55%   ELAPSED TIME: 34.71 s    
+[22;0m[2K--------------------------------------------------------------------------------
+INFO  : Map 1: -/-	Map 2: 0(+1)/1	Map 3: -/-	Map 6: 0(+1)/1	Map 7: 0(+1)/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 2: 0(+1)/1	Map 3: -/-	Map 6: 0(+1)/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 2: 1/1	Map 3: -/-	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 0/2	Map 2: 1/1	Map 3: -/-	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 0/2	Map 2: 1/1	Map 3: 0/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 0(+2)/2	Map 2: 1/1	Map 3: 0/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 0(+2)/2	Map 2: 1/1	Map 3: 0(+1)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 0(+3)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 0(+5)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 0(+6)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 0(+10)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 0(+15)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 0(+21)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 0(+34)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 0(+49)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 0(+68)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 0(+88)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 0(+110)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 1(+155)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 1(+221)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 1(+268)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 1(+329)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 1(+349)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 1(+379)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 1(+424)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 2(+489)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 2(+495)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 3(+500)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 3(+503)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 4(+502)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 4(+503)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 5(+502)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 5(+503)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 5(+503,-1)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 5(+503,-2)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 5(+503,-3)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 5(+503,-3)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 6(+502,-3)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 7(+502,-3)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 7(+503,-3)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 8(+502,-3)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 9(+502,-3)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 10(+502,-3)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 12(+501,-3)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 13(+501,-3)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 14(+501,-3)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 17(+501,-3)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 19(+501,-3)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 26(+498,-3)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 30(+497,-3)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 32(+497,-3)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 37(+496,-4)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 43(+493,-5)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 49(+496,-5)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 58(+491,-5)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 66(+489,-5)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 72(+494,-6)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 88(+484,-7)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 97(+486,-8)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 112(+480,-10)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 124(+480,-11)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 137(+478,-12)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 146(+474,-13)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 172(+465,-14)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 182(+470,-17)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 197(+472,-18)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 209(+464,-18)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 225(+460,-21)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 238(+473,-24)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 267(+447,-35)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 283(+436,-39)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 321(+430,-50)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 344(+398,-62)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 384(+402,-65)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 388(+408,-73)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 369(+418,-78)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 317(+350,-102)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 404(+327,-111)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 425(+315,-142)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 457(+365,-154)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 463(+364,-164)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 494(+353,-187)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 502(+347,-212)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 510(+337,-238)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 525(+326,-255)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 534(+319,-277)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 541(+314,-284)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 548(+308,-307)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 557(+302,-319)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 2/2	Map 2: 1/1	Map 3: 562(+0,-322)/1005	Map 6: 1/1	Map 7: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+ERROR : Status: Failed
+ERROR : Vertex failed, vertexName=Map 3, vertexId=vertex_1491366857972_0229_1_04, diagnostics=[Task failed, taskId=task_1491366857972_0229_1_04_000523, diagnostics=[TaskAttempt 0 failed, info=[Error: Failure while running task:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:159)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.run(TezProcessor.java:139)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask.run(LogicalIOProcessorRuntimeTask.java:347)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:194)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:185)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:185)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:181)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at java.nio.HeapByteBuffer.<init>(HeapByteBuffer.java:57)
+	at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.allocateSpace(PipelinedSorter.java:234)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.<init>(PipelinedSorter.java:185)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.start(OrderedPartitionedKVOutput.java:142)
+	at org.apache.hadoop.hive.ql.exec.tez.MapRecordProcessor.init(MapRecordProcessor.java:138)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:149)
+	... 14 more
+], TaskAttempt 1 failed, info=[Error: Failure while running task:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:159)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.run(TezProcessor.java:139)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask.run(LogicalIOProcessorRuntimeTask.java:347)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:194)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:185)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:185)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:181)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at java.nio.HeapByteBuffer.<init>(HeapByteBuffer.java:57)
+	at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.allocateSpace(PipelinedSorter.java:234)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.<init>(PipelinedSorter.java:185)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.start(OrderedPartitionedKVOutput.java:142)
+	at org.apache.hadoop.hive.ql.exec.tez.MapRecordProcessor.init(MapRecordProcessor.java:138)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:149)
+	... 14 more
+], TaskAttempt 2 failed, info=[Error: Failure while running task:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:159)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.run(TezProcessor.java:139)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask.run(LogicalIOProcessorRuntimeTask.java:347)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:194)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:185)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:185)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:181)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at java.nio.HeapByteBuffer.<init>(HeapByteBuffer.java:57)
+	at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.allocateSpace(PipelinedSorter.java:234)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.<init>(PipelinedSorter.java:185)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.start(OrderedPartitionedKVOutput.java:142)
+	at org.apache.hadoop.hive.ql.exec.tez.MapRecordProcessor.init(MapRecordProcessor.java:138)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:149)
+	... 14 more
+], TaskAttempt 3 failed, info=[Error: Failure while running task:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:159)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.run(TezProcessor.java:139)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask.run(LogicalIOProcessorRuntimeTask.java:347)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:194)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:185)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:185)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:181)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at java.nio.HeapByteBuffer.<init>(HeapByteBuffer.java:57)
+	at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.allocateSpace(PipelinedSorter.java:234)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.<init>(PipelinedSorter.java:185)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.start(OrderedPartitionedKVOutput.java:142)
+	at org.apache.hadoop.hive.ql.exec.tez.MapRecordProcessor.init(MapRecordProcessor.java:138)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:149)
+	... 14 more
+]], Vertex did not succeed due to OWN_TASK_FAILURE, failedTasks:1 killedTasks:442, Vertex vertex_1491366857972_0229_1_04 [Map 3] killed/failed due to:OWN_TASK_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 5, vertexId=vertex_1491366857972_0229_1_06, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1, Vertex vertex_1491366857972_0229_1_06 [Reducer 5] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 4, vertexId=vertex_1491366857972_0229_1_05, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0229_1_05 [Reducer 4] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : DAG did not succeed due to VERTEX_FAILURE. failedVertices:1 killedVertices:2
+INFO  : org.apache.tez.common.counters.DAGCounter:
+INFO  :    NUM_FAILED_TASKS: 322
+INFO  :    NUM_KILLED_TASKS: 619
+INFO  :    NUM_SUCCEEDED_TASKS: 669
+INFO  :    TOTAL_LAUNCHED_TASKS: 1167
+INFO  :    DATA_LOCAL_TASKS: 544
+INFO  :    RACK_LOCAL_TASKS: 23
+INFO  :    AM_CPU_MILLISECONDS: 61970
+INFO  :    AM_GC_TIME_MILLIS: 1288
+INFO  : File System Counters:
+INFO  :    FILE_BYTES_READ: 307723506
+INFO  :    FILE_BYTES_WRITTEN: 6112218
+INFO  :    HDFS_BYTES_READ: 779985614
+INFO  :    HDFS_READ_OPS: 2084
+INFO  :    HDFS_OP_OPEN: 2084
+INFO  : org.apache.tez.common.counters.TaskCounter:
+INFO  :    SPILLED_RECORDS: 14314
+INFO  :    NUM_SHUFFLED_INPUTS: 1566
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    GC_TIME_MILLIS: 347325
+INFO  :    CPU_MILLISECONDS: 8059500
+INFO  :    PHYSICAL_MEMORY_BYTES: 1219252715520
+INFO  :    VIRTUAL_MEMORY_BYTES: 3184792674304
+INFO  :    COMMITTED_HEAP_BYTES: 1219252715520
+INFO  :    INPUT_RECORDS_PROCESSED: 160294048
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 6487387396
+INFO  :    OUTPUT_RECORDS: 423926
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_BYTES: 8367344
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 9221970
+INFO  :    OUTPUT_BYTES_PHYSICAL: 6080706
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    SHUFFLE_CHUNK_COUNT: 562
+INFO  :    SHUFFLE_BYTES: 2165191728
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 3103340453
+INFO  :    SHUFFLE_BYTES_TO_MEM: 1857506830
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 307684898
+INFO  :    SHUFFLE_PHASE_TIME: 3242733
+INFO  :    FIRST_EVENT_RECEIVED: 1410848
+INFO  :    LAST_EVENT_RECEIVED: 1428316
+INFO  : HIVE:
+INFO  :    DESERIALIZE_ERRORS: 0
+INFO  :    RECORDS_IN_Map_1: 342298
+INFO  :    RECORDS_IN_Map_2: 10000
+INFO  :    RECORDS_IN_Map_3: 149990388
+INFO  :    RECORDS_IN_Map_6: 73049
+INFO  :    RECORDS_IN_Map_7: 402
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_1: 336131
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_2: 30
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_3: 14314
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_6: 73049
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_7: 402
+INFO  : TaskCounter_Map_1_INPUT_Map_2:
+INFO  :    FIRST_EVENT_RECEIVED: 132
+INFO  :    INPUT_RECORDS_PROCESSED: 60
+INFO  :    LAST_EVENT_RECEIVED: 132
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 2
+INFO  :    SHUFFLE_BYTES: 294
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 432
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 147
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 147
+INFO  :    SHUFFLE_PHASE_TIME: 161
+INFO  : TaskCounter_Map_1_INPUT_store_returns:
+INFO  :    INPUT_RECORDS_PROCESSED: 349
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 16754998
+INFO  : TaskCounter_Map_1_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 6722620
+INFO  :    OUTPUT_BYTES_PHYSICAL: 5234781
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 7394894
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 336131
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_2_INPUT_d1:
+INFO  :    INPUT_RECORDS_PROCESSED: 10
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 361420
+INFO  : TaskCounter_Map_2_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 150
+INFO  :    OUTPUT_BYTES_PHYSICAL: 171
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 216
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 30
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_3_INPUT_Map_1:
+INFO  :    FIRST_EVENT_RECEIVED: 480740
+INFO  :    INPUT_RECORDS_PROCESSED: 131427221
+INFO  :    LAST_EVENT_RECEIVED: 498208
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 782
+INFO  :    SHUFFLE_BYTES: 2046780603
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 2891403554
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 290737426
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 1756043177
+INFO  :    SHUFFLE_PHASE_TIME: 1490628
+INFO  : TaskCounter_Map_3_INPUT_Map_6:
+INFO  :    FIRST_EVENT_RECEIVED: 469939
+INFO  :    INPUT_RECORDS_PROCESSED: 28562159
+INFO  :    LAST_EVENT_RECEIVED: 469939
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 391
+INFO  :    SHUFFLE_BYTES: 113808370
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 199937459
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 16299920
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 97508450
+INFO  :    SHUFFLE_PHASE_TIME: 873000
+INFO  : TaskCounter_Map_3_INPUT_Map_7:
+INFO  :    FIRST_EVENT_RECEIVED: 460037
+INFO  :    INPUT_RECORDS_PROCESSED: 157182
+INFO  :    LAST_EVENT_RECEIVED: 460037
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 391
+INFO  :    SHUFFLE_BYTES: 4602461
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 11999008
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 647405
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 3955056
+INFO  :    SHUFFLE_PHASE_TIME: 878944
+INFO  : TaskCounter_Map_3_INPUT_store_sales:
+INFO  :    INPUT_RECORDS_PROCESSED: 146994
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 6469883836
+INFO  : TaskCounter_Map_3_OUTPUT_Reducer_4:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1249451
+INFO  :    OUTPUT_BYTES_PHYSICAL: 542865
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 1284823
+INFO  :    OUTPUT_RECORDS: 14314
+INFO  :    SHUFFLE_CHUNK_COUNT: 562
+INFO  :    SPILLED_RECORDS: 14314
+INFO  : TaskCounter_Map_6_INPUT_d1:
+INFO  :    INPUT_RECORDS_PROCESSED: 72
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 361420
+INFO  : TaskCounter_Map_6_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 365245
+INFO  :    OUTPUT_BYTES_PHYSICAL: 291094
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 511349
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 73049
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_7_INPUT_store:
+INFO  :    INPUT_RECORDS_PROCESSED: 1
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 25722
+INFO  : TaskCounter_Map_7_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 29878
+INFO  :    OUTPUT_BYTES_PHYSICAL: 11795
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 30688
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 402
+INFO  :    SPILLED_RECORDS: 0
+Error: Error while processing statement: FAILED: Execution Error, return code 2 from org.apache.hadoop.hive.ql.exec.tez.TezTask. Vertex failed, vertexName=Map 3, vertexId=vertex_1491366857972_0229_1_04, diagnostics=[Task failed, taskId=task_1491366857972_0229_1_04_000523, diagnostics=[TaskAttempt 0 failed, info=[Error: Failure while running task:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:159)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.run(TezProcessor.java:139)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask.run(LogicalIOProcessorRuntimeTask.java:347)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:194)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:185)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:185)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:181)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at java.nio.HeapByteBuffer.<init>(HeapByteBuffer.java:57)
+	at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.allocateSpace(PipelinedSorter.java:234)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.<init>(PipelinedSorter.java:185)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.start(OrderedPartitionedKVOutput.java:142)
+	at org.apache.hadoop.hive.ql.exec.tez.MapRecordProcessor.init(MapRecordProcessor.java:138)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:149)
+	... 14 more
+], TaskAttempt 1 failed, info=[Error: Failure while running task:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:159)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.run(TezProcessor.java:139)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask.run(LogicalIOProcessorRuntimeTask.java:347)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:194)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:185)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:185)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:181)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at java.nio.HeapByteBuffer.<init>(HeapByteBuffer.java:57)
+	at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.allocateSpace(PipelinedSorter.java:234)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.<init>(PipelinedSorter.java:185)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.start(OrderedPartitionedKVOutput.java:142)
+	at org.apache.hadoop.hive.ql.exec.tez.MapRecordProcessor.init(MapRecordProcessor.java:138)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:149)
+	... 14 more
+], TaskAttempt 2 failed, info=[Error: Failure while running task:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:159)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.run(TezProcessor.java:139)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask.run(LogicalIOProcessorRuntimeTask.java:347)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:194)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:185)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:185)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:181)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at java.nio.HeapByteBuffer.<init>(HeapByteBuffer.java:57)
+	at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.allocateSpace(PipelinedSorter.java:234)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.<init>(PipelinedSorter.java:185)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.start(OrderedPartitionedKVOutput.java:142)
+	at org.apache.hadoop.hive.ql.exec.tez.MapRecordProcessor.init(MapRecordProcessor.java:138)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:149)
+	... 14 more
+], TaskAttempt 3 failed, info=[Error: Failure while running task:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:159)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.run(TezProcessor.java:139)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask.run(LogicalIOProcessorRuntimeTask.java:347)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:194)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:185)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:185)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:181)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at java.nio.HeapByteBuffer.<init>(HeapByteBuffer.java:57)
+	at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.allocateSpace(PipelinedSorter.java:234)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.<init>(PipelinedSorter.java:185)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.start(OrderedPartitionedKVOutput.java:142)
+	at org.apache.hadoop.hive.ql.exec.tez.MapRecordProcessor.init(MapRecordProcessor.java:138)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:149)
+	... 14 more
+]], Vertex did not succeed due to OWN_TASK_FAILURE, failedTasks:1 killedTasks:442, Vertex vertex_1491366857972_0229_1_04 [Map 3] killed/failed due to:OWN_TASK_FAILURE]Vertex killed, vertexName=Reducer 5, vertexId=vertex_1491366857972_0229_1_06, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1, Vertex vertex_1491366857972_0229_1_06 [Reducer 5] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 4, vertexId=vertex_1491366857972_0229_1_05, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0229_1_05 [Reducer 4] killed/failed due to:OTHER_VERTEX_FAILURE]DAG did not succeed due to VERTEX_FAILURE. failedVertices:1 killedVertices:2 (state=08S01,code=2)
+
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+STOP hdp2.6_hivetez_run_2_100_query50_sql_2017-04-06-23-13:  Thu Apr 6 23:14:27 CDT 2017

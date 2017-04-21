@@ -1,0 +1,69 @@
+START hdp2.6_llap_after_analyze1000_query65_sql_2017-04-05-11-26:  Wed Apr 5 11:26:36 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2" -n hive --incremental=true -i test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_1000;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+Connected to: Apache Hive (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.041 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     s_store_name,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     i_item_desc,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     sc.revenue,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     i_current_price,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     i_wholesale_cost,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     i_brand
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     store,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     item,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     (select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ss_store_sk, avg(revenue) as ave
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         (select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ss_store_sk, ss_item_sk, sum(ss_sales_price) as revenue
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         store_sales, date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     where
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ss_sold_date_sk = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>             and d_month_seq between 1212 and 1212 + 11
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     group by ss_store_sk , ss_item_sk) sa
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     group by ss_store_sk) sb,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     (select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ss_store_sk, ss_item_sk, sum(ss_sales_price) as revenue
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         store_sales, date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     where
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ss_sold_date_sk = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>             and d_month_seq between 1212 and 1212 + 11
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     group by ss_store_sk , ss_item_sk) sc
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> where
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     sb.ss_store_sk = sc.ss_store_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         and sc.revenue <= 0.1 * sb.ave
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         and s_store_sk = sc.ss_store_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         and i_item_sk = sc.ss_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> order by s_store_name , i_item_desc
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> limit 100;
+ERROR : Status: Failed
+ERROR : Dag received [DAG_TERMINATE, SERVICE_PLUGIN_ERROR] in RUNNING state.
+ERROR : Error reported by TaskScheduler [[2:LLAP]][SERVICE_UNAVAILABLE] No LLAP Daemons are running
+ERROR : Vertex killed, vertexName=Reducer 7, vertexId=vertex_1491366857972_0097_8_12, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to DAG_TERMINATED, failedTasks:0 killedTasks:1, Vertex vertex_1491366857972_0097_8_12 [Reducer 7] killed/failed due to:DAG_TERMINATED]
+ERROR : Vertex killed, vertexName=Reducer 6, vertexId=vertex_1491366857972_0097_8_11, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to DAG_TERMINATED, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0097_8_11 [Reducer 6] killed/failed due to:DAG_TERMINATED]
+ERROR : Vertex killed, vertexName=Map 5, vertexId=vertex_1491366857972_0097_8_10, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to DAG_TERMINATED, failedTasks:0 killedTasks:80, Vertex vertex_1491366857972_0097_8_10 [Map 5] killed/failed due to:DAG_TERMINATED]
+ERROR : DAG did not succeed due to SERVICE_PLUGIN_ERROR. failedVertices:0 killedVertices:3
+ERROR : FAILED: Execution Error, return code 2 from org.apache.hadoop.hive.ql.exec.tez.TezTask. Dag received [DAG_TERMINATE, SERVICE_PLUGIN_ERROR] in RUNNING state.Error reported by TaskScheduler [[2:LLAP]][SERVICE_UNAVAILABLE] No LLAP Daemons are runningVertex killed, vertexName=Reducer 7, vertexId=vertex_1491366857972_0097_8_12, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to DAG_TERMINATED, failedTasks:0 killedTasks:1, Vertex vertex_1491366857972_0097_8_12 [Reducer 7] killed/failed due to:DAG_TERMINATED]Vertex killed, vertexName=Reducer 6, vertexId=vertex_1491366857972_0097_8_11, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to DAG_TERMINATED, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0097_8_11 [Reducer 6] killed/failed due to:DAG_TERMINATED]Vertex killed, vertexName=Map 5, vertexId=vertex_1491366857972_0097_8_10, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to DAG_TERMINATED, failedTasks:0 killedTasks:80, Vertex vertex_1491366857972_0097_8_10 [Map 5] killed/failed due to:DAG_TERMINATED]DAG did not succeed due to SERVICE_PLUGIN_ERROR. failedVertices:0 killedVertices:3
+Error: Error while processing statement: FAILED: Execution Error, return code 2 from org.apache.hadoop.hive.ql.exec.tez.TezTask. Dag received [DAG_TERMINATE, SERVICE_PLUGIN_ERROR] in RUNNING state.Error reported by TaskScheduler [[2:LLAP]][SERVICE_UNAVAILABLE] No LLAP Daemons are runningVertex killed, vertexName=Reducer 7, vertexId=vertex_1491366857972_0097_8_12, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to DAG_TERMINATED, failedTasks:0 killedTasks:1, Vertex vertex_1491366857972_0097_8_12 [Reducer 7] killed/failed due to:DAG_TERMINATED]Vertex killed, vertexName=Reducer 6, vertexId=vertex_1491366857972_0097_8_11, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to DAG_TERMINATED, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0097_8_11 [Reducer 6] killed/failed due to:DAG_TERMINATED]Vertex killed, vertexName=Map 5, vertexId=vertex_1491366857972_0097_8_10, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to DAG_TERMINATED, failedTasks:0 killedTasks:80, Vertex vertex_1491366857972_0097_8_10 [Map 5] killed/failed due to:DAG_TERMINATED]DAG did not succeed due to SERVICE_PLUGIN_ERROR. failedVertices:0 killedVertices:3 (state=08S01,code=2)
+
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_1000;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+STOP hdp2.6_llap_after_analyze1000_query65_sql_2017-04-05-11-26:  Wed Apr 5 11:34:24 CDT 2017
+
+ South Results Number of Nodes:  9
+ Avg CPU Busy:  8.022  Peak Cpu Avg:  41.111 Count > 90% Busy:  0
+ Avg Disk Busy:  .286  Peak Disk Avg:  2.365 Count > 90% busy 0
+ Avg Disk Reads per sec:  45.851  Avg Write per sec:  477.498
+ Avg Net TX:   1767.765  Peak TX Avg:  2472.896
+ Avg Net RX:   1851.083  Peak RX Avg:  2639.434
+ Mem Utilized:  73.443
+South CSV
+8.022 | 41.111 | 0 | .286 | 2.365 | 0 | 45.851 | 477.498 | 1767.765 | 2472.896 | 1851.083 | 2639.434 | 73.443

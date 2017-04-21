@@ -1,0 +1,645 @@
+START hdp2.6_llap_run_2_1000_query65_sql_2017-04-06-04-55:  Thu Apr 6 04:55:18 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2" -n hive --incremental=true -i settings/test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_1000;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+Connected to: Apache Hive (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.042 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.exec.reducers.bytes.per.reducer=67108864;
+No rows affected (0.002 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     s_store_name,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     i_item_desc,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     sc.revenue,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     i_current_price,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     i_wholesale_cost,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     i_brand
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     store,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     item,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     (select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ss_store_sk, avg(revenue) as ave
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         (select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ss_store_sk, ss_item_sk, sum(ss_sales_price) as revenue
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         store_sales, date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     where
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ss_sold_date_sk = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>             and d_month_seq between 1212 and 1212 + 11
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     group by ss_store_sk , ss_item_sk) sa
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     group by ss_store_sk) sb,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     (select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ss_store_sk, ss_item_sk, sum(ss_sales_price) as revenue
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         store_sales, date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     where
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ss_sold_date_sk = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>             and d_month_seq between 1212 and 1212 + 11
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     group by ss_store_sk , ss_item_sk) sc
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> where
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     sb.ss_store_sk = sc.ss_store_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         and sc.revenue <= 0.1 * sb.ave
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         and s_store_sk = sc.ss_store_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         and i_item_sk = sc.ss_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> order by s_store_name , i_item_desc
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> limit 100;
+INFO  : Compiling command(queryId=hive_20170406045521_0ca548ea-3ef0-4a21-b8cd-dcf2e4c16410): select
+    s_store_name,
+    i_item_desc,
+    sc.revenue,
+    i_current_price,
+    i_wholesale_cost,
+    i_brand
+from
+    store,
+    item,
+    (select 
+        ss_store_sk, avg(revenue) as ave
+    from
+        (select 
+        ss_store_sk, ss_item_sk, sum(ss_sales_price) as revenue
+    from
+        store_sales, date_dim
+    where
+        ss_sold_date_sk = d_date_sk
+            and d_month_seq between 1212 and 1212 + 11
+    group by ss_store_sk , ss_item_sk) sa
+    group by ss_store_sk) sb,
+    (select 
+        ss_store_sk, ss_item_sk, sum(ss_sales_price) as revenue
+    from
+        store_sales, date_dim
+    where
+        ss_sold_date_sk = d_date_sk
+            and d_month_seq between 1212 and 1212 + 11
+    group by ss_store_sk , ss_item_sk) sc
+where
+    sb.ss_store_sk = sc.ss_store_sk
+        and sc.revenue <= 0.1 * sb.ave
+        and s_store_sk = sc.ss_store_sk
+        and i_item_sk = sc.ss_item_sk
+order by s_store_name , i_item_desc
+limit 100
+INFO  : We are setting the hadoop caller context from HIVE_SSN_ID:7a0e5d93-1786-4d0d-b126-54d5713a82e7 to hive_20170406045521_0ca548ea-3ef0-4a21-b8cd-dcf2e4c16410
+INFO  : Semantic Analysis Completed
+INFO  : Returning Hive schema: Schema(fieldSchemas:[FieldSchema(name:s_store_name, type:string, comment:null), FieldSchema(name:i_item_desc, type:string, comment:null), FieldSchema(name:sc.revenue, type:double, comment:null), FieldSchema(name:i_current_price, type:float, comment:null), FieldSchema(name:i_wholesale_cost, type:float, comment:null), FieldSchema(name:i_brand, type:string, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=hive_20170406045521_0ca548ea-3ef0-4a21-b8cd-dcf2e4c16410); Time taken: 1.274 seconds
+INFO  : We are resetting the hadoop caller context to HIVE_SSN_ID:7a0e5d93-1786-4d0d-b126-54d5713a82e7
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Setting caller context to query id hive_20170406045521_0ca548ea-3ef0-4a21-b8cd-dcf2e4c16410
+INFO  : Executing command(queryId=hive_20170406045521_0ca548ea-3ef0-4a21-b8cd-dcf2e4c16410): select
+    s_store_name,
+    i_item_desc,
+    sc.revenue,
+    i_current_price,
+    i_wholesale_cost,
+    i_brand
+from
+    store,
+    item,
+    (select 
+        ss_store_sk, avg(revenue) as ave
+    from
+        (select 
+        ss_store_sk, ss_item_sk, sum(ss_sales_price) as revenue
+    from
+        store_sales, date_dim
+    where
+        ss_sold_date_sk = d_date_sk
+            and d_month_seq between 1212 and 1212 + 11
+    group by ss_store_sk , ss_item_sk) sa
+    group by ss_store_sk) sb,
+    (select 
+        ss_store_sk, ss_item_sk, sum(ss_sales_price) as revenue
+    from
+        store_sales, date_dim
+    where
+        ss_sold_date_sk = d_date_sk
+            and d_month_seq between 1212 and 1212 + 11
+    group by ss_store_sk , ss_item_sk) sc
+where
+    sb.ss_store_sk = sc.ss_store_sk
+        and sc.revenue <= 0.1 * sb.ave
+        and s_store_sk = sc.ss_store_sk
+        and i_item_sk = sc.ss_item_sk
+order by s_store_name , i_item_desc
+limit 100
+INFO  : Query ID = hive_20170406045521_0ca548ea-3ef0-4a21-b8cd-dcf2e4c16410
+INFO  : Total jobs = 1
+INFO  : Launching Job 1 out of 1
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Session is already open
+INFO  : Dag name: select
+    s_store_name,
+    i_item_de...100(Stage-1)
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Map 1: -/-	Map 12: -/-	Map 4: -/-	Map 5: -/-	Map 8: -/-	Map 9: -/-	Reducer 10: 0/1	Reducer 11: 0/1	Reducer 13: 0/1	Reducer 2: 0/34	Reducer 3: 0/1	Reducer 6: 0/34	Reducer 7: 0/1	
+ERROR : Status: Failed
+ERROR : Vertex failed, vertexName=Map 12, vertexId=vertex_1491366857972_0107_73_05, diagnostics=[Vertex vertex_1491366857972_0107_73_05 [Map 12] killed/failed due to:INIT_FAILURE, Fail to create InputInitializerManager, org.apache.tez.dag.api.TezReflectionException: Unable to instantiate class with 1 arguments: org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:70)
+	at org.apache.tez.common.ReflectionUtils.createClazzInstance(ReflectionUtils.java:89)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:151)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:148)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.createInitializer(RootInputInitializerManager.java:148)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.runInputInitializers(RootInputInitializerManager.java:121)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.setupInputInitializerManager(VertexImpl.java:3987)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.access$3100(VertexImpl.java:204)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.handleInitEvent(VertexImpl.java:2819)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2766)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2748)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$MultipleInternalArc.doTransition(StateMachineFactory.java:385)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.doTransition(StateMachineFactory.java:302)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.access$300(StateMachineFactory.java:46)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$InternalStateMachine.doTransition(StateMachineFactory.java:448)
+	at org.apache.tez.state.StateMachineTez.doTransition(StateMachineTez.java:59)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:1889)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:203)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2290)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2276)
+	at org.apache.tez.common.AsyncDispatcher.dispatch(AsyncDispatcher.java:184)
+	at org.apache.tez.common.AsyncDispatcher$1.run(AsyncDispatcher.java:115)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.GeneratedConstructorAccessor64.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:68)
+	... 25 more
+Caused by: java.lang.IllegalStateException: org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProviderneeds at least 1 location to function
+	at com.google.common.base.Preconditions.checkState(Preconditions.java:149)
+	at org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProvider.<init>(HostAffinitySplitLocationProvider.java:51)
+	at org.apache.hadoop.hive.ql.exec.tez.Utils.getSplitLocationProvider(Utils.java:54)
+	at org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator.<init>(HiveSplitGenerator.java:121)
+	... 29 more
+]
+ERROR : Vertex failed, vertexName=Map 4, vertexId=vertex_1491366857972_0107_73_02, diagnostics=[Vertex vertex_1491366857972_0107_73_02 [Map 4] killed/failed due to:INIT_FAILURE, Fail to create InputInitializerManager, org.apache.tez.dag.api.TezReflectionException: Unable to instantiate class with 1 arguments: org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:70)
+	at org.apache.tez.common.ReflectionUtils.createClazzInstance(ReflectionUtils.java:89)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:151)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:148)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.createInitializer(RootInputInitializerManager.java:148)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.runInputInitializers(RootInputInitializerManager.java:121)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.setupInputInitializerManager(VertexImpl.java:3987)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.access$3100(VertexImpl.java:204)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.handleInitEvent(VertexImpl.java:2819)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2766)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2748)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$MultipleInternalArc.doTransition(StateMachineFactory.java:385)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.doTransition(StateMachineFactory.java:302)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.access$300(StateMachineFactory.java:46)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$InternalStateMachine.doTransition(StateMachineFactory.java:448)
+	at org.apache.tez.state.StateMachineTez.doTransition(StateMachineTez.java:59)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:1889)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:203)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2290)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2276)
+	at org.apache.tez.common.AsyncDispatcher.dispatch(AsyncDispatcher.java:184)
+	at org.apache.tez.common.AsyncDispatcher$1.run(AsyncDispatcher.java:115)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.GeneratedConstructorAccessor64.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:68)
+	... 25 more
+Caused by: java.lang.IllegalStateException: org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProviderneeds at least 1 location to function
+	at com.google.common.base.Preconditions.checkState(Preconditions.java:149)
+	at org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProvider.<init>(HostAffinitySplitLocationProvider.java:51)
+	at org.apache.hadoop.hive.ql.exec.tez.Utils.getSplitLocationProvider(Utils.java:54)
+	at org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator.<init>(HiveSplitGenerator.java:121)
+	... 29 more
+]
+ERROR : Vertex failed, vertexName=Map 8, vertexId=vertex_1491366857972_0107_73_01, diagnostics=[Vertex vertex_1491366857972_0107_73_01 [Map 8] killed/failed due to:INIT_FAILURE, Fail to create InputInitializerManager, org.apache.tez.dag.api.TezReflectionException: Unable to instantiate class with 1 arguments: org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:70)
+	at org.apache.tez.common.ReflectionUtils.createClazzInstance(ReflectionUtils.java:89)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:151)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:148)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.createInitializer(RootInputInitializerManager.java:148)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.runInputInitializers(RootInputInitializerManager.java:121)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.setupInputInitializerManager(VertexImpl.java:3987)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.access$3100(VertexImpl.java:204)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.handleInitEvent(VertexImpl.java:2819)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2766)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2748)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$MultipleInternalArc.doTransition(StateMachineFactory.java:385)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.doTransition(StateMachineFactory.java:302)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.access$300(StateMachineFactory.java:46)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$InternalStateMachine.doTransition(StateMachineFactory.java:448)
+	at org.apache.tez.state.StateMachineTez.doTransition(StateMachineTez.java:59)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:1889)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:203)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2290)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2276)
+	at org.apache.tez.common.AsyncDispatcher.dispatch(AsyncDispatcher.java:184)
+	at org.apache.tez.common.AsyncDispatcher$1.run(AsyncDispatcher.java:115)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.GeneratedConstructorAccessor64.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:68)
+	... 25 more
+Caused by: java.lang.IllegalStateException: org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProviderneeds at least 1 location to function
+	at com.google.common.base.Preconditions.checkState(Preconditions.java:149)
+	at org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProvider.<init>(HostAffinitySplitLocationProvider.java:51)
+	at org.apache.hadoop.hive.ql.exec.tez.Utils.getSplitLocationProvider(Utils.java:54)
+	at org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator.<init>(HiveSplitGenerator.java:121)
+	... 29 more
+]
+ERROR : Vertex failed, vertexName=Map 9, vertexId=vertex_1491366857972_0107_73_00, diagnostics=[Vertex vertex_1491366857972_0107_73_00 [Map 9] killed/failed due to:INIT_FAILURE, Fail to create InputInitializerManager, org.apache.tez.dag.api.TezReflectionException: Unable to instantiate class with 1 arguments: org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:70)
+	at org.apache.tez.common.ReflectionUtils.createClazzInstance(ReflectionUtils.java:89)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:151)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:148)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.createInitializer(RootInputInitializerManager.java:148)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.runInputInitializers(RootInputInitializerManager.java:121)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.setupInputInitializerManager(VertexImpl.java:3987)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.access$3100(VertexImpl.java:204)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.handleInitEvent(VertexImpl.java:2819)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2766)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2748)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$MultipleInternalArc.doTransition(StateMachineFactory.java:385)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.doTransition(StateMachineFactory.java:302)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.access$300(StateMachineFactory.java:46)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$InternalStateMachine.doTransition(StateMachineFactory.java:448)
+	at org.apache.tez.state.StateMachineTez.doTransition(StateMachineTez.java:59)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:1889)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:203)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2290)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2276)
+	at org.apache.tez.common.AsyncDispatcher.dispatch(AsyncDispatcher.java:184)
+	at org.apache.tez.common.AsyncDispatcher$1.run(AsyncDispatcher.java:115)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.GeneratedConstructorAccessor64.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:68)
+	... 25 more
+Caused by: java.lang.IllegalStateException: org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProviderneeds at least 1 location to function
+	at com.google.common.base.Preconditions.checkState(Preconditions.java:149)
+	at org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProvider.<init>(HostAffinitySplitLocationProvider.java:51)
+	at org.apache.hadoop.hive.ql.exec.tez.Utils.getSplitLocationProvider(Utils.java:54)
+	at org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator.<init>(HiveSplitGenerator.java:121)
+	... 29 more
+]
+ERROR : Vertex killed, vertexName=Reducer 11, vertexId=vertex_1491366857972_0107_73_04, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_04 [Reducer 11] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 10, vertexId=vertex_1491366857972_0107_73_03, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_03 [Reducer 10] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 7, vertexId=vertex_1491366857972_0107_73_12, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_12 [Reducer 7] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 6, vertexId=vertex_1491366857972_0107_73_11, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_11 [Reducer 6] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Map 5, vertexId=vertex_1491366857972_0107_73_10, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_10 [Map 5] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 3, vertexId=vertex_1491366857972_0107_73_09, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_09 [Reducer 3] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 2, vertexId=vertex_1491366857972_0107_73_08, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_08 [Reducer 2] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Map 1, vertexId=vertex_1491366857972_0107_73_07, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_07 [Map 1] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 13, vertexId=vertex_1491366857972_0107_73_06, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_06 [Reducer 13] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : DAG did not succeed due to VERTEX_FAILURE. failedVertices:4 killedVertices:9
+INFO  : org.apache.tez.common.counters.DAGCounter:
+INFO  :    AM_CPU_MILLISECONDS: 20
+INFO  :    AM_GC_TIME_MILLIS: 0
+ERROR : FAILED: Execution Error, return code 2 from org.apache.hadoop.hive.ql.exec.tez.TezTask. Vertex failed, vertexName=Map 12, vertexId=vertex_1491366857972_0107_73_05, diagnostics=[Vertex vertex_1491366857972_0107_73_05 [Map 12] killed/failed due to:INIT_FAILURE, Fail to create InputInitializerManager, org.apache.tez.dag.api.TezReflectionException: Unable to instantiate class with 1 arguments: org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:70)
+	at org.apache.tez.common.ReflectionUtils.createClazzInstance(ReflectionUtils.java:89)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:151)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:148)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.createInitializer(RootInputInitializerManager.java:148)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.runInputInitializers(RootInputInitializerManager.java:121)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.setupInputInitializerManager(VertexImpl.java:3987)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.access$3100(VertexImpl.java:204)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.handleInitEvent(VertexImpl.java:2819)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2766)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2748)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$MultipleInternalArc.doTransition(StateMachineFactory.java:385)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.doTransition(StateMachineFactory.java:302)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.access$300(StateMachineFactory.java:46)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$InternalStateMachine.doTransition(StateMachineFactory.java:448)
+	at org.apache.tez.state.StateMachineTez.doTransition(StateMachineTez.java:59)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:1889)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:203)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2290)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2276)
+	at org.apache.tez.common.AsyncDispatcher.dispatch(AsyncDispatcher.java:184)
+	at org.apache.tez.common.AsyncDispatcher$1.run(AsyncDispatcher.java:115)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.GeneratedConstructorAccessor64.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:68)
+	... 25 more
+Caused by: java.lang.IllegalStateException: org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProviderneeds at least 1 location to function
+	at com.google.common.base.Preconditions.checkState(Preconditions.java:149)
+	at org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProvider.<init>(HostAffinitySplitLocationProvider.java:51)
+	at org.apache.hadoop.hive.ql.exec.tez.Utils.getSplitLocationProvider(Utils.java:54)
+	at org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator.<init>(HiveSplitGenerator.java:121)
+	... 29 more
+]Vertex failed, vertexName=Map 4, vertexId=vertex_1491366857972_0107_73_02, diagnostics=[Vertex vertex_1491366857972_0107_73_02 [Map 4] killed/failed due to:INIT_FAILURE, Fail to create InputInitializerManager, org.apache.tez.dag.api.TezReflectionException: Unable to instantiate class with 1 arguments: org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:70)
+	at org.apache.tez.common.ReflectionUtils.createClazzInstance(ReflectionUtils.java:89)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:151)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:148)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.createInitializer(RootInputInitializerManager.java:148)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.runInputInitializers(RootInputInitializerManager.java:121)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.setupInputInitializerManager(VertexImpl.java:3987)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.access$3100(VertexImpl.java:204)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.handleInitEvent(VertexImpl.java:2819)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2766)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2748)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$MultipleInternalArc.doTransition(StateMachineFactory.java:385)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.doTransition(StateMachineFactory.java:302)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.access$300(StateMachineFactory.java:46)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$InternalStateMachine.doTransition(StateMachineFactory.java:448)
+	at org.apache.tez.state.StateMachineTez.doTransition(StateMachineTez.java:59)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:1889)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:203)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2290)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2276)
+	at org.apache.tez.common.AsyncDispatcher.dispatch(AsyncDispatcher.java:184)
+	at org.apache.tez.common.AsyncDispatcher$1.run(AsyncDispatcher.java:115)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.GeneratedConstructorAccessor64.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:68)
+	... 25 more
+Caused by: java.lang.IllegalStateException: org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProviderneeds at least 1 location to function
+	at com.google.common.base.Preconditions.checkState(Preconditions.java:149)
+	at org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProvider.<init>(HostAffinitySplitLocationProvider.java:51)
+	at org.apache.hadoop.hive.ql.exec.tez.Utils.getSplitLocationProvider(Utils.java:54)
+	at org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator.<init>(HiveSplitGenerator.java:121)
+	... 29 more
+]Vertex failed, vertexName=Map 8, vertexId=vertex_1491366857972_0107_73_01, diagnostics=[Vertex vertex_1491366857972_0107_73_01 [Map 8] killed/failed due to:INIT_FAILURE, Fail to create InputInitializerManager, org.apache.tez.dag.api.TezReflectionException: Unable to instantiate class with 1 arguments: org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:70)
+	at org.apache.tez.common.ReflectionUtils.createClazzInstance(ReflectionUtils.java:89)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:151)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:148)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.createInitializer(RootInputInitializerManager.java:148)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.runInputInitializers(RootInputInitializerManager.java:121)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.setupInputInitializerManager(VertexImpl.java:3987)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.access$3100(VertexImpl.java:204)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.handleInitEvent(VertexImpl.java:2819)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2766)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2748)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$MultipleInternalArc.doTransition(StateMachineFactory.java:385)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.doTransition(StateMachineFactory.java:302)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.access$300(StateMachineFactory.java:46)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$InternalStateMachine.doTransition(StateMachineFactory.java:448)
+	at org.apache.tez.state.StateMachineTez.doTransition(StateMachineTez.java:59)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:1889)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:203)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2290)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2276)
+	at org.apache.tez.common.AsyncDispatcher.dispatch(AsyncDispatcher.java:184)
+	at org.apache.tez.common.AsyncDispatcher$1.run(AsyncDispatcher.java:115)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.GeneratedConstructorAccessor64.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:68)
+	... 25 more
+Caused by: java.lang.IllegalStateException: org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProviderneeds at least 1 location to function
+	at com.google.common.base.Preconditions.checkState(Preconditions.java:149)
+	at org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProvider.<init>(HostAffinitySplitLocationProvider.java:51)
+	at org.apache.hadoop.hive.ql.exec.tez.Utils.getSplitLocationProvider(Utils.java:54)
+	at org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator.<init>(HiveSplitGenerator.java:121)
+	... 29 more
+]Vertex failed, vertexName=Map 9, vertexId=vertex_1491366857972_0107_73_00, diagnostics=[Vertex vertex_1491366857972_0107_73_00 [Map 9] killed/failed due to:INIT_FAILURE, Fail to create InputInitializerManager, org.apache.tez.dag.api.TezReflectionException: Unable to instantiate class with 1 arguments: org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:70)
+	at org.apache.tez.common.ReflectionUtils.createClazzInstance(ReflectionUtils.java:89)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:151)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:148)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.createInitializer(RootInputInitializerManager.java:148)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.runInputInitializers(RootInputInitializerManager.java:121)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.setupInputInitializerManager(VertexImpl.java:3987)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.access$3100(VertexImpl.java:204)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.handleInitEvent(VertexImpl.java:2819)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2766)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2748)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$MultipleInternalArc.doTransition(StateMachineFactory.java:385)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.doTransition(StateMachineFactory.java:302)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.access$300(StateMachineFactory.java:46)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$InternalStateMachine.doTransition(StateMachineFactory.java:448)
+	at org.apache.tez.state.StateMachineTez.doTransition(StateMachineTez.java:59)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:1889)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:203)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2290)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2276)
+	at org.apache.tez.common.AsyncDispatcher.dispatch(AsyncDispatcher.java:184)
+	at org.apache.tez.common.AsyncDispatcher$1.run(AsyncDispatcher.java:115)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.GeneratedConstructorAccessor64.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:68)
+	... 25 more
+Caused by: java.lang.IllegalStateException: org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProviderneeds at least 1 location to function
+	at com.google.common.base.Preconditions.checkState(Preconditions.java:149)
+	at org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProvider.<init>(HostAffinitySplitLocationProvider.java:51)
+	at org.apache.hadoop.hive.ql.exec.tez.Utils.getSplitLocationProvider(Utils.java:54)
+	at org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator.<init>(HiveSplitGenerator.java:121)
+	... 29 more
+]Vertex killed, vertexName=Reducer 11, vertexId=vertex_1491366857972_0107_73_04, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_04 [Reducer 11] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 10, vertexId=vertex_1491366857972_0107_73_03, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_03 [Reducer 10] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 7, vertexId=vertex_1491366857972_0107_73_12, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_12 [Reducer 7] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 6, vertexId=vertex_1491366857972_0107_73_11, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_11 [Reducer 6] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Map 5, vertexId=vertex_1491366857972_0107_73_10, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_10 [Map 5] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 3, vertexId=vertex_1491366857972_0107_73_09, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_09 [Reducer 3] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 2, vertexId=vertex_1491366857972_0107_73_08, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_08 [Reducer 2] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Map 1, vertexId=vertex_1491366857972_0107_73_07, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_07 [Map 1] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 13, vertexId=vertex_1491366857972_0107_73_06, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_06 [Reducer 13] killed/failed due to:OTHER_VERTEX_FAILURE]DAG did not succeed due to VERTEX_FAILURE. failedVertices:4 killedVertices:9
+INFO  : Resetting the caller context to HIVE_SSN_ID:7a0e5d93-1786-4d0d-b126-54d5713a82e7
+INFO  : Completed executing command(queryId=hive_20170406045521_0ca548ea-3ef0-4a21-b8cd-dcf2e4c16410); Time taken: 0.851 seconds
+Error: Error while processing statement: FAILED: Execution Error, return code 2 from org.apache.hadoop.hive.ql.exec.tez.TezTask. Vertex failed, vertexName=Map 12, vertexId=vertex_1491366857972_0107_73_05, diagnostics=[Vertex vertex_1491366857972_0107_73_05 [Map 12] killed/failed due to:INIT_FAILURE, Fail to create InputInitializerManager, org.apache.tez.dag.api.TezReflectionException: Unable to instantiate class with 1 arguments: org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:70)
+	at org.apache.tez.common.ReflectionUtils.createClazzInstance(ReflectionUtils.java:89)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:151)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:148)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.createInitializer(RootInputInitializerManager.java:148)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.runInputInitializers(RootInputInitializerManager.java:121)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.setupInputInitializerManager(VertexImpl.java:3987)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.access$3100(VertexImpl.java:204)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.handleInitEvent(VertexImpl.java:2819)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2766)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2748)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$MultipleInternalArc.doTransition(StateMachineFactory.java:385)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.doTransition(StateMachineFactory.java:302)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.access$300(StateMachineFactory.java:46)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$InternalStateMachine.doTransition(StateMachineFactory.java:448)
+	at org.apache.tez.state.StateMachineTez.doTransition(StateMachineTez.java:59)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:1889)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:203)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2290)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2276)
+	at org.apache.tez.common.AsyncDispatcher.dispatch(AsyncDispatcher.java:184)
+	at org.apache.tez.common.AsyncDispatcher$1.run(AsyncDispatcher.java:115)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.GeneratedConstructorAccessor64.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:68)
+	... 25 more
+Caused by: java.lang.IllegalStateException: org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProviderneeds at least 1 location to function
+	at com.google.common.base.Preconditions.checkState(Preconditions.java:149)
+	at org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProvider.<init>(HostAffinitySplitLocationProvider.java:51)
+	at org.apache.hadoop.hive.ql.exec.tez.Utils.getSplitLocationProvider(Utils.java:54)
+	at org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator.<init>(HiveSplitGenerator.java:121)
+	... 29 more
+]Vertex failed, vertexName=Map 4, vertexId=vertex_1491366857972_0107_73_02, diagnostics=[Vertex vertex_1491366857972_0107_73_02 [Map 4] killed/failed due to:INIT_FAILURE, Fail to create InputInitializerManager, org.apache.tez.dag.api.TezReflectionException: Unable to instantiate class with 1 arguments: org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:70)
+	at org.apache.tez.common.ReflectionUtils.createClazzInstance(ReflectionUtils.java:89)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:151)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:148)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.createInitializer(RootInputInitializerManager.java:148)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.runInputInitializers(RootInputInitializerManager.java:121)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.setupInputInitializerManager(VertexImpl.java:3987)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.access$3100(VertexImpl.java:204)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.handleInitEvent(VertexImpl.java:2819)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2766)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2748)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$MultipleInternalArc.doTransition(StateMachineFactory.java:385)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.doTransition(StateMachineFactory.java:302)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.access$300(StateMachineFactory.java:46)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$InternalStateMachine.doTransition(StateMachineFactory.java:448)
+	at org.apache.tez.state.StateMachineTez.doTransition(StateMachineTez.java:59)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:1889)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:203)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2290)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2276)
+	at org.apache.tez.common.AsyncDispatcher.dispatch(AsyncDispatcher.java:184)
+	at org.apache.tez.common.AsyncDispatcher$1.run(AsyncDispatcher.java:115)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.GeneratedConstructorAccessor64.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:68)
+	... 25 more
+Caused by: java.lang.IllegalStateException: org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProviderneeds at least 1 location to function
+	at com.google.common.base.Preconditions.checkState(Preconditions.java:149)
+	at org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProvider.<init>(HostAffinitySplitLocationProvider.java:51)
+	at org.apache.hadoop.hive.ql.exec.tez.Utils.getSplitLocationProvider(Utils.java:54)
+	at org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator.<init>(HiveSplitGenerator.java:121)
+	... 29 more
+]Vertex failed, vertexName=Map 8, vertexId=vertex_1491366857972_0107_73_01, diagnostics=[Vertex vertex_1491366857972_0107_73_01 [Map 8] killed/failed due to:INIT_FAILURE, Fail to create InputInitializerManager, org.apache.tez.dag.api.TezReflectionException: Unable to instantiate class with 1 arguments: org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:70)
+	at org.apache.tez.common.ReflectionUtils.createClazzInstance(ReflectionUtils.java:89)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:151)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:148)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.createInitializer(RootInputInitializerManager.java:148)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.runInputInitializers(RootInputInitializerManager.java:121)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.setupInputInitializerManager(VertexImpl.java:3987)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.access$3100(VertexImpl.java:204)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.handleInitEvent(VertexImpl.java:2819)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2766)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2748)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$MultipleInternalArc.doTransition(StateMachineFactory.java:385)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.doTransition(StateMachineFactory.java:302)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.access$300(StateMachineFactory.java:46)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$InternalStateMachine.doTransition(StateMachineFactory.java:448)
+	at org.apache.tez.state.StateMachineTez.doTransition(StateMachineTez.java:59)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:1889)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:203)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2290)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2276)
+	at org.apache.tez.common.AsyncDispatcher.dispatch(AsyncDispatcher.java:184)
+	at org.apache.tez.common.AsyncDispatcher$1.run(AsyncDispatcher.java:115)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.GeneratedConstructorAccessor64.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:68)
+	... 25 more
+Caused by: java.lang.IllegalStateException: org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProviderneeds at least 1 location to function
+	at com.google.common.base.Preconditions.checkState(Preconditions.java:149)
+	at org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProvider.<init>(HostAffinitySplitLocationProvider.java:51)
+	at org.apache.hadoop.hive.ql.exec.tez.Utils.getSplitLocationProvider(Utils.java:54)
+	at org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator.<init>(HiveSplitGenerator.java:121)
+	... 29 more
+]Vertex failed, vertexName=Map 9, vertexId=vertex_1491366857972_0107_73_00, diagnostics=[Vertex vertex_1491366857972_0107_73_00 [Map 9] killed/failed due to:INIT_FAILURE, Fail to create InputInitializerManager, org.apache.tez.dag.api.TezReflectionException: Unable to instantiate class with 1 arguments: org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:70)
+	at org.apache.tez.common.ReflectionUtils.createClazzInstance(ReflectionUtils.java:89)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:151)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager$1.run(RootInputInitializerManager.java:148)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.createInitializer(RootInputInitializerManager.java:148)
+	at org.apache.tez.dag.app.dag.RootInputInitializerManager.runInputInitializers(RootInputInitializerManager.java:121)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.setupInputInitializerManager(VertexImpl.java:3987)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.access$3100(VertexImpl.java:204)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.handleInitEvent(VertexImpl.java:2819)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2766)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl$InitTransition.transition(VertexImpl.java:2748)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$MultipleInternalArc.doTransition(StateMachineFactory.java:385)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.doTransition(StateMachineFactory.java:302)
+	at org.apache.hadoop.yarn.state.StateMachineFactory.access$300(StateMachineFactory.java:46)
+	at org.apache.hadoop.yarn.state.StateMachineFactory$InternalStateMachine.doTransition(StateMachineFactory.java:448)
+	at org.apache.tez.state.StateMachineTez.doTransition(StateMachineTez.java:59)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:1889)
+	at org.apache.tez.dag.app.dag.impl.VertexImpl.handle(VertexImpl.java:203)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2290)
+	at org.apache.tez.dag.app.DAGAppMaster$VertexEventDispatcher.handle(DAGAppMaster.java:2276)
+	at org.apache.tez.common.AsyncDispatcher.dispatch(AsyncDispatcher.java:184)
+	at org.apache.tez.common.AsyncDispatcher$1.run(AsyncDispatcher.java:115)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.GeneratedConstructorAccessor64.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at org.apache.tez.common.ReflectionUtils.getNewInstance(ReflectionUtils.java:68)
+	... 25 more
+Caused by: java.lang.IllegalStateException: org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProviderneeds at least 1 location to function
+	at com.google.common.base.Preconditions.checkState(Preconditions.java:149)
+	at org.apache.hadoop.hive.ql.exec.tez.HostAffinitySplitLocationProvider.<init>(HostAffinitySplitLocationProvider.java:51)
+	at org.apache.hadoop.hive.ql.exec.tez.Utils.getSplitLocationProvider(Utils.java:54)
+	at org.apache.hadoop.hive.ql.exec.tez.HiveSplitGenerator.<init>(HiveSplitGenerator.java:121)
+	... 29 more
+]Vertex killed, vertexName=Reducer 11, vertexId=vertex_1491366857972_0107_73_04, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_04 [Reducer 11] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 10, vertexId=vertex_1491366857972_0107_73_03, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_03 [Reducer 10] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 7, vertexId=vertex_1491366857972_0107_73_12, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_12 [Reducer 7] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 6, vertexId=vertex_1491366857972_0107_73_11, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_11 [Reducer 6] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Map 5, vertexId=vertex_1491366857972_0107_73_10, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_10 [Map 5] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 3, vertexId=vertex_1491366857972_0107_73_09, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_09 [Reducer 3] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 2, vertexId=vertex_1491366857972_0107_73_08, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_08 [Reducer 2] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Map 1, vertexId=vertex_1491366857972_0107_73_07, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_07 [Map 1] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 13, vertexId=vertex_1491366857972_0107_73_06, diagnostics=[Vertex received Kill in NEW state., Vertex vertex_1491366857972_0107_73_06 [Reducer 13] killed/failed due to:OTHER_VERTEX_FAILURE]DAG did not succeed due to VERTEX_FAILURE. failedVertices:4 killedVertices:9 (state=08S01,code=2)
+
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_1000;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+STOP hdp2.6_llap_run_2_1000_query65_sql_2017-04-06-04-55:  Thu Apr 6 04:55:24 CDT 2017
+
+ South Results Number of Nodes:  9
+ Avg CPU Busy:   Peak Cpu Avg:  100.000 Count > 90% Busy:  0
+ Avg Disk Busy:   Peak Disk Avg:  0 Count > 90% busy 0
+ Avg Disk Reads per sec:   Avg Write per sec: 
+ Avg Net TX:    Peak TX Avg: 
+ Avg Net RX:    Peak RX Avg: 
+ Mem Utilized: 
+South CSV
+| 100.000 | 0 | | 0 | 0 | | | | | | |

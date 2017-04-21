@@ -1,0 +1,631 @@
+START hdp2.6_hivetez_run_3_100_query17_sql_2017-04-06-22-30:  Thu Apr 6 22:30:18 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2" -n hive --incremental=true -i settings/test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+Connected to: Apache Hive (version 1.2.1000.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.041 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.exec.reducers.bytes.per.reducer=67108864;
+No rows affected (0.002 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> select  i_item_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,i_item_desc
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,s_state
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,count(ss_quantity) as store_sales_quantitycount
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,avg(ss_quantity) as store_sales_quantityave
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,stddev_samp(ss_quantity) as store_sales_quantitystdev
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,stddev_samp(ss_quantity)/avg(ss_quantity) as store_sales_quantitycov
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,count(sr_return_quantity) as_store_returns_quantitycount
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,avg(sr_return_quantity) as_store_returns_quantityave
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,stddev_samp(sr_return_quantity) as_store_returns_quantitystdev
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,stddev_samp(sr_return_quantity)/avg(sr_return_quantity) as store_retu rns_quantitycov
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,count(cs_quantity) as catalog_sales_quantitycount ,avg(cs_quantity) a s catalog_sales_quantityave
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,stddev_samp(cs_quantity)/avg(cs_quantity) as catalog_sales_quantityst dev
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,stddev_samp(cs_quantity)/avg(cs_quantity) as catalog_sales_quantityco v
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from store_sales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      ,store_returns
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      ,catalog_sales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      ,date_dim d1
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      ,date_dim d2
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      ,date_dim d3
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      ,store
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      ,item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where d1.d_quarter_name = '2000Q1'
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    and d1.d_date_sk = store_sales.ss_sold_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    and item.i_item_sk = store_sales.ss_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    and store.s_store_sk = store_sales.ss_store_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    and store_sales.ss_customer_sk = store_returns.sr_customer_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    and store_sales.ss_item_sk = store_returns.sr_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    and store_sales.ss_ticket_number = store_returns.sr_ticket_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    and store_returns.sr_returned_date_sk = d2.d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    and d2.d_quarter_name in ('2000Q1','2000Q2','2000Q3')
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    and store_returns.sr_customer_sk = catalog_sales.cs_bill_customer_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    and store_returns.sr_item_sk = catalog_sales.cs_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    and catalog_sales.cs_sold_date_sk = d3.d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    and d3.d_quarter_name in ('2000Q1','2000Q2','2000Q3')
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  group by i_item_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          ,i_item_desc
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          ,s_state
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  order by i_item_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          ,i_item_desc
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          ,s_state
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> limit 100;
+INFO  : Tez session hasn't been created yet. Opening session
+INFO  : Dag name: select  i_item_id
+       ,i_item_desc
+...100(Stage-1)
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Status: Running (Executing on YARN cluster with App id application_1491366857972_0161)
+
+INFO  : Map 1: -/-	Map 10: -/-	Map 2: -/-	Map 3: -/-	Map 6: -/-	Map 7: -/-	Map 8: -/-	Map 9: -/-	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 0/4	Map 2: 0/1	Map 3: -/-	Map 6: -/-	Map 7: 0/1	Map 8: 0/1	Map 9: 0/1	Reducer 4: 0/2	Reducer 5: 0/1	
+[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                RUNNING     13          0        4        9       0       0
+Map 10 .........   SUCCEEDED      4          4        0        0       0       0
+Map 2 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 3                 INITED     12          0        0       12       0       0
+Map 6                RUNNING      5          0        4        1       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 9 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 05/10  [=====>>---------------------] 19%   ELAPSED TIME: 5.36 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[16A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED     13         13        0        0       0       0
+Map 10 .........   SUCCEEDED      4          4        0        0       0       0
+Map 2 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 3                RUNNING     12          0       12        0       0       0
+Map 6 ..........   SUCCEEDED      5          5        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 9 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 07/10  [================>>----------] 63%   ELAPSED TIME: 10.36 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[16A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED     13         13        0        0       0       0
+Map 10 .........   SUCCEEDED      4          4        0        0       0       0
+Map 2 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 3                RUNNING     12          0       12        0       0       0
+Map 6 ..........   SUCCEEDED      5          5        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 9 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 07/10  [================>>----------] 63%   ELAPSED TIME: 15.37 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[16A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED     13         13        0        0       0       0
+Map 10 .........   SUCCEEDED      4          4        0        0       0       0
+Map 2 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 3                RUNNING     12          0       12        0       0       0
+Map 6 ..........   SUCCEEDED      5          5        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 9 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 07/10  [================>>----------] 63%   ELAPSED TIME: 20.37 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[16A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED     13         13        0        0       0       0
+Map 10 .........   SUCCEEDED      4          4        0        0       0       0
+Map 2 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 3 .........      RUNNING     12         11        1        0       0       0
+Map 6 ..........   SUCCEEDED      5          5        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 9 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 4            RUNNING      1          0        1        0       0       0
+Reducer 5             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 07/10  [========================>>--] 92%   ELAPSED TIME: 25.37 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[16A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED     13         13        0        0       0       0
+Map 10 .........   SUCCEEDED      4          4        0        0       0       0
+Map 2 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 3 ..........   SUCCEEDED     12         12        0        0       0       0
+Map 6 ..........   SUCCEEDED      5          5        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 9 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 4 ......   SUCCEEDED      1          1        0        0       0       0
+Reducer 5 ......   SUCCEEDED      1          1        0        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 10/10  [==========================>>] 100%  ELAPSED TIME: 26.42 s    
+[22;0m[2K--------------------------------------------------------------------------------
+INFO  : Map 1: -/-	Map 10: 0(+2)/4	Map 2: 0(+1)/1	Map 3: -/-	Map 6: -/-	Map 7: 0(+1)/1	Map 8: 0(+1)/1	Map 9: 0(+1)/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 0(+4)/4	Map 2: 0(+1)/1	Map 3: -/-	Map 6: -/-	Map 7: 0(+1)/1	Map 8: 0(+1)/1	Map 9: 0(+1)/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 0(+4)/4	Map 2: 0(+1)/1	Map 3: -/-	Map 6: -/-	Map 7: 0(+1)/1	Map 8: 0(+1)/1	Map 9: 0/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 0(+4)/4	Map 2: 1/1	Map 3: -/-	Map 6: -/-	Map 7: 1/1	Map 8: 0(+1)/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 4/4	Map 2: 1/1	Map 3: -/-	Map 6: -/-	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 4/4	Map 2: 1/1	Map 3: 0/12	Map 6: -/-	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 0(+3)/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0/12	Map 6: 0/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 0(+4)/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0/12	Map 6: 0(+1)/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 0(+4)/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0/12	Map 6: 0(+3)/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 0(+4)/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0/12	Map 6: 0(+4)/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 1(+3)/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0(+1)/12	Map 6: 0(+4)/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 4(+1)/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0(+1)/12	Map 6: 0(+5)/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 4(+7)/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0(+1)/12	Map 6: 0(+5)/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 4(+9)/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0(+3)/12	Map 6: 0(+5)/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 4(+9)/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0(+5)/12	Map 6: 0(+5)/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 4(+9)/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0(+11)/12	Map 6: 0(+5)/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 4(+9)/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0(+12)/12	Map 6: 3(+2)/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 4(+9)/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0(+12)/12	Map 6: 4(+1)/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 6(+7)/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0(+12)/12	Map 6: 4(+1)/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 9(+4)/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0(+12)/12	Map 6: 4(+1)/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 11(+2)/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0(+12)/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 12(+1)/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0(+12)/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 13/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0(+12)/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 13/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0(+12)/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 13/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0(+12)/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 13/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0(+12)/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 13/13	Map 10: 4/4	Map 2: 1/1	Map 3: 0(+12)/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 13/13	Map 10: 4/4	Map 2: 1/1	Map 3: 1(+11)/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 13/13	Map 10: 4/4	Map 2: 1/1	Map 3: 2(+10)/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 13/13	Map 10: 4/4	Map 2: 1/1	Map 3: 4(+8)/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 13/13	Map 10: 4/4	Map 2: 1/1	Map 3: 6(+6)/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 13/13	Map 10: 4/4	Map 2: 1/1	Map 3: 7(+5)/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 13/13	Map 10: 4/4	Map 2: 1/1	Map 3: 8(+4)/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/2	Reducer 5: 0/1	
+INFO  : Map 1: 13/13	Map 10: 4/4	Map 2: 1/1	Map 3: 10(+2)/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0/1	Reducer 5: 0/1	
+INFO  : Map 1: 13/13	Map 10: 4/4	Map 2: 1/1	Map 3: 10(+2)/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0(+1)/1	Reducer 5: 0/1	
+INFO  : Map 1: 13/13	Map 10: 4/4	Map 2: 1/1	Map 3: 11(+1)/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0(+1)/1	Reducer 5: 0/1	
+INFO  : Map 1: 13/13	Map 10: 4/4	Map 2: 1/1	Map 3: 12/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 0(+1)/1	Reducer 5: 0/1	
+INFO  : Map 1: 13/13	Map 10: 4/4	Map 2: 1/1	Map 3: 12/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 1/1	Reducer 5: 0(+1)/1	
+INFO  : Map 1: 13/13	Map 10: 4/4	Map 2: 1/1	Map 3: 12/12	Map 6: 5/5	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 4: 1/1	Reducer 5: 1/1	
+INFO  : Status: DAG finished successfully in 26.38 seconds
+INFO  : 
+INFO  : Query Execution Summary
+INFO  : --------------------------------------------------------------------------------
+INFO  : OPERATION                            DURATION
+INFO  : --------------------------------------------------------------------------------
+INFO  : Compile Query                           2.23s
+INFO  : Prepare Plan                            3.91s
+INFO  : Submit Plan                             0.26s
+INFO  : Start DAG                               0.48s
+INFO  : Run DAG                                26.38s
+INFO  : --------------------------------------------------------------------------------
+INFO  : 
+INFO  : Task Execution Summary
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  :   VERTICES  TOTAL_TASKS  FAILED_ATTEMPTS  KILLED_TASKS   DURATION(ms)  CPU_TIME(ms)  GC_TIME(ms)  INPUT_RECORDS  OUTPUT_RECORDS
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  :      Map 1           13                0             0       22292.00       127,150          922     15,933,052      15,892,861
+INFO  :     Map 10            4                0             0       24547.00        19,330          184        204,000         204,000
+INFO  :      Map 2            1                0             0       24546.00         4,150           54         10,000             274
+INFO  :      Map 3           12                0             0       20671.00       439,840        3,271     28,529,595              55
+INFO  :      Map 6            5                0             0       22087.00        40,340          396      4,082,869       4,009,059
+INFO  :      Map 7            1                0             0       24546.00         4,190           41         10,000              91
+INFO  :      Map 8            1                0             0       24546.00         4,080           26         10,000             274
+INFO  :      Map 9            1                0             0       24546.00         3,580           32            402             402
+INFO  :  Reducer 4            1                0             0        1268.00         1,960           15             55              55
+INFO  :  Reducer 5            1                0             0         243.00           620            0             55               0
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : org.apache.tez.common.counters.DAGCounter:
+INFO  :    NUM_SUCCEEDED_TASKS: 40
+INFO  :    TOTAL_LAUNCHED_TASKS: 40
+INFO  :    DATA_LOCAL_TASKS: 26
+INFO  :    RACK_LOCAL_TASKS: 12
+INFO  :    AM_CPU_MILLISECONDS: 18770
+INFO  :    AM_GC_TIME_MILLIS: 77
+INFO  : File System Counters:
+INFO  :    FILE_BYTES_READ: 1121952878
+INFO  :    FILE_BYTES_WRITTEN: 936926754
+INFO  :    HDFS_BYTES_READ: 170198516
+INFO  :    HDFS_BYTES_WRITTEN: 8248
+INFO  :    HDFS_READ_OPS: 1296
+INFO  :    HDFS_WRITE_OPS: 2
+INFO  :    HDFS_OP_CREATE: 1
+INFO  :    HDFS_OP_GET_FILE_STATUS: 2
+INFO  :    HDFS_OP_OPEN: 1294
+INFO  :    HDFS_OP_RENAME: 1
+INFO  : org.apache.tez.common.counters.TaskCounter:
+INFO  :    REDUCE_INPUT_GROUPS: 110
+INFO  :    REDUCE_INPUT_RECORDS: 110
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    SPILLED_RECORDS: 220
+INFO  :    NUM_SHUFFLED_INPUTS: 334
+INFO  :    NUM_SKIPPED_INPUTS: 4
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    MERGED_MAP_OUTPUTS: 21
+INFO  :    GC_TIME_MILLIS: 4941
+INFO  :    CPU_MILLISECONDS: 645240
+INFO  :    PHYSICAL_MEMORY_BYTES: 97492402176
+INFO  :    VIRTUAL_MEMORY_BYTES: 224667615232
+INFO  :    COMMITTED_HEAP_BYTES: 97492402176
+INFO  :    INPUT_RECORDS_PROCESSED: 241312166
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 1510447580
+INFO  :    OUTPUT_RECORDS: 20107071
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_BYTES: 300318352
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 340626521
+INFO  :    OUTPUT_BYTES_PHYSICAL: 208800950
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 11917
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 11917
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    SHUFFLE_CHUNK_COUNT: 13
+INFO  :    SHUFFLE_BYTES: 2505450073
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 4087273422
+INFO  :    SHUFFLE_BYTES_TO_MEM: 1389156456
+INFO  :    SHUFFLE_BYTES_TO_DISK: 722467903
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 393825714
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    SHUFFLE_PHASE_TIME: 88102
+INFO  :    MERGE_PHASE_TIME: 616
+INFO  :    FIRST_EVENT_RECEIVED: 20791
+INFO  :    LAST_EVENT_RECEIVED: 84553
+INFO  : HIVE:
+INFO  :    CREATED_FILES: 1
+INFO  :    DESERIALIZE_ERRORS: 0
+INFO  :    RECORDS_IN_Map_1: 15932778
+INFO  :    RECORDS_IN_Map_10: 204000
+INFO  :    RECORDS_IN_Map_2: 10000
+INFO  :    RECORDS_IN_Map_3: 8422908
+INFO  :    RECORDS_IN_Map_6: 4082869
+INFO  :    RECORDS_IN_Map_7: 10000
+INFO  :    RECORDS_IN_Map_8: 10000
+INFO  :    RECORDS_IN_Map_9: 402
+INFO  :    RECORDS_OUT_0: 55
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_1: 15892861
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_10: 204000
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_2: 274
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_3: 55
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_6: 4009059
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_7: 91
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_8: 274
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_9: 402
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_4: 55
+INFO  : Shuffle Errors:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_4_INPUT_Map_3:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_5_INPUT_Reducer_4:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : TaskCounter_Map_10_INPUT_item:
+INFO  :    INPUT_RECORDS_PROCESSED: 202
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 13146180
+INFO  : TaskCounter_Map_10_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 25441975
+INFO  :    OUTPUT_BYTES_PHYSICAL: 12885433
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 25943680
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 204000
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_1_INPUT_Map_2:
+INFO  :    FIRST_EVENT_RECEIVED: 3005
+INFO  :    INPUT_RECORDS_PROCESSED: 3562
+INFO  :    LAST_EVENT_RECEIVED: 3005
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 13
+INFO  :    SHUFFLE_BYTES: 14573
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 25012
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 1121
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 13452
+INFO  :    SHUFFLE_PHASE_TIME: 3325
+INFO  : TaskCounter_Map_1_INPUT_catalog_sales:
+INFO  :    INPUT_RECORDS_PROCESSED: 15728
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 931584738
+INFO  : TaskCounter_Map_1_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 190694371
+INFO  :    OUTPUT_BYTES_PHYSICAL: 131217389
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 222480171
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 15892861
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_2_INPUT_d1:
+INFO  :    INPUT_RECORDS_PROCESSED: 10
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 361420
+INFO  : TaskCounter_Map_2_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1370
+INFO  :    OUTPUT_BYTES_PHYSICAL: 1145
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 1924
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 274
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_3_INPUT_Map_1:
+INFO  :    FIRST_EVENT_RECEIVED: 2613
+INFO  :    INPUT_RECORDS_PROCESSED: 190714332
+INFO  :    LAST_EVENT_RECEIVED: 37804
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 156
+INFO  :    SHUFFLE_BYTES: 1574604924
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 2669762052
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 230282457
+INFO  :    SHUFFLE_BYTES_TO_DISK: 722467903
+INFO  :    SHUFFLE_BYTES_TO_MEM: 621854564
+INFO  :    SHUFFLE_PHASE_TIME: 38552
+INFO  : TaskCounter_Map_3_INPUT_Map_10:
+INFO  :    FIRST_EVENT_RECEIVED: 2575
+INFO  :    INPUT_RECORDS_PROCESSED: 2448000
+INFO  :    LAST_EVENT_RECEIVED: 2622
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 48
+INFO  :    SHUFFLE_BYTES: 154624044
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 311324160
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 34903643
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 119720401
+INFO  :    SHUFFLE_PHASE_TIME: 3333
+INFO  : TaskCounter_Map_3_INPUT_Map_6:
+INFO  :    FIRST_EVENT_RECEIVED: 4888
+INFO  :    INPUT_RECORDS_PROCESSED: 48108708
+INFO  :    LAST_EVENT_RECEIVED: 32910
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 60
+INFO  :    SHUFFLE_BYTES: 776153712
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 1106055900
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 128632023
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 647521689
+INFO  :    SHUFFLE_PHASE_TIME: 33446
+INFO  : TaskCounter_Map_3_INPUT_Map_7:
+INFO  :    FIRST_EVENT_RECEIVED: 2563
+INFO  :    INPUT_RECORDS_PROCESSED: 1092
+INFO  :    LAST_EVENT_RECEIVED: 2563
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 12
+INFO  :    SHUFFLE_BYTES: 4692
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 7716
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 782
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 3910
+INFO  :    SHUFFLE_PHASE_TIME: 2957
+INFO  : TaskCounter_Map_3_INPUT_Map_8:
+INFO  :    FIRST_EVENT_RECEIVED: 2564
+INFO  :    INPUT_RECORDS_PROCESSED: 3288
+INFO  :    LAST_EVENT_RECEIVED: 2564
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 12
+INFO  :    SHUFFLE_BYTES: 13452
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 23088
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 2242
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 11210
+INFO  :    SHUFFLE_PHASE_TIME: 2966
+INFO  : TaskCounter_Map_3_INPUT_Map_9:
+INFO  :    FIRST_EVENT_RECEIVED: 2562
+INFO  :    INPUT_RECORDS_PROCESSED: 4824
+INFO  :    LAST_EVENT_RECEIVED: 2562
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 12
+INFO  :    SHUFFLE_BYTES: 20676
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 53088
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 3446
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 17230
+INFO  :    SHUFFLE_PHASE_TIME: 2995
+INFO  : TaskCounter_Map_3_INPUT_store_sales:
+INFO  :    INPUT_RECORDS_PROCESSED: 8278
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 365508378
+INFO  : TaskCounter_Map_3_OUTPUT_Reducer_4:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 12214
+INFO  :    OUTPUT_BYTES_PHYSICAL: 8638
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 12488
+INFO  :    OUTPUT_RECORDS: 55
+INFO  :    SHUFFLE_CHUNK_COUNT: 12
+INFO  :    SPILLED_RECORDS: 55
+INFO  : TaskCounter_Map_6_INPUT_store_returns:
+INFO  :    INPUT_RECORDS_PROCESSED: 4121
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 199098302
+INFO  : TaskCounter_Map_6_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 84153177
+INFO  :    OUTPUT_BYTES_PHYSICAL: 64679596
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 92171325
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 4009059
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_7_INPUT_d1:
+INFO  :    INPUT_RECORDS_PROCESSED: 10
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 361420
+INFO  : TaskCounter_Map_7_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 455
+INFO  :    OUTPUT_BYTES_PHYSICAL: 415
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 643
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 91
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_8_INPUT_d1:
+INFO  :    INPUT_RECORDS_PROCESSED: 10
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 361420
+INFO  : TaskCounter_Map_8_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1370
+INFO  :    OUTPUT_BYTES_PHYSICAL: 1145
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 1924
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 274
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_9_INPUT_store:
+INFO  :    INPUT_RECORDS_PROCESSED: 1
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 25722
+INFO  : TaskCounter_Map_9_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 3614
+INFO  :    OUTPUT_BYTES_PHYSICAL: 1747
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 4424
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 402
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_4_INPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 6475
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 6475
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 11
+INFO  :    LAST_EVENT_RECEIVED: 513
+INFO  :    MERGED_MAP_OUTPUTS: 20
+INFO  :    MERGE_PHASE_TIME: 556
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 20
+INFO  :    NUM_SKIPPED_INPUTS: 4
+INFO  :    REDUCE_INPUT_GROUPS: 55
+INFO  :    REDUCE_INPUT_RECORDS: 55
+INFO  :    SHUFFLE_BYTES: 8558
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 12464
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 0
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 8558
+INFO  :    SHUFFLE_PHASE_TIME: 514
+INFO  :    SPILLED_RECORDS: 55
+INFO  : TaskCounter_Reducer_4_OUTPUT_Reducer_5:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 9806
+INFO  :    OUTPUT_BYTES_PHYSICAL: 5442
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 9942
+INFO  :    OUTPUT_RECORDS: 55
+INFO  :    SHUFFLE_CHUNK_COUNT: 1
+INFO  :    SPILLED_RECORDS: 55
+INFO  : TaskCounter_Reducer_5_INPUT_Reducer_4:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 5442
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 5442
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 10
+INFO  :    LAST_EVENT_RECEIVED: 10
+INFO  :    MERGED_MAP_OUTPUTS: 1
+INFO  :    MERGE_PHASE_TIME: 60
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 1
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 55
+INFO  :    REDUCE_INPUT_RECORDS: 55
+INFO  :    SHUFFLE_BYTES: 5442
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 9942
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 0
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 5442
+INFO  :    SHUFFLE_PHASE_TIME: 14
+INFO  :    SPILLED_RECORDS: 55
+INFO  : TaskCounter_Reducer_5_OUTPUT_out_Reducer_5:
+INFO  :    OUTPUT_RECORDS: 0
++-------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------+----------------------------+--------------------------+----------------------------+--------------------------+---------------------------------+-------------------------------+---------------------------------+----------------------------+------------------------------+----------------------------+------------------------------+----------------------------+--+
+|     i_item_id     |                                                                                              i_item_desc                                                                                               | s_state  | store_sales_quantitycount  | store_sales_quantityave  | store_sales_quantitystdev  | store_sales_quantitycov  | as_store_returns_quantitycount  | as_store_returns_quantityave  | as_store_returns_quantitystdev  | store_returns_quantitycov  | catalog_sales_quantitycount  | catalog_sales_quantityave  | catalog_sales_quantitystdev  | catalog_sales_quantitycov  |
++-------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------+----------------------------+--------------------------+----------------------------+--------------------------+---------------------------------+-------------------------------+---------------------------------+----------------------------+------------------------------+----------------------------+------------------------------+----------------------------+--+
+| AAAAAAAAAAHHCAAA  | Original classes sh                                                                                                                                                                                    | OH       | 1                          | 53.0                     | 0.0                        | 0.0                      | 1                               | 49.0                          | 0.0                             | 0.0                        | 1                            | 9.0                        | 0.0                          | 0.0                        |
+| AAAAAAAAABKBBAAA  | Activities give therefore male changes. Go                                                                                                                                                             | SD       | 1                          | 53.0                     | 0.0                        | 0.0                      | 1                               | 18.0                          | 0.0                             | 0.0                        | 1                            | 13.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAABMHAAAA  | Mental, central che                                                                                                                                                                                    | SC       | 1                          | 34.0                     | 0.0                        | 0.0                      | 1                               | 25.0                          | 0.0                             | 0.0                        | 1                            | 35.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAAPKNAAAA  | Legal others should not put explanations. Economic, ot                                                                                                                                                 | LA       | 1                          | 38.0                     | 0.0                        | 0.0                      | 1                               | 35.0                          | 0.0                             | 0.0                        | 1                            | 56.0                       | 0.0                          | 0.0                        |
+| AAAAAAAABFMOCAAA  | International, international meetings must like forward. Costs will not assist easier yesterday tall years. Stations used to know liberal device                                                       | SC       | 1                          | 7.0                      | 0.0                        | 0.0                      | 1                               | 3.0                           | 0.0                             | 0.0                        | 1                            | 94.0                       | 0.0                          | 0.0                        |
+| AAAAAAAACFGIBAAA  | Yesterday european ca                                                                                                                                                                                  | SD       | 1                          | 10.0                     | 0.0                        | 0.0                      | 1                               | 6.0                           | 0.0                             | 0.0                        | 1                            | 72.0                       | 0.0                          | 0.0                        |
+| AAAAAAAACFNFBAAA  | Good levels shall pray only out of a offices. Scottish, long notes free for a feet; ever bad                                                                                                           | SC       | 1                          | 16.0                     | 0.0                        | 0.0                      | 1                               | 6.0                           | 0.0                             | 0.0                        | 1                            | 18.0                       | 0.0                          | 0.0                        |
+| AAAAAAAACNGKBAAA  | Differences shall remind thus negative,                                                                                                                                                                | SD       | 1                          | 84.0                     | 0.0                        | 0.0                      | 1                               | 63.0                          | 0.0                             | 0.0                        | 1                            | 22.0                       | 0.0                          | 0.0                        |
+| AAAAAAAACPOIBAAA  | Black attitudes begin together tickets. Opening books must not use;                                                                                                                                    | AL       | 1                          | 82.0                     | 0.0                        | 0.0                      | 1                               | 6.0                           | 0.0                             | 0.0                        | 1                            | 88.0                       | 0.0                          | 0.0                        |
+| AAAAAAAADDKPAAAA  | Successfully adequate minutes must                                                                                                                                                                     | MO       | 1                          | 51.0                     | 0.0                        | 0.0                      | 1                               | 43.0                          | 0.0                             | 0.0                        | 1                            | 48.0                       | 0.0                          | 0.0                        |
+| AAAAAAAADKJLBAAA  | Also sharp agents would not try low shops. Shows would make never new, old results. Financial, he                                                                                                      | TN       | 1                          | 1.0                      | 0.0                        | 0.0                      | 1                               | 1.0                           | 0.0                             | 0.0                        | 1                            | 94.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAEBMPAAAA  | Nurses may get only free doors; both true deposits could not want forcibly quiet, political banks. Disciplines must establish perhaps new, prime terms; free colo                                      | MO       | 1                          | 44.0                     | 0.0                        | 0.0                      | 1                               | 23.0                          | 0.0                             | 0.0                        | 1                            | 38.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAEBPBBAAA  | Also far sectors include basic, specific lines; as video-taped rivers might wear alone main police. Clear, clear figures marry then. Now coastal parties entertai                                      | LA       | 1                          | 15.0                     | 0.0                        | 0.0                      | 1                               | 7.0                           | 0.0                             | 0.0                        | 1                            | 69.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAEEAPAAAA  | Great, local marks should not turn countries. S                                                                                                                                                        | LA       | 1                          | 13.0                     | 0.0                        | 0.0                      | 1                               | 1.0                           | 0.0                             | 0.0                        | 1                            | 7.0                        | 0.0                          | 0.0                        |
+| AAAAAAAAEIPIAAAA  | Additional words shall not run again badly flexible hands. Local                                                                                                                                       | MO       | 1                          | 15.0                     | 0.0                        | 0.0                      | 1                               | 15.0                          | 0.0                             | 0.0                        | 1                            | 8.0                        | 0.0                          | 0.0                        |
+| AAAAAAAAEJIEAAAA  | Similar, particular members would hire either barriers. Bodies a                                                                                                                                       | OH       | 1                          | 100.0                    | 0.0                        | 0.0                      | 1                               | 59.0                          | 0.0                             | 0.0                        | 1                            | 41.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAELAPCAAA  | Remarkably required authorities could allow as rates. Powerful departments must struggle perhaps human, national powers. Once natural leaves remember also right similar hands; semantic               | OH       | 1                          | 67.0                     | 0.0                        | 0.0                      | 1                               | 61.0                          | 0.0                             | 0.0                        | 1                            | 96.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAELIGCAAA  | Abroad careful years will me                                                                                                                                                                           | SD       | 1                          | 13.0                     | 0.0                        | 0.0                      | 1                               | 11.0                          | 0.0                             | 0.0                        | 1                            | 29.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAEMPHAAAA  | Honest, significant stories last soft, essential me                                                                                                                                                    | TN       | 1                          | 66.0                     | 0.0                        | 0.0                      | 1                               | 9.0                           | 0.0                             | 0.0                        | 1                            | 28.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAFADDCAAA  | Wrong, alone groups visit professional, various poli                                                                                                                                                   | TN       | 0                          | NULL                     | NULL                       | NULL                     | 1                               | 4.0                           | 0.0                             | 0.0                        | 1                            | 19.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAFDBGBAAA  | Royal, european managers wait at an eyes; formerly normal advertisements go of course in the women. Quite rich roses could not deal more national possible affai                                       | TN       | 1                          | 2.0                      | 0.0                        | 0.0                      | 1                               | 2.0                           | 0.0                             | 0.0                        | 1                            | 1.0                        | 0.0                          | 0.0                        |
+| AAAAAAAAFPDNBAAA  | Only, advanced institutions criticise finally increasingly remarkable right                                                                                                                            | AL       | 1                          | 73.0                     | 0.0                        | 0.0                      | 1                               | 60.0                          | 0.0                             | 0.0                        | 1                            | 4.0                        | 0.0                          | 0.0                        |
+| AAAAAAAAGKKDAAAA  | Indeed sensitive words used to come significantly alone european matters. Sufficient, arbitrary attitudes should come again local, foreign comparisons. Public, patient initiatives migh               | OH       | 1                          | 21.0                     | 0.0                        | 0.0                      | 1                               | 4.0                           | 0.0                             | 0.0                        | 1                            | 48.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAGLBBBAAA  | Pleasant neighbours affect most considerable experts; lite                                                                                                                                             | MI       | 1                          | 21.0                     | 0.0                        | 0.0                      | 1                               | 1.0                           | 0.0                             | 0.0                        | 1                            | 29.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAGOANBAAA  | Technological, other things used to look substantial characters. Girls bring here entirely routine papers. For example new members used to make up to private schools. Practical                       | MI       | 1                          | 73.0                     | 0.0                        | 0.0                      | 1                               | 27.0                          | 0.0                             | 0.0                        | 1                            | 65.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAHAKACAAA  | Only wrong circumstances prevent. Economic, continuous ingredients buy often metropolitan requirements. From time to time beautiful buildings continue cells. Ordi                                     | MI       | 1                          | 77.0                     | 0.0                        | 0.0                      | 1                               | 36.0                          | 0.0                             | 0.0                        | 1                            | 89.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAHJDKCAAA  | Just new rates should develop; heavy, new children contact even from a groups. Black, double descriptions correspond dependent dates. Of course unawar                                                 | MO       | 1                          | 82.0                     | 0.0                        | 0.0                      | 1                               | 65.0                          | 0.0                             | 0.0                        | 1                            | 73.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAIDCADAAA  | Important farmers would form away ab                                                                                                                                                                   | LA       | 1                          | 75.0                     | 0.0                        | 0.0                      | 1                               | 9.0                           | 0.0                             | 0.0                        | 1                            | 97.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAIFFHAAAA  | Defensive, broad shows reduce still left dogs. Then particular duties try most industrial communities. Origins might see reasons. Asleep tickets may identify; years must not get from a idea          | TN       | 1                          | 52.0                     | 0.0                        | 0.0                      | 1                               | 35.0                          | 0.0                             | 0.0                        | 1                            | 3.0                        | 0.0                          | 0.0                        |
+| AAAAAAAAIJNCCAAA  | Almost relevant                                                                                                                                                                                        | GA       | 1                          | 92.0                     | 0.0                        | 0.0                      | 1                               | 8.0                           | 0.0                             | 0.0                        | 1                            | 92.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAINAPCAAA  | Functions will think forward now dead schools. New arrangements talk against a women. Weeks pick only with a exception                                                                                 | MO       | 1                          | 63.0                     | 0.0                        | 0.0                      | 1                               | 5.0                           | 0.0                             | 0.0                        | 1                            | 65.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAIOECAAAA  | Ag                                                                                                                                                                                                     | SC       | 1                          | 9.0                      | 0.0                        | 0.0                      | 1                               | 4.0                           | 0.0                             | 0.0                        | 1                            | 87.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAIPDPCAAA  | Times call definite, famous agencies. Purposes may merge even very consistent classes. Deep remote communities save per annum just nuc                                                                 | TN       | 1                          | 45.0                     | 0.0                        | 0.0                      | 1                               | 10.0                          | 0.0                             | 0.0                        | 1                            | 46.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAIPLDBAAA  | Difficult, little dreams could accept then to a systems. Sheets get against a notes. Users move as well true eggs. Right numbers stick elsewhere. Big, direct levels                                   | GA       | 1                          | 47.0                     | 0.0                        | 0.0                      | 1                               | 8.0                           | 0.0                             | 0.0                        | 1                            | 50.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAJCGNBAAA  | Nuclear, unique minutes used to tax good proud lines. Eg                                                                                                                                               | GA       | 1                          | 48.0                     | 0.0                        | 0.0                      | 1                               | 15.0                          | 0.0                             | 0.0                        | 1                            | 39.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAJEOJBAAA  | Victorian sciences get little, civil legs. Originally possible systems would not generate forwards in a streets. American                                                                              | GA       | 1                          | 95.0                     | 0.0                        | 0.0                      | 1                               | 8.0                           | 0.0                             | 0.0                        | 1                            | 99.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAJKCJBAAA  | Ordinary cars desert yesterday though im                                                                                                                                                               | MI       | 1                          | 89.0                     | 0.0                        | 0.0                      | 1                               | 65.0                          | 0.0                             | 0.0                        | 1                            | 75.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAKAGOCAAA  | Soviet villages could re                                                                                                                                                                               | SD       | 1                          | 21.0                     | 0.0                        | 0.0                      | 1                               | 11.0                          | 0.0                             | 0.0                        | 1                            | 24.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAKAHOAAAA  | As other events will get here on the cars. Essentially immediate circumstances might spend also main, emotional names; officials get for once. Conditions can credit so fu                             | OH       | 1                          | 41.0                     | 0.0                        | 0.0                      | 1                               | 25.0                          | 0.0                             | 0.0                        | 1                            | 84.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAKBGNCAAA  | Full properties would make finally honestly gia                                                                                                                                                        | SD       | 1                          | 7.0                      | 0.0                        | 0.0                      | 1                               | 2.0                           | 0.0                             | 0.0                        | 1                            | 35.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAKECLCAAA  | Social changes w                                                                                                                                                                                       | TN       | 1                          | 85.0                     | 0.0                        | 0.0                      | 1                               | 36.0                          | 0.0                             | 0.0                        | 1                            | 67.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAKFAEAAAA  | Paintings marry only respect                                                                                                                                                                           | MI       | 1                          | 27.0                     | 0.0                        | 0.0                      | 1                               | 10.0                          | 0.0                             | 0.0                        | 1                            | 11.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAKKIFBAAA  |                                                                                                                                                                                                        | MI       | 1                          | 43.0                     | 0.0                        | 0.0                      | 1                               | 2.0                           | 0.0                             | 0.0                        | 1                            | 21.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAKLKAAAAA  | Underlying                                                                                                                                                                                             | OH       | 1                          | 68.0                     | 0.0                        | 0.0                      | 1                               | 37.0                          | 0.0                             | 0.0                        | 1                            | 26.0                       | 0.0                          | 0.0                        |
+| AAAAAAAALGPIAAAA  | Eastern views mean never. Bare, irish parties used to write really for a companie                                                                                                                      | OH       | 1                          | 95.0                     | 0.0                        | 0.0                      | 1                               | 87.0                          | 0.0                             | 0.0                        | 1                            | 74.0                       | 0.0                          | 0.0                        |
+| AAAAAAAALHNCBAAA  | Central days look up a relations. Others become                                                                                                                                                        | SD       | 1                          | 63.0                     | 0.0                        | 0.0                      | 1                               | 27.0                          | 0.0                             | 0.0                        | 1                            | 72.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAMCEPCAAA  | Earnings go at the roles. La                                                                                                                                                                           | SC       | 1                          | 8.0                      | 0.0                        | 0.0                      | 1                               | 7.0                           | 0.0                             | 0.0                        | 1                            | 74.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAMDHBCAAA  | Commercial roots shall not work earlier cultural, particular parts. Both other units used to exercise very tory problems; compulsory, soft savings continue                                            | LA       | 1                          | 17.0                     | 0.0                        | 0.0                      | 1                               | 10.0                          | 0.0                             | 0.0                        | 1                            | 34.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAMHMGBAAA  |                                                                                                                                                                                                        | LA       | 1                          | 97.0                     | 0.0                        | 0.0                      | 1                               | 43.0                          | 0.0                             | 0.0                        | 1                            | 86.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAMJBHCAAA  | Jewish, irish customers choose ou                                                                                                                                                                      | MI       | 1                          | 8.0                      | 0.0                        | 0.0                      | 1                               | 2.0                           | 0.0                             | 0.0                        | 1                            | 81.0                       | 0.0                          | 0.0                        |
+| AAAAAAAANMOHAAAA  | Other relatives leave roman policemen. Steps can copy likely now minor documents; local, bad outcomes will not f                                                                                       | AL       | 1                          | 72.0                     | 0.0                        | 0.0                      | 1                               | 18.0                          | 0.0                             | 0.0                        | 1                            | 93.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAODBHAAAA  | Babies give through a assets. Rates increase particularly lives. Small feet shall not sign. Students stay so days. Keenly controversial heels look suddenly important houses. Authorities describe bo  | LA       | 1                          | 7.0                      | 0.0                        | 0.0                      | 1                               | 4.0                           | 0.0                             | 0.0                        | 1                            | 9.0                        | 0.0                          | 0.0                        |
+| AAAAAAAAPBKLAAAA  | Needs affect local, lovely women. Requirements see at least now urban kinds. Great islands look still australian, elaborate days. Ancient, vulnerable applications ought to stimulat                   | LA       | 1                          | 58.0                     | 0.0                        | 0.0                      | 1                               | 51.0                          | 0.0                             | 0.0                        | 1                            | 1.0                        | 0.0                          | 0.0                        |
+| AAAAAAAAPDAHAAAA  | Different secrets make to a rocks. Levels understand then in a houses. More than other offic                                                                                                           | LA       | 1                          | 44.0                     | 0.0                        | 0.0                      | 1                               | 33.0                          | 0.0                             | 0.0                        | 1                            | 21.0                       | 0.0                          | 0.0                        |
+| AAAAAAAAPGNECAAA  | Only continental questions may hide by far able guns. Else silent offences extend easily flat reasons. Considerable, other types take indian, american than                                            | AL       | 1                          | 44.0                     | 0.0                        | 0.0                      | 1                               | 44.0                          | 0.0                             | 0.0                        | 1                            | 92.0                       | 0.0                          | 0.0                        |
++-------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------+----------------------------+--------------------------+----------------------------+--------------------------+---------------------------------+-------------------------------+---------------------------------+----------------------------+------------------------------+----------------------------+------------------------------+----------------------------+--+
+55 rows selected (33.36 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+STOP hdp2.6_hivetez_run_3_100_query17_sql_2017-04-06-22-30:  Thu Apr 6 22:30:55 CDT 2017

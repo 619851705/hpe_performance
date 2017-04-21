@@ -1,0 +1,54 @@
+START hdp2.6_llap_after_analyze100_query95_sql_2017-04-04-17-42:  Tue Apr 4 17:42:30 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2" -n hive --incremental=true -i test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+Connected to: Apache Hive (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.041 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> SELECT count(distinct ws1.ws_order_number) as order_count,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                sum(ws1.ws_ext_ship_cost) as total_shipping_cost,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                sum(ws1.ws_net_profit) as total_net_profit
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> FROM web_sales ws1
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> JOIN customer_address ca ON (ws1.ws_ship_addr_sk = ca.ca_address_sk)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> JOIN web_site s ON (ws1.ws_web_site_sk = s.web_site_sk)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> JOIN date_dim d ON (ws1.ws_ship_date_sk = d.d_date_sk)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> LEFT SEMI JOIN (SELECT ws2.ws_order_number as ws_order_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                                FROM web_sales ws2 JOIN web_sales ws3
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                                ON (ws2.ws_order_number = ws3.ws_order_number)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                                WHERE ws2.ws_warehouse_sk <> ws3.ws_warehouse_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> ) ws_wh1
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> ON (ws1.ws_order_number = ws_wh1.ws_order_number)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> LEFT SEMI JOIN (SELECT wr_order_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                                FROM web_returns wr
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                                JOIN (SELECT ws4.ws_order_number as ws_order_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                                           FROM web_sales ws4 JOIN web_sales ws5
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                                           ON (ws4.ws_order_number = ws5.ws_order_number)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                                          WHERE ws4.ws_warehouse_sk <> ws5.ws_warehouse_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> ) ws_wh2
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                                ON (wr.wr_order_number = ws_wh2.ws_order_number)) tmp1
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> ON (ws1.ws_order_number = tmp1.wr_order_number)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> WHERE d.d_date between '2002-05-01' and '2002-06-30' and
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                ca.ca_state = 'GA' and
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                s.web_company_name = 'pri';
++--------------+----------------------+----------------------+--+
+| order_count  | total_shipping_cost  |   total_net_profit   |
++--------------+----------------------+----------------------+--+
+| 3374         | 5417485.24858892     | -1018876.1715360414  |
++--------------+----------------------+----------------------+--+
+1 row selected (83.189 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+STOP hdp2.6_llap_after_analyze100_query95_sql_2017-04-04-17-42:  Tue Apr 4 17:43:57 CDT 2017
+
+ South Results Number of Nodes:  9
+ Avg CPU Busy:  54.103  Peak Cpu Avg:  83.138 Count > 90% Busy:  0
+ Avg Disk Busy:  .543  Peak Disk Avg:  2.158 Count > 90% busy 0
+ Avg Disk Reads per sec:  207.274  Avg Write per sec:  134.145
+ Avg Net TX:   3137.735  Peak TX Avg:  1130.210
+ Avg Net RX:   3572.076  Peak RX Avg:  1345.439
+ Mem Utilized:  95.260
+South CSV
+54.103 | 83.138 | 0 | .543 | 2.158 | 0 | 207.274 | 134.145 | 3137.735 | 1130.210 | 3572.076 | 1345.439 | 95.260

@@ -1,0 +1,408 @@
+Connecting to jdbc:hive2://h01hn02:10500/tpcds_bin_partitioned_orc_1000
+Connected to: Apache Hive (version 2.1.0.2.5.1.0-43)
+Driver: Hive JDBC (version 1.2.1000.2.5.1.0-43)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script testbench.settings-2g-container
+No rows affected (0.042 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.002 seconds)
+No rows affected (0.002 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.002 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.002 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.002 seconds)
+No rows affected (0.002 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.002 seconds)
+No rows affected (0.002 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.002 seconds)
+No rows affected (0.009 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.002 seconds)
+No rows affected (0.002 seconds)
+No rows affected (0.002 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.002 seconds)
+No rows affected (0.002 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.002 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+No rows affected (0.001 seconds)
+INFO  : Compiling command(queryId=hive_20161003143518_f8c5fe07-a4be-4728-b88b-818d38fb3d5d): select  *
+ from(select w_warehouse_name
+            ,i_item_id
+            ,sum(case when (cast(d_date as date) < cast ('1998-04-08' as date))
+                then inv_quantity_on_hand 
+                      else 0 end) as inv_before
+            ,sum(case when (cast(d_date as date) >= cast ('1998-04-08' as date))
+                      then inv_quantity_on_hand 
+                      else 0 end) as inv_after
+   from inventory
+       ,warehouse
+       ,item
+       ,date_dim
+   where i_current_price between 0.99 and 1.49
+     and item.i_item_sk          = inventory.inv_item_sk
+     and inventory.inv_warehouse_sk   = warehouse.w_warehouse_sk
+     and inventory.inv_date_sk    = date_dim.d_date_sk
+     and d_date between '1998-03-09' and '1998-05-07'
+   group by w_warehouse_name, i_item_id) x
+ where (case when inv_before > 0 
+             then inv_after / inv_before 
+             else null
+             end) between 2.0/3.0 and 3.0/2.0
+ order by w_warehouse_name
+         ,i_item_id
+ limit 100
+INFO  : Semantic Analysis Completed
+INFO  : Returning Hive schema: Schema(fieldSchemas:[FieldSchema(name:x.w_warehouse_name, type:string, comment:null), FieldSchema(name:x.i_item_id, type:string, comment:null), FieldSchema(name:x.inv_before, type:bigint, comment:null), FieldSchema(name:x.inv_after, type:bigint, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=hive_20161003143518_f8c5fe07-a4be-4728-b88b-818d38fb3d5d); Time taken: 0.308 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=hive_20161003143518_f8c5fe07-a4be-4728-b88b-818d38fb3d5d): select  *
+ from(select w_warehouse_name
+            ,i_item_id
+            ,sum(case when (cast(d_date as date) < cast ('1998-04-08' as date))
+                then inv_quantity_on_hand 
+                      else 0 end) as inv_before
+            ,sum(case when (cast(d_date as date) >= cast ('1998-04-08' as date))
+                      then inv_quantity_on_hand 
+                      else 0 end) as inv_after
+   from inventory
+       ,warehouse
+       ,item
+       ,date_dim
+   where i_current_price between 0.99 and 1.49
+     and item.i_item_sk          = inventory.inv_item_sk
+     and inventory.inv_warehouse_sk   = warehouse.w_warehouse_sk
+     and inventory.inv_date_sk    = date_dim.d_date_sk
+     and d_date between '1998-03-09' and '1998-05-07'
+   group by w_warehouse_name, i_item_id) x
+ where (case when inv_before > 0 
+             then inv_after / inv_before 
+             else null
+             end) between 2.0/3.0 and 3.0/2.0
+ order by w_warehouse_name
+         ,i_item_id
+ limit 100
+INFO  : Query ID = hive_20161003143518_f8c5fe07-a4be-4728-b88b-818d38fb3d5d
+INFO  : Total jobs = 1
+INFO  : Launching Job 1 out of 1
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Session is already open
+INFO  : Dag name: select  *
+ from(select w_warehouse_nam...100(Stage-1)
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Tez session was closed. Reopening...
+INFO  : Session re-established.
+INFO  : 
+
+INFO  : Status: Running (Executing on YARN cluster with App id application_1475174811091_0166)
+
+INFO  : Map 1: -/-	Map 4: -/-	Map 5: -/-	Map 6: -/-	Reducer 2: 0/982	Reducer 3: 0/1	
+INFO  : Map 1: 0/186	Map 4: 0/1	Map 5: 0/5	Map 6: 0/1	Reducer 2: 0/982	Reducer 3: 0/1	
+INFO  : Map 1: 0(+95,-87)/186	Map 4: 1/1	Map 5: 5/5	Map 6: 1/1	Reducer 2: 0/982	Reducer 3: 0/1	
+INFO  : Map 1: 0(+186,-284)/186	Map 4: 1/1	Map 5: 5/5	Map 6: 1/1	Reducer 2: 0/982	Reducer 3: 0/1	
+INFO  : Map 1: 0(+186,-473)/186	Map 4: 1/1	Map 5: 5/5	Map 6: 1/1	Reducer 2: 0/982	Reducer 3: 0/1	
+ERROR : Status: Failed
+ERROR : Vertex failed, vertexName=Map 1, vertexId=vertex_1475174811091_0166_1_03, diagnostics=[Task failed, taskId=task_1475174811091_0166_1_03_000001, diagnostics=[TaskAttempt 0 failed, info=[Error: Error while running task ( failure ) : attempt_1475174811091_0166_1_03_000001_0:java.lang.IllegalArgumentException: tez.runtime.io.sort.mb 500 should be larger than 0 and should be less than the available task memory (MB):175
+	at com.google.common.base.Preconditions.checkArgument(Preconditions.java:92)
+	at org.apache.tez.runtime.library.common.sort.impl.ExternalSorter.getInitialMemoryRequirement(ExternalSorter.java:351)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.initialize(OrderedPartitionedKVOutput.java:92)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable._callInternal(LogicalIOProcessorRuntimeTask.java:533)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:516)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:501)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+], TaskAttempt 1 failed, info=[Error: Error while running task ( failure ) : attempt_1475174811091_0166_1_03_000001_1:java.lang.IllegalArgumentException: tez.runtime.io.sort.mb 500 should be larger than 0 and should be less than the available task memory (MB):175
+	at com.google.common.base.Preconditions.checkArgument(Preconditions.java:92)
+	at org.apache.tez.runtime.library.common.sort.impl.ExternalSorter.getInitialMemoryRequirement(ExternalSorter.java:351)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.initialize(OrderedPartitionedKVOutput.java:92)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable._callInternal(LogicalIOProcessorRuntimeTask.java:533)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:516)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:501)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+], TaskAttempt 2 failed, info=[Error: Error while running task ( failure ) : attempt_1475174811091_0166_1_03_000001_2:java.lang.IllegalArgumentException: tez.runtime.io.sort.mb 500 should be larger than 0 and should be less than the available task memory (MB):175
+	at com.google.common.base.Preconditions.checkArgument(Preconditions.java:92)
+	at org.apache.tez.runtime.library.common.sort.impl.ExternalSorter.getInitialMemoryRequirement(ExternalSorter.java:351)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.initialize(OrderedPartitionedKVOutput.java:92)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable._callInternal(LogicalIOProcessorRuntimeTask.java:533)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:516)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:501)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+], TaskAttempt 3 failed, info=[Error: Error while running task ( failure ) : attempt_1475174811091_0166_1_03_000001_3:java.lang.IllegalArgumentException: tez.runtime.io.sort.mb 500 should be larger than 0 and should be less than the available task memory (MB):175
+	at com.google.common.base.Preconditions.checkArgument(Preconditions.java:92)
+	at org.apache.tez.runtime.library.common.sort.impl.ExternalSorter.getInitialMemoryRequirement(ExternalSorter.java:351)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.initialize(OrderedPartitionedKVOutput.java:92)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable._callInternal(LogicalIOProcessorRuntimeTask.java:533)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:516)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:501)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+]], Vertex did not succeed due to OWN_TASK_FAILURE, failedTasks:1 killedTasks:185, Vertex vertex_1475174811091_0166_1_03 [Map 1] killed/failed due to:OWN_TASK_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 3, vertexId=vertex_1475174811091_0166_1_05, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1, Vertex vertex_1475174811091_0166_1_05 [Reducer 3] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 2, vertexId=vertex_1475174811091_0166_1_04, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:982, Vertex vertex_1475174811091_0166_1_04 [Reducer 2] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : DAG did not succeed due to VERTEX_FAILURE. failedVertices:1 killedVertices:2
+INFO  : org.apache.tez.common.counters.DAGCounter:
+INFO  :    NUM_FAILED_TASKS: 495
+INFO  :    NUM_KILLED_TASKS: 184
+INFO  :    NUM_SUCCEEDED_TASKS: 7
+INFO  :    TOTAL_LAUNCHED_TASKS: 537
+INFO  :    DATA_LOCAL_TASKS: 7
+INFO  :    AM_CPU_MILLISECONDS: 11760
+INFO  :    AM_GC_TIME_MILLIS: 36
+INFO  : File System Counters:
+INFO  :    FILE_BYTES_READ: 0
+INFO  :    FILE_BYTES_WRITTEN: 142877
+INFO  :    FILE_READ_OPS: 0
+INFO  :    FILE_LARGE_READ_OPS: 0
+INFO  :    FILE_WRITE_OPS: 0
+INFO  :    HDFS_BYTES_READ: 0
+INFO  :    HDFS_BYTES_WRITTEN: 0
+INFO  :    HDFS_READ_OPS: 0
+INFO  :    HDFS_LARGE_READ_OPS: 0
+INFO  :    HDFS_WRITE_OPS: 0
+INFO  : org.apache.tez.common.counters.TaskCounter:
+INFO  :    SPILLED_RECORDS: 0
+INFO  :    INPUT_RECORDS_PROCESSED: 313
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 29215257
+INFO  :    OUTPUT_RECORDS: 18501
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_BYTES: 425150
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 462194
+INFO  :    OUTPUT_BYTES_PHYSICAL: 142821
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  : HIVE:
+INFO  :    DESERIALIZE_ERRORS: 0
+INFO  :    RECORDS_IN_Map_4: 20
+INFO  :    RECORDS_IN_Map_5: 300000
+INFO  :    RECORDS_IN_Map_6: 10000
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_4: 20
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_5: 18421
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_6: 60
+INFO  : TaskCounter_Map_4_INPUT_warehouse:
+INFO  :    INPUT_RECORDS_PROCESSED: 1
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 2436
+INFO  : TaskCounter_Map_4_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 447
+INFO  :    OUTPUT_BYTES_PHYSICAL: 483
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 493
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 20
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_5_INPUT_item:
+INFO  :    INPUT_RECORDS_PROCESSED: 302
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 28453644
+INFO  : TaskCounter_Map_5_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 423683
+INFO  :    OUTPUT_BYTES_PHYSICAL: 141881
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 460555
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 18421
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_6_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 10
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 759177
+INFO  : TaskCounter_Map_6_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1020
+INFO  :    OUTPUT_BYTES_PHYSICAL: 457
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 1146
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 60
+INFO  :    SPILLED_RECORDS: 0
+INFO  : org.apache.hadoop.hive.llap.counters.LlapIOCounters:
+INFO  :    CACHE_HIT_BYTES: 2430885
+INFO  :    CACHE_MISS_BYTES: 0
+INFO  :    CONSUMER_TIME_NS: 13930974
+INFO  :    DECODE_TIME_NS: 54170802
+INFO  :    HDFS_TIME_NS: 62833
+INFO  :    METADATA_CACHE_HIT: 16
+INFO  :    NUM_DECODED_BATCHES: 33
+INFO  :    NUM_VECTOR_BATCHES: 313
+INFO  :    ROWS_EMITTED: 310020
+INFO  :    SELECTED_ROWGROUPS: 33
+INFO  :    TOTAL_IO_TIME_NS: 62517988
+ERROR : FAILED: Execution Error, return code 2 from org.apache.hadoop.hive.ql.exec.tez.TezTask. Vertex failed, vertexName=Map 1, vertexId=vertex_1475174811091_0166_1_03, diagnostics=[Task failed, taskId=task_1475174811091_0166_1_03_000001, diagnostics=[TaskAttempt 0 failed, info=[Error: Error while running task ( failure ) : attempt_1475174811091_0166_1_03_000001_0:java.lang.IllegalArgumentException: tez.runtime.io.sort.mb 500 should be larger than 0 and should be less than the available task memory (MB):175
+	at com.google.common.base.Preconditions.checkArgument(Preconditions.java:92)
+	at org.apache.tez.runtime.library.common.sort.impl.ExternalSorter.getInitialMemoryRequirement(ExternalSorter.java:351)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.initialize(OrderedPartitionedKVOutput.java:92)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable._callInternal(LogicalIOProcessorRuntimeTask.java:533)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:516)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:501)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+], TaskAttempt 1 failed, info=[Error: Error while running task ( failure ) : attempt_1475174811091_0166_1_03_000001_1:java.lang.IllegalArgumentException: tez.runtime.io.sort.mb 500 should be larger than 0 and should be less than the available task memory (MB):175
+	at com.google.common.base.Preconditions.checkArgument(Preconditions.java:92)
+	at org.apache.tez.runtime.library.common.sort.impl.ExternalSorter.getInitialMemoryRequirement(ExternalSorter.java:351)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.initialize(OrderedPartitionedKVOutput.java:92)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable._callInternal(LogicalIOProcessorRuntimeTask.java:533)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:516)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:501)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+], TaskAttempt 2 failed, info=[Error: Error while running task ( failure ) : attempt_1475174811091_0166_1_03_000001_2:java.lang.IllegalArgumentException: tez.runtime.io.sort.mb 500 should be larger than 0 and should be less than the available task memory (MB):175
+	at com.google.common.base.Preconditions.checkArgument(Preconditions.java:92)
+	at org.apache.tez.runtime.library.common.sort.impl.ExternalSorter.getInitialMemoryRequirement(ExternalSorter.java:351)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.initialize(OrderedPartitionedKVOutput.java:92)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable._callInternal(LogicalIOProcessorRuntimeTask.java:533)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:516)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:501)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+], TaskAttempt 3 failed, info=[Error: Error while running task ( failure ) : attempt_1475174811091_0166_1_03_000001_3:java.lang.IllegalArgumentException: tez.runtime.io.sort.mb 500 should be larger than 0 and should be less than the available task memory (MB):175
+	at com.google.common.base.Preconditions.checkArgument(Preconditions.java:92)
+	at org.apache.tez.runtime.library.common.sort.impl.ExternalSorter.getInitialMemoryRequirement(ExternalSorter.java:351)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.initialize(OrderedPartitionedKVOutput.java:92)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable._callInternal(LogicalIOProcessorRuntimeTask.java:533)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:516)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:501)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+]], Vertex did not succeed due to OWN_TASK_FAILURE, failedTasks:1 killedTasks:185, Vertex vertex_1475174811091_0166_1_03 [Map 1] killed/failed due to:OWN_TASK_FAILURE]Vertex killed, vertexName=Reducer 3, vertexId=vertex_1475174811091_0166_1_05, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1, Vertex vertex_1475174811091_0166_1_05 [Reducer 3] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 2, vertexId=vertex_1475174811091_0166_1_04, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:982, Vertex vertex_1475174811091_0166_1_04 [Reducer 2] killed/failed due to:OTHER_VERTEX_FAILURE]DAG did not succeed due to VERTEX_FAILURE. failedVertices:1 killedVertices:2
+INFO  : Completed executing command(queryId=hive_20161003143518_f8c5fe07-a4be-4728-b88b-818d38fb3d5d); Time taken: 6.005 seconds
+Error: Error while processing statement: FAILED: Execution Error, return code 2 from org.apache.hadoop.hive.ql.exec.tez.TezTask. Vertex failed, vertexName=Map 1, vertexId=vertex_1475174811091_0166_1_03, diagnostics=[Task failed, taskId=task_1475174811091_0166_1_03_000001, diagnostics=[TaskAttempt 0 failed, info=[Error: Error while running task ( failure ) : attempt_1475174811091_0166_1_03_000001_0:java.lang.IllegalArgumentException: tez.runtime.io.sort.mb 500 should be larger than 0 and should be less than the available task memory (MB):175
+	at com.google.common.base.Preconditions.checkArgument(Preconditions.java:92)
+	at org.apache.tez.runtime.library.common.sort.impl.ExternalSorter.getInitialMemoryRequirement(ExternalSorter.java:351)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.initialize(OrderedPartitionedKVOutput.java:92)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable._callInternal(LogicalIOProcessorRuntimeTask.java:533)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:516)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:501)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+], TaskAttempt 1 failed, info=[Error: Error while running task ( failure ) : attempt_1475174811091_0166_1_03_000001_1:java.lang.IllegalArgumentException: tez.runtime.io.sort.mb 500 should be larger than 0 and should be less than the available task memory (MB):175
+	at com.google.common.base.Preconditions.checkArgument(Preconditions.java:92)
+	at org.apache.tez.runtime.library.common.sort.impl.ExternalSorter.getInitialMemoryRequirement(ExternalSorter.java:351)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.initialize(OrderedPartitionedKVOutput.java:92)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable._callInternal(LogicalIOProcessorRuntimeTask.java:533)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:516)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:501)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+], TaskAttempt 2 failed, info=[Error: Error while running task ( failure ) : attempt_1475174811091_0166_1_03_000001_2:java.lang.IllegalArgumentException: tez.runtime.io.sort.mb 500 should be larger than 0 and should be less than the available task memory (MB):175
+	at com.google.common.base.Preconditions.checkArgument(Preconditions.java:92)
+	at org.apache.tez.runtime.library.common.sort.impl.ExternalSorter.getInitialMemoryRequirement(ExternalSorter.java:351)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.initialize(OrderedPartitionedKVOutput.java:92)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable._callInternal(LogicalIOProcessorRuntimeTask.java:533)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:516)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:501)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+], TaskAttempt 3 failed, info=[Error: Error while running task ( failure ) : attempt_1475174811091_0166_1_03_000001_3:java.lang.IllegalArgumentException: tez.runtime.io.sort.mb 500 should be larger than 0 and should be less than the available task memory (MB):175
+	at com.google.common.base.Preconditions.checkArgument(Preconditions.java:92)
+	at org.apache.tez.runtime.library.common.sort.impl.ExternalSorter.getInitialMemoryRequirement(ExternalSorter.java:351)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.initialize(OrderedPartitionedKVOutput.java:92)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable._callInternal(LogicalIOProcessorRuntimeTask.java:533)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:516)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask$InitializeOutputCallable.callInternal(LogicalIOProcessorRuntimeTask.java:501)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+]], Vertex did not succeed due to OWN_TASK_FAILURE, failedTasks:1 killedTasks:185, Vertex vertex_1475174811091_0166_1_03 [Map 1] killed/failed due to:OWN_TASK_FAILURE]Vertex killed, vertexName=Reducer 3, vertexId=vertex_1475174811091_0166_1_05, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1, Vertex vertex_1475174811091_0166_1_05 [Reducer 3] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 2, vertexId=vertex_1475174811091_0166_1_04, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:982, Vertex vertex_1475174811091_0166_1_04 [Reducer 2] killed/failed due to:OTHER_VERTEX_FAILURE]DAG did not succeed due to VERTEX_FAILURE. failedVertices:1 killedVertices:2 (state=08S01,code=2)
+Closing: 0: jdbc:hive2://h01hn02:10500/tpcds_bin_partitioned_orc_1000

@@ -1,0 +1,40 @@
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> set tez.runtime.io.sort.mb=700;
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> -- set hive.execution.engine=mr;
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> 
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> select
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> o_year,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> sum(case
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> when nation = 'PERU' then volume
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> else 0
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> end) / sum(volume) as mkt_share
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> from
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> (
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> select
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> year(o_orderdate) as o_year,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> l_extendedprice * (1 - l_discount) as volume,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> n2.n_name as nation
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> from
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> part,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> supplier,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> lineitem,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> orders,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> customer,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> nation n1,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> nation n2,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> region
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> where
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> p_partkey = l_partkey
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> and s_suppkey = l_suppkey
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> and l_orderkey = o_orderkey
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> and o_custkey = c_custkey
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> and c_nationkey = n1.n_nationkey
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> and n1.n_regionkey = r_regionkey
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> and r_name = 'AMERICA'
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> and s_nationkey = n2.n_nationkey
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> and o_orderdate between '1995-01-01' and '1996-12-31'
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> and p_type = 'ECONOMY BURNISHED NICKEL'
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> ) as all_nations
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> group by
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> o_year
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> order by
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> o_year;

@@ -1,0 +1,64 @@
+START hdp2.6_hivetez_run_3_100_query24_sql_2017-04-06-22-41:  Thu Apr 6 22:41:44 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2" -n hive --incremental=true -i settings/test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+Connected to: Apache Hive (version 1.2.1000.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.041 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.exec.reducers.bytes.per.reducer=67108864;
+No rows affected (0.002 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> with ssales as
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> (select c_last_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,c_first_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,s_store_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,ca_state
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,s_state
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,i_color
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,i_current_price
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,i_manager_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,i_units
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,i_size
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,sum(ss_sales_price) netpaid
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> from store_sales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     ,store_returns
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     ,store
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     ,item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     ,customer
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     ,customer_address
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> where ss_ticket_number = sr_ticket_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   and ss_item_sk = sr_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   and ss_customer_sk = c_customer_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   and ss_item_sk = i_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   and ss_store_sk = s_store_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   and c_birth_country = upper(ca_country)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   and s_zip = ca_zip
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and s_market_id=7
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> group by c_last_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,c_first_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,s_store_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,ca_state
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,s_state
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,i_color
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,i_current_price
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,i_manager_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,i_units
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,i_size)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> select c_last_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,c_first_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,s_store_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,sum(netpaid) paid
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> from ssales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> where i_color = 'orchid'
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> group by c_last_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,c_first_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ,s_store_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> having sum(netpaid) > (select 0.05*avg(netpaid)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                                  from ssales)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> ;
+Error: Error while compiling statement: FAILED: ParseException line 46:23 cannot recognize input near 'select' '0.05' '*' in expression specification (state=42000,code=40000)
+
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+STOP hdp2.6_hivetez_run_3_100_query24_sql_2017-04-06-22-41:  Thu Apr 6 22:41:47 CDT 2017

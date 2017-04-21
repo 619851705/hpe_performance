@@ -1,0 +1,63 @@
+START hdp2.6_llap_after_analyze100_query46_sql_2017-04-04-17-18:  Tue Apr 4 17:18:52 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2" -n hive --incremental=true -i test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+Connected to: Apache Hive (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.042 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> select  c_last_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,c_first_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,ca_city
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,bought_city
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,ss_ticket_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,amt,profit 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    (select ss_ticket_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           ,ss_customer_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           ,ca_city bought_city
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           ,sum(ss_coupon_amt) amt
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           ,sum(ss_net_profit) profit
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     from store_sales,date_dim,store,household_demographics,customer_address 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     where store_sales.ss_sold_date_sk = date_dim.d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     and store_sales.ss_store_sk = store.s_store_sk  
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     and store_sales.ss_hdemo_sk = household_demographics.hd_demo_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     and store_sales.ss_addr_sk = customer_address.ca_address_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     and (household_demographics.hd_dep_count = 4 or
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          household_demographics.hd_vehicle_count= 2)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     and date_dim.d_dow in (6,0)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     and date_dim.d_year in (1998,1998+1,1998+2) 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     and store.s_city in ('Rosedale','Bethlehem','Clinton','Clifton','Springfield') 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     group by ss_ticket_number,ss_customer_sk,ss_addr_sk,ca_city) dn,customer,customer_address current_addr
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     where dn.ss_customer_sk = customer.c_customer_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       and customer.c_current_addr_sk = current_addr.ca_address_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       and current_addr.ca_city <> bought_city
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   order by c_last_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           ,c_first_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           ,ca_city
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           ,bought_city
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           ,ss_ticket_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   limit 100;
++--------------+---------------+----------+--------------+-------------------+------+---------+--+
+| c_last_name  | c_first_name  | ca_city  | bought_city  | ss_ticket_number  | amt  | profit  |
++--------------+---------------+----------+--------------+-------------------+------+---------+--+
++--------------+---------------+----------+--------------+-------------------+------+---------+--+
+No rows selected (5.555 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+STOP hdp2.6_llap_after_analyze100_query46_sql_2017-04-04-17-18:  Tue Apr 4 17:19:02 CDT 2017
+
+ South Results Number of Nodes:  9
+ Avg CPU Busy:   Peak Cpu Avg:  100.000 Count > 90% Busy:  0
+ Avg Disk Busy:   Peak Disk Avg:  0 Count > 90% busy 0
+ Avg Disk Reads per sec:   Avg Write per sec: 
+ Avg Net TX:    Peak TX Avg: 
+ Avg Net RX:    Peak RX Avg: 
+ Mem Utilized: 
+South CSV
+| 100.000 | 0 | | 0 | 0 | | | | | | |

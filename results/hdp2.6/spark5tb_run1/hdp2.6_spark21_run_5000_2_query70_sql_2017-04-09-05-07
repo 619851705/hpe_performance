@@ -1,0 +1,52 @@
+START hdp2.6_spark21_run_5000_2_query70_sql_2017-04-09-05-07:  Sun Apr 9 05:07:04 CDT 2017
+ /usr/hdp/current/spark2-client/bin/beeline -u "jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_$SF" -n hive --incremental=true  -i settings/spark.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_5000
+17/04/09 05:07:04 INFO Utils: Supplied authorities: h01hn02.hadoop:10016
+17/04/09 05:07:04 INFO Utils: Resolved authority: h01hn02.hadoop:10016
+17/04/09 05:07:04 INFO HiveConnection: Will try to open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_5000
+17/04/09 05:07:04 INFO HiveConnection: Could not open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_5000
+17/04/09 05:07:04 INFO HiveConnection: Transport Used for JDBC connection: null
+Error: Could not open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_5000: java.net.ConnectException: Connection refused (Connection refused) (state=08S01,code=0)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)> select  
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>     sum(ss_net_profit) as total_sum
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>    ,s_state
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>    ,s_county
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>    ,grouping__id as lochierarchy
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>    , rank() over(partition by grouping__id, case when grouping__id == 2 then s_state end order by sum(s s_net_profit)) as rank_within_parent
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)> from
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>     store_sales ss join date_dim d1 on d1.d_date_sk = ss.ss_sold_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>     join store s on s.s_store_sk  = ss.ss_store_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>  where
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>     d1.d_month_seq between 1193 and 1193+11
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>  and s.s_state in
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>              ( select s_state
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>                from  (select s_state as s_state, sum(ss_net_profit),
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>                              rank() over ( partition by s_state order by sum(ss_net_profit) desc) as ra nking
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>                       from   store_sales, store, date_dim
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>                       where  d_month_seq between 1193 and 1193+11
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>                             and date_dim.d_date_sk = store_sales.ss_sold_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>                             and store.s_store_sk  = store_sales.ss_store_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>                       group by s_state
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>                      ) tmp1 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>                where ranking <= 5
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>              )
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>  group by s_state,s_county with rollup
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)> order by
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>    lochierarchy desc
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>   ,case when lochierarchy = 0 then s_state end
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>   ,rank_within_parent
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi (closed)>  limit 100;
+17/04/09 05:07:05 INFO Utils: Supplied authorities: h01hn02.hadoop:10016
+17/04/09 05:07:05 INFO Utils: Resolved authority: h01hn02.hadoop:10016
+17/04/09 05:07:05 INFO HiveConnection: Will try to open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_5000
+17/04/09 05:07:05 INFO HiveConnection: Could not open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_5000
+17/04/09 05:07:05 INFO HiveConnection: Transport Used for JDBC connection: null
+No current connection
+
+17/04/09 05:07:05 INFO Utils: Supplied authorities: h01hn02.hadoop:10016
+17/04/09 05:07:05 INFO Utils: Resolved authority: h01hn02.hadoop:10016
+17/04/09 05:07:05 INFO HiveConnection: Will try to open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_5000
+17/04/09 05:07:05 INFO HiveConnection: Could not open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_5000
+17/04/09 05:07:05 INFO HiveConnection: Transport Used for JDBC connection: null
+Error: Could not open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_5000: java.net.ConnectException: Connection refused (Connection refused) (state=08S01,code=0)
+STOP hdp2.6_spark21_run_5000_2_query70_sql_2017-04-09-05-07:  Sun Apr 9 05:07:05 CDT 2017

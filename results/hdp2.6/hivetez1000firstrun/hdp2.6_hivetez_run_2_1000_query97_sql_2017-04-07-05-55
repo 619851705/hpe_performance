@@ -1,0 +1,866 @@
+START hdp2.6_hivetez_run_2_1000_query97_sql_2017-04-07-05-55:  Fri Apr 7 05:55:57 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2" -n hive --incremental=true -i settings/test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_1000;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+Connected to: Apache Hive (version 1.2.1000.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.041 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.exec.reducers.bytes.per.reducer=67108864;
+No rows affected (0.002 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> select sum(case when ssci.customer_sk is not null and csci.customer_sk is nul l then 1 else 0 end) store_only
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,sum(case when ssci.customer_sk is null and csci.customer_sk is not nul l then 1 else 0 end) catalog_only
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,sum(case when ssci.customer_sk is not null and csci.customer_sk is not  null then 1 else 0 end) store_and_catalog
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> from 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> ( select ss_customer_sk customer_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,ss_item_sk item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> from store_sales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> JOIN date_dim ON store_sales.ss_sold_date_sk = date_dim.d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> where
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   d_month_seq between 1193 and 1193 + 11
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> group by ss_customer_sk ,ss_item_sk) ssci
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> full outer join
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> ( select cs_bill_customer_sk customer_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       ,cs_item_sk item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> from catalog_sales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> JOIN date_dim ON catalog_sales.cs_sold_date_sk = date_dim.d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> where
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   d_month_seq between 1193 and 1193 + 11
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> group by cs_bill_customer_sk ,cs_item_sk) csci
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> on (ssci.customer_sk=csci.customer_sk and ssci.item_sk = csci.item_sk)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> limit 100;
+INFO  : Tez session hasn't been created yet. Opening session
+INFO  : Dag name: select sum(case when ssci.customer_sk ...100(Stage-1)
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Status: Running (Executing on YARN cluster with App id application_1491366857972_0529)
+
+INFO  : Map 1: -/-	Map 5: -/-	Map 6: -/-	Map 8: -/-	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                RUNNING    261          0        2      259       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6                 INITED    161          0        0      161       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2             INITED    328          0        0      328       0       0
+Reducer 3             INITED    500          0        0      500       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7             INITED    172          0        0      172       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 02/08  [>>--------------------------] 0%    ELAPSED TIME: 5.15 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                RUNNING    261          0      180       81       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6                RUNNING    161          0       97       64       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2             INITED    328          0        0      328       0       0
+Reducer 3             INITED    500          0        0      500       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7             INITED    172          0        0      172       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 02/08  [>>--------------------------] 0%    ELAPSED TIME: 10.15 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                RUNNING    261          0      261        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6                RUNNING    161          0      161        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2             INITED    328          0        0      328       0       0
+Reducer 3             INITED    500          0        0      500       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7             INITED    172          0        0      172       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 02/08  [>>--------------------------] 0%    ELAPSED TIME: 15.15 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                RUNNING    261          1      260        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6                RUNNING    161          0      161        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2             INITED    328          0        0      328       0       0
+Reducer 3             INITED    500          0        0      500       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7             INITED    172          0        0      172       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 02/08  [>>--------------------------] 0%    ELAPSED TIME: 20.15 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                RUNNING    261          2      259        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6                RUNNING    161          0      161        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2             INITED    328          0        0      328       0       0
+Reducer 3             INITED    500          0        0      500       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7             INITED    172          0        0      172       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 02/08  [>>--------------------------] 0%    ELAPSED TIME: 25.16 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                RUNNING    261          4      257        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6                RUNNING    161          1      160        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2             INITED    328          0        0      328       0       0
+Reducer 3             INITED    500          0        0      500       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7             INITED    172          0        0      172       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 02/08  [>>--------------------------] 0%    ELAPSED TIME: 30.16 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ....           RUNNING    261        110      151        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ....           RUNNING    161         78       83        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2            RUNNING     82          0       29       53       0       0
+Reducer 3             INITED    500          0        0      500       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7            RUNNING     58          0       23       35       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 02/08  [====>>----------------------] 17%   ELAPSED TIME: 35.16 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 .........      RUNNING    261        258        3        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED    161        161        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2            RUNNING     82          0       82        0       0       0
+Reducer 3             INITED    500          0        0      500       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7            RUNNING     58          0       58        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 03/08  [==========>>----------------] 39%   ELAPSED TIME: 40.16 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED    261        261        0        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED    161        161        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2            RUNNING     82          0       82        0       0       0
+Reducer 3             INITED    500          0        0      500       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7            RUNNING     58          1       57        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 04/08  [==========>>----------------] 39%   ELAPSED TIME: 45.16 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED    261        261        0        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED    161        161        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2            RUNNING     82          0       82        0       0       0
+Reducer 3             INITED    500          0        0      500       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7            RUNNING     58          1       57        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 04/08  [==========>>----------------] 39%   ELAPSED TIME: 50.16 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED    261        261        0        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED    161        161        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2            RUNNING     82          0       82        0       0       0
+Reducer 3             INITED    500          0        0      500       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7            RUNNING     58          8       50        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 04/08  [==========>>----------------] 40%   ELAPSED TIME: 55.16 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED    261        261        0        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED    161        161        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 .          RUNNING     82         22       60        0       0       0
+Reducer 3            RUNNING    125          0       45       80       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7 ...        RUNNING     58         38       20        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 04/08  [==================>>--------] 70%   ELAPSED TIME: 60.17 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED    261        261        0        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED    161        161        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ...        RUNNING     82         54       28        0       0       0
+Reducer 3            RUNNING    125          0      121        4       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7 .....      RUNNING     58         57        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 04/08  [====================>>------] 77%   ELAPSED TIME: 65.17 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED    261        261        0        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED    161        161        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 .....      RUNNING     82         71       11        0       0       0
+Reducer 3            RUNNING    125          0      125        0       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7 ......   SUCCEEDED     58         58        0        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 05/08  [====================>>------] 80%   ELAPSED TIME: 70.17 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED    261        261        0        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED    161        161        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED     82         82        0        0       0       0
+Reducer 3            RUNNING    125          0      125        0       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7 ......   SUCCEEDED     58         58        0        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 06/08  [=====================>>-----] 81%   ELAPSED TIME: 75.17 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED    261        261        0        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED    161        161        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED     82         82        0        0       0       0
+Reducer 3            RUNNING    125          0      125        0       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7 ......   SUCCEEDED     58         58        0        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 06/08  [=====================>>-----] 81%   ELAPSED TIME: 80.17 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED    261        261        0        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED    161        161        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED     82         82        0        0       0       0
+Reducer 3            RUNNING    125          0      125        0       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7 ......   SUCCEEDED     58         58        0        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 06/08  [=====================>>-----] 81%   ELAPSED TIME: 85.18 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED    261        261        0        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED    161        161        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED     82         82        0        0       0       0
+Reducer 3            RUNNING    125          6      119        0       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+Reducer 7 ......   SUCCEEDED     58         58        0        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 06/08  [=====================>>-----] 82%   ELAPSED TIME: 90.18 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED    261        261        0        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED    161        161        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED     82         82        0        0       0       0
+Reducer 3 .....      RUNNING    125        117        8        0       0       0
+Reducer 4            RUNNING      1          0        1        0       0       0
+Reducer 7 ......   SUCCEEDED     58         58        0        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 06/08  [=========================>>-] 98%   ELAPSED TIME: 95.18 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[14A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED    261        261        0        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED    161        161        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED     82         82        0        0       0       0
+Reducer 3 ......   SUCCEEDED    125        125        0        0       0       0
+Reducer 4 ......   SUCCEEDED      1          1        0        0       0       0
+Reducer 7 ......   SUCCEEDED     58         58        0        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 08/08  [==========================>>] 100%  ELAPSED TIME: 97.52 s    
+[22;0m[2K--------------------------------------------------------------------------------
+INFO  : Map 1: -/-	Map 5: 0/1	Map 6: -/-	Map 8: 0/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: -/-	Map 5: 0(+1)/1	Map 6: -/-	Map 8: 0(+1)/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: -/-	Map 5: 0(+1)/1	Map 6: -/-	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: -/-	Map 5: 1/1	Map 6: -/-	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+1)/261	Map 5: 1/1	Map 6: 0/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+2)/261	Map 5: 1/1	Map 6: 0/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+2)/261	Map 5: 1/1	Map 6: 0/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+3)/261	Map 5: 1/1	Map 6: 0/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+4)/261	Map 5: 1/1	Map 6: 0/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+9)/261	Map 5: 1/1	Map 6: 0(+2)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+21)/261	Map 5: 1/1	Map 6: 0(+9)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+38)/261	Map 5: 1/1	Map 6: 0(+20)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+56)/261	Map 5: 1/1	Map 6: 0(+32)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+89)/261	Map 5: 1/1	Map 6: 0(+53)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+127)/261	Map 5: 1/1	Map 6: 0(+68)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+161)/261	Map 5: 1/1	Map 6: 0(+83)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+180)/261	Map 5: 1/1	Map 6: 0(+97)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+195)/261	Map 5: 1/1	Map 6: 0(+107)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+243)/261	Map 5: 1/1	Map 6: 0(+145)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+251)/261	Map 5: 1/1	Map 6: 0(+152)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+257)/261	Map 5: 1/1	Map 6: 0(+158)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+261)/261	Map 5: 1/1	Map 6: 0(+161)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+261)/261	Map 5: 1/1	Map 6: 0(+161)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 0(+261)/261	Map 5: 1/1	Map 6: 0(+161)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 1(+260)/261	Map 5: 1/1	Map 6: 0(+161)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 2(+259)/261	Map 5: 1/1	Map 6: 0(+161)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 2(+259)/261	Map 5: 1/1	Map 6: 0(+161)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 3(+258)/261	Map 5: 1/1	Map 6: 0(+161)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 4(+257)/261	Map 5: 1/1	Map 6: 0(+161)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 4(+257)/261	Map 5: 1/1	Map 6: 1(+160)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 5(+256)/261	Map 5: 1/1	Map 6: 1(+160)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 6(+255)/261	Map 5: 1/1	Map 6: 1(+160)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 8(+253)/261	Map 5: 1/1	Map 6: 1(+160)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 11(+250)/261	Map 5: 1/1	Map 6: 1(+160)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 14(+247)/261	Map 5: 1/1	Map 6: 2(+159)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 17(+244)/261	Map 5: 1/1	Map 6: 3(+158)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 18(+243)/261	Map 5: 1/1	Map 6: 3(+158)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 20(+241)/261	Map 5: 1/1	Map 6: 6(+155)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 25(+236)/261	Map 5: 1/1	Map 6: 9(+152)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 32(+229)/261	Map 5: 1/1	Map 6: 14(+147)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 39(+222)/261	Map 5: 1/1	Map 6: 15(+146)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 46(+215)/261	Map 5: 1/1	Map 6: 18(+143)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 52(+209)/261	Map 5: 1/1	Map 6: 23(+138)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 60(+201)/261	Map 5: 1/1	Map 6: 30(+131)/161	Map 8: 1/1	Reducer 2: 0/328	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 67(+194)/261	Map 5: 1/1	Map 6: 36(+125)/161	Map 8: 1/1	Reducer 2: 0/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0/172	
+INFO  : Map 1: 76(+185)/261	Map 5: 1/1	Map 6: 49(+112)/161	Map 8: 1/1	Reducer 2: 0(+5)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+3)/58	
+INFO  : Map 1: 89(+172)/261	Map 5: 1/1	Map 6: 56(+105)/161	Map 8: 1/1	Reducer 2: 0(+12)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+10)/58	
+INFO  : Map 1: 93(+168)/261	Map 5: 1/1	Map 6: 64(+97)/161	Map 8: 1/1	Reducer 2: 0(+18)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+15)/58	
+INFO  : Map 1: 103(+158)/261	Map 5: 1/1	Map 6: 70(+91)/161	Map 8: 1/1	Reducer 2: 0(+22)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+22)/58	
+INFO  : Map 1: 110(+151)/261	Map 5: 1/1	Map 6: 78(+83)/161	Map 8: 1/1	Reducer 2: 0(+29)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+23)/58	
+INFO  : Map 1: 121(+140)/261	Map 5: 1/1	Map 6: 84(+77)/161	Map 8: 1/1	Reducer 2: 0(+34)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+29)/58	
+INFO  : Map 1: 133(+128)/261	Map 5: 1/1	Map 6: 92(+69)/161	Map 8: 1/1	Reducer 2: 0(+39)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+36)/58	
+INFO  : Map 1: 143(+118)/261	Map 5: 1/1	Map 6: 96(+65)/161	Map 8: 1/1	Reducer 2: 0(+46)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+39)/58	
+INFO  : Map 1: 154(+107)/261	Map 5: 1/1	Map 6: 105(+56)/161	Map 8: 1/1	Reducer 2: 0(+52)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+45)/58	
+INFO  : Map 1: 163(+98)/261	Map 5: 1/1	Map 6: 109(+52)/161	Map 8: 1/1	Reducer 2: 0(+60)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+49)/58	
+INFO  : Map 1: 169(+92)/261	Map 5: 1/1	Map 6: 115(+46)/161	Map 8: 1/1	Reducer 2: 0(+63)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+51)/58	
+INFO  : Map 1: 180(+81)/261	Map 5: 1/1	Map 6: 120(+41)/161	Map 8: 1/1	Reducer 2: 0(+71)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+57)/58	
+INFO  : Map 1: 191(+70)/261	Map 5: 1/1	Map 6: 123(+38)/161	Map 8: 1/1	Reducer 2: 0(+80)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 200(+61)/261	Map 5: 1/1	Map 6: 132(+29)/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 202(+59)/261	Map 5: 1/1	Map 6: 134(+27)/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 208(+53)/261	Map 5: 1/1	Map 6: 137(+24)/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 215(+46)/261	Map 5: 1/1	Map 6: 141(+20)/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 220(+41)/261	Map 5: 1/1	Map 6: 143(+18)/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 226(+35)/261	Map 5: 1/1	Map 6: 144(+17)/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 232(+29)/261	Map 5: 1/1	Map 6: 148(+13)/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 237(+24)/261	Map 5: 1/1	Map 6: 151(+10)/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 241(+20)/261	Map 5: 1/1	Map 6: 151(+10)/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 248(+13)/261	Map 5: 1/1	Map 6: 153(+8)/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 249(+12)/261	Map 5: 1/1	Map 6: 157(+4)/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 252(+9)/261	Map 5: 1/1	Map 6: 158(+3)/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 255(+6)/261	Map 5: 1/1	Map 6: 159(+2)/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 256(+5)/261	Map 5: 1/1	Map 6: 160(+1)/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 258(+3)/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 259(+2)/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 260(+1)/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 0(+58)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 1(+57)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 1(+57)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 1(+57)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 2(+56)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 3(+55)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 4(+54)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 6(+52)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 8(+50)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 9(+49)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 11(+47)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 14(+44)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 0(+82)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 17(+41)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 1(+81)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 18(+40)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 3(+79)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 18(+40)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 3(+79)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 21(+37)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 3(+79)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 23(+35)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 3(+79)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 28(+30)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 5(+77)/82	Reducer 3: 0/500	Reducer 4: 0/1	Reducer 7: 30(+28)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 6(+76)/82	Reducer 3: 0(+4)/125	Reducer 4: 0/1	Reducer 7: 32(+26)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 7(+75)/82	Reducer 3: 0(+9)/125	Reducer 4: 0/1	Reducer 7: 33(+25)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 8(+74)/82	Reducer 3: 0(+12)/125	Reducer 4: 0/1	Reducer 7: 34(+24)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 10(+72)/82	Reducer 3: 0(+17)/125	Reducer 4: 0/1	Reducer 7: 35(+23)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 10(+72)/82	Reducer 3: 0(+18)/125	Reducer 4: 0/1	Reducer 7: 36(+22)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 15(+67)/82	Reducer 3: 0(+22)/125	Reducer 4: 0/1	Reducer 7: 36(+22)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 17(+65)/82	Reducer 3: 0(+33)/125	Reducer 4: 0/1	Reducer 7: 36(+22)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 18(+64)/82	Reducer 3: 0(+37)/125	Reducer 4: 0/1	Reducer 7: 38(+20)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 20(+62)/82	Reducer 3: 0(+40)/125	Reducer 4: 0/1	Reducer 7: 38(+20)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 22(+60)/82	Reducer 3: 0(+45)/125	Reducer 4: 0/1	Reducer 7: 38(+20)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 26(+56)/82	Reducer 3: 0(+49)/125	Reducer 4: 0/1	Reducer 7: 38(+20)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 27(+55)/82	Reducer 3: 0(+54)/125	Reducer 4: 0/1	Reducer 7: 38(+20)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 29(+53)/82	Reducer 3: 0(+59)/125	Reducer 4: 0/1	Reducer 7: 40(+18)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 31(+51)/82	Reducer 3: 0(+67)/125	Reducer 4: 0/1	Reducer 7: 42(+16)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 34(+48)/82	Reducer 3: 0(+77)/125	Reducer 4: 0/1	Reducer 7: 44(+14)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 37(+45)/82	Reducer 3: 0(+82)/125	Reducer 4: 0/1	Reducer 7: 44(+14)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 39(+43)/82	Reducer 3: 0(+86)/125	Reducer 4: 0/1	Reducer 7: 44(+14)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 41(+41)/82	Reducer 3: 0(+89)/125	Reducer 4: 0/1	Reducer 7: 45(+13)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 42(+40)/82	Reducer 3: 0(+90)/125	Reducer 4: 0/1	Reducer 7: 45(+13)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 43(+39)/82	Reducer 3: 0(+91)/125	Reducer 4: 0/1	Reducer 7: 45(+13)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 45(+37)/82	Reducer 3: 0(+93)/125	Reducer 4: 0/1	Reducer 7: 45(+13)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 46(+36)/82	Reducer 3: 0(+96)/125	Reducer 4: 0/1	Reducer 7: 47(+11)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 46(+36)/82	Reducer 3: 0(+97)/125	Reducer 4: 0/1	Reducer 7: 48(+10)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 46(+36)/82	Reducer 3: 0(+100)/125	Reducer 4: 0/1	Reducer 7: 49(+9)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 47(+35)/82	Reducer 3: 0(+103)/125	Reducer 4: 0/1	Reducer 7: 50(+8)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 47(+35)/82	Reducer 3: 0(+104)/125	Reducer 4: 0/1	Reducer 7: 50(+8)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 48(+34)/82	Reducer 3: 0(+107)/125	Reducer 4: 0/1	Reducer 7: 50(+8)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 48(+34)/82	Reducer 3: 0(+110)/125	Reducer 4: 0/1	Reducer 7: 51(+7)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 48(+34)/82	Reducer 3: 0(+114)/125	Reducer 4: 0/1	Reducer 7: 54(+4)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 49(+33)/82	Reducer 3: 0(+116)/125	Reducer 4: 0/1	Reducer 7: 55(+3)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 50(+32)/82	Reducer 3: 0(+118)/125	Reducer 4: 0/1	Reducer 7: 55(+3)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 52(+30)/82	Reducer 3: 0(+120)/125	Reducer 4: 0/1	Reducer 7: 56(+2)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 54(+28)/82	Reducer 3: 0(+121)/125	Reducer 4: 0/1	Reducer 7: 57(+1)/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 57(+25)/82	Reducer 3: 0(+122)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 58(+24)/82	Reducer 3: 0(+124)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 60(+22)/82	Reducer 3: 0(+124)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 61(+21)/82	Reducer 3: 0(+124)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 62(+20)/82	Reducer 3: 0(+125)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 63(+19)/82	Reducer 3: 0(+125)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 64(+18)/82	Reducer 3: 0(+125)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 65(+17)/82	Reducer 3: 0(+125)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 67(+15)/82	Reducer 3: 0(+125)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 71(+11)/82	Reducer 3: 0(+125)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 73(+9)/82	Reducer 3: 0(+125)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 76(+6)/82	Reducer 3: 0(+125)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 79(+3)/82	Reducer 3: 0(+125)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 81(+1)/82	Reducer 3: 0(+125)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 0(+125)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 0(+125)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 0(+125)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 0(+125)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 0(+125)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 0(+125)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 2(+123)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 3(+122)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 4(+121)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 5(+120)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 6(+119)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 7(+118)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 10(+115)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 12(+113)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 15(+110)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 18(+107)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 22(+103)/125	Reducer 4: 0/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 29(+96)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 37(+88)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 41(+84)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 48(+77)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 53(+72)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 58(+67)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 62(+63)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 69(+56)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 77(+48)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 84(+41)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 90(+35)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 94(+31)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 100(+25)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 106(+19)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 108(+17)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 115(+10)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 117(+8)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 121(+4)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 124(+1)/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 125/125	Reducer 4: 0(+1)/1	Reducer 7: 58/58	
+INFO  : Map 1: 261/261	Map 5: 1/1	Map 6: 161/161	Map 8: 1/1	Reducer 2: 82/82	Reducer 3: 125/125	Reducer 4: 1/1	Reducer 7: 58/58	
+INFO  : Status: DAG finished successfully in 97.47 seconds
+INFO  : 
+INFO  : Query Execution Summary
+INFO  : --------------------------------------------------------------------------------
+INFO  : OPERATION                            DURATION
+INFO  : --------------------------------------------------------------------------------
+INFO  : Compile Query                           1.12s
+INFO  : Prepare Plan                            4.42s
+INFO  : Submit Plan                             0.26s
+INFO  : Start DAG                               0.44s
+INFO  : Run DAG                                97.47s
+INFO  : --------------------------------------------------------------------------------
+INFO  : 
+INFO  : Task Execution Summary
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  :   VERTICES  TOTAL_TASKS  FAILED_ATTEMPTS  KILLED_TASKS   DURATION(ms)  CPU_TIME(ms)  GC_TIME(ms)  INPUT_RECORDS  OUTPUT_RECORDS
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  :      Map 1          261                0             0       93196.00     7,117,860      322,442            366     551,643,993
+INFO  :      Map 5            1                0             0       95435.00         3,470           30         10,000             366
+INFO  :      Map 6          161                0             0       89255.00     4,236,830      202,498            366     285,834,358
+INFO  :      Map 8            1                0             0       95436.00         3,460           26         10,000             366
+INFO  :  Reducer 2           82                0             0       63339.00     3,579,590       39,173    551,643,993     538,850,415
+INFO  :  Reducer 3          125                0             0       39333.00     4,383,270       30,060    824,148,262             125
+INFO  :  Reducer 4            1                0             0        5677.00           570            0            125               0
+INFO  :  Reducer 7           58                0             0       63339.00     1,964,690       25,551    285,834,358     285,297,847
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : org.apache.tez.common.counters.DAGCounter:
+INFO  :    NUM_SUCCEEDED_TASKS: 690
+INFO  :    TOTAL_LAUNCHED_TASKS: 690
+INFO  :    DATA_LOCAL_TASKS: 421
+INFO  :    RACK_LOCAL_TASKS: 3
+INFO  :    AM_CPU_MILLISECONDS: 63490
+INFO  :    AM_GC_TIME_MILLIS: 783
+INFO  : File System Counters:
+INFO  :    FILE_BYTES_READ: 16376320319
+INFO  :    FILE_BYTES_WRITTEN: 29062273564
+INFO  :    HDFS_BYTES_READ: 2976754210
+INFO  :    HDFS_BYTES_WRITTEN: 26
+INFO  :    HDFS_READ_OPS: 1470
+INFO  :    HDFS_WRITE_OPS: 2
+INFO  :    HDFS_OP_CREATE: 1
+INFO  :    HDFS_OP_GET_FILE_STATUS: 2
+INFO  :    HDFS_OP_OPEN: 1468
+INFO  :    HDFS_OP_RENAME: 1
+INFO  : org.apache.tez.common.counters.TaskCounter:
+INFO  :    REDUCE_INPUT_GROUPS: 1648296525
+INFO  :    REDUCE_INPUT_RECORDS: 1661626738
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    SPILLED_RECORDS: 3336338770
+INFO  :    NUM_SHUFFLED_INPUTS: 176347
+INFO  :    NUM_SKIPPED_INPUTS: 7500
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    MERGED_MAP_OUTPUTS: 175925
+INFO  :    GC_TIME_MILLIS: 619780
+INFO  :    CPU_MILLISECONDS: 21289740
+INFO  :    PHYSICAL_MEMORY_BYTES: 1670729695232
+INFO  :    VIRTUAL_MEMORY_BYTES: 3896692543488
+INFO  :    COMMITTED_HEAP_BYTES: 1670729695232
+INFO  :    INPUT_RECORDS_PROCESSED: 972806
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 41133533966
+INFO  :    OUTPUT_RECORDS: 1661627470
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_BYTES: 18221520432
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 21545875934
+INFO  :    OUTPUT_BYTES_PHYSICAL: 16528454965
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 8431771488
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 14604455564
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    SHUFFLE_CHUNK_COUNT: 687
+INFO  :    SHUFFLE_BYTES: 16528928197
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 21546909494
+INFO  :    SHUFFLE_BYTES_TO_MEM: 14453806352
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 2075121845
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    SHUFFLE_PHASE_TIME: 3234582
+INFO  :    MERGE_PHASE_TIME: 4014050
+INFO  :    FIRST_EVENT_RECEIVED: 442983
+INFO  :    LAST_EVENT_RECEIVED: 3010173
+INFO  : HIVE:
+INFO  :    CREATED_FILES: 1
+INFO  :    DESERIALIZE_ERRORS: 0
+INFO  :    RECORDS_IN_Map_1: 0
+INFO  :    RECORDS_IN_Map_5: 10000
+INFO  :    RECORDS_IN_Map_6: 0
+INFO  :    RECORDS_IN_Map_8: 10000
+INFO  :    RECORDS_OUT_0: 1
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_1: 551643993
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_5: 366
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_6: 285834358
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_8: 366
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_2: 538850415
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_3: 125
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_7: 285297847
+INFO  : Shuffle Errors:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_2_INPUT_Map_1:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_3_INPUT_Reducer_2:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_3_INPUT_Reducer_7:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_4_INPUT_Reducer_3:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_7_INPUT_Map_6:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : TaskCounter_Map_1_INPUT_Map_5:
+INFO  :    FIRST_EVENT_RECEIVED: 264632
+INFO  :    INPUT_RECORDS_PROCESSED: 95526
+INFO  :    LAST_EVENT_RECEIVED: 264632
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 261
+INFO  :    SHUFFLE_BYTES: 387324
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 670248
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 48972
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 338352
+INFO  :    SHUFFLE_PHASE_TIME: 303878
+INFO  : TaskCounter_Map_1_INPUT_store_sales:
+INFO  :    INPUT_RECORDS_PROCESSED: 538983
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 24327167350
+INFO  : TaskCounter_Map_1_OUTPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 6016109611
+INFO  :    OUTPUT_BYTES_PHYSICAL: 5446863911
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 7119911245
+INFO  :    OUTPUT_RECORDS: 551643993
+INFO  :    SHUFFLE_CHUNK_COUNT: 261
+INFO  :    SPILLED_RECORDS: 551643993
+INFO  : TaskCounter_Map_5_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 10
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 361420
+INFO  : TaskCounter_Map_5_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1830
+INFO  :    OUTPUT_BYTES_PHYSICAL: 1508
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 2568
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 366
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_6_INPUT_Map_8:
+INFO  :    FIRST_EVENT_RECEIVED: 164916
+INFO  :    INPUT_RECORDS_PROCESSED: 58926
+INFO  :    LAST_EVENT_RECEIVED: 164916
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 161
+INFO  :    SHUFFLE_BYTES: 238924
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 413448
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 28196
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 210728
+INFO  :    SHUFFLE_PHASE_TIME: 191162
+INFO  : TaskCounter_Map_6_INPUT_catalog_sales:
+INFO  :    INPUT_RECORDS_PROCESSED: 279351
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 16805643776
+INFO  : TaskCounter_Map_6_OUTPUT_Reducer_7:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 3141303274
+INFO  :    OUTPUT_BYTES_PHYSICAL: 2836826923
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 3713138142
+INFO  :    OUTPUT_RECORDS: 285834358
+INFO  :    SHUFFLE_CHUNK_COUNT: 161
+INFO  :    SPILLED_RECORDS: 285834358
+INFO  : TaskCounter_Map_8_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 10
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 361420
+INFO  : TaskCounter_Map_8_OUTPUT_Map_6:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1830
+INFO  :    OUTPUT_BYTES_PHYSICAL: 1508
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 2568
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 366
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_2_INPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 4778022120
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 3992
+INFO  :    LAST_EVENT_RECEIVED: 475164
+INFO  :    MERGED_MAP_OUTPUTS: 85608
+INFO  :    MERGE_PHASE_TIME: 1033588
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 85608
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 538850415
+INFO  :    REDUCE_INPUT_RECORDS: 551643993
+INFO  :    SHUFFLE_BYTES: 5446863911
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 7119911245
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 680382721
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 4766481190
+INFO  :    SHUFFLE_PHASE_TIME: 497148
+INFO  :    SPILLED_RECORDS: 564729287
+INFO  : TaskCounter_Reducer_2_OUTPUT_Reducer_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 5926554565
+INFO  :    OUTPUT_BYTES_PHYSICAL: 5389169064
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 7004501395
+INFO  :    OUTPUT_RECORDS: 538850415
+INFO  :    SHUFFLE_CHUNK_COUNT: 82
+INFO  :    SPILLED_RECORDS: 538850415
+INFO  : TaskCounter_Reducer_3_INPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 4758919700
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 4086404806
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 4825
+INFO  :    LAST_EVENT_RECEIVED: 1295069
+INFO  :    MERGED_MAP_OUTPUTS: 41000
+INFO  :    MERGE_PHASE_TIME: 1633770
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 41000
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 538850415
+INFO  :    REDUCE_INPUT_RECORDS: 538850415
+INFO  :    SHUFFLE_BYTES: 5389169064
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 7004501395
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 672514894
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 4716654170
+INFO  :    SHUFFLE_PHASE_TIME: 1303859
+INFO  :    SPILLED_RECORDS: 538850415
+INFO  : TaskCounter_Reducer_3_INPUT_Reducer_7:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 2572659762
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 2200776997
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 2007
+INFO  :    LAST_EVENT_RECEIVED: 544861
+INFO  :    MERGED_MAP_OUTPUTS: 21500
+INFO  :    MERGE_PHASE_TIME: 784758
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 21500
+INFO  :    NUM_SKIPPED_INPUTS: 7500
+INFO  :    REDUCE_INPUT_GROUPS: 285297847
+INFO  :    REDUCE_INPUT_RECORDS: 285297847
+INFO  :    SHUFFLE_BYTES: 2855437676
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 3708272391
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 371882765
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 2483554911
+INFO  :    SHUFFLE_PHASE_TIME: 599690
+INFO  :    SPILLED_RECORDS: 285297847
+INFO  : TaskCounter_Reducer_3_OUTPUT_Reducer_4:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1625
+INFO  :    OUTPUT_BYTES_PHYSICAL: 4375
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 2625
+INFO  :    OUTPUT_RECORDS: 125
+INFO  :    SHUFFLE_CHUNK_COUNT: 125
+INFO  :    SPILLED_RECORDS: 125
+INFO  : TaskCounter_Reducer_4_INPUT_Reducer_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 1819
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 1189
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 1
+INFO  :    LAST_EVENT_RECEIVED: 5217
+INFO  :    MERGED_MAP_OUTPUTS: 125
+INFO  :    MERGE_PHASE_TIME: 5226
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 125
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 1
+INFO  :    REDUCE_INPUT_RECORDS: 125
+INFO  :    SHUFFLE_BYTES: 4375
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 2625
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 630
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 3745
+INFO  :    SHUFFLE_PHASE_TIME: 5218
+INFO  :    SPILLED_RECORDS: 125
+INFO  : TaskCounter_Reducer_4_OUTPUT_out_Reducer_4:
+INFO  :    OUTPUT_RECORDS: 0
+INFO  : TaskCounter_Reducer_7_INPUT_Map_6:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 2494852163
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 2144588496
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 2610
+INFO  :    LAST_EVENT_RECEIVED: 260314
+INFO  :    MERGED_MAP_OUTPUTS: 27692
+INFO  :    MERGE_PHASE_TIME: 556708
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 27692
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 285297847
+INFO  :    REDUCE_INPUT_RECORDS: 285834358
+INFO  :    SHUFFLE_BYTES: 2836826923
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 3713138142
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 350263667
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 2486563256
+INFO  :    SHUFFLE_PHASE_TIME: 333627
+INFO  :    SPILLED_RECORDS: 285834358
+INFO  : TaskCounter_Reducer_7_OUTPUT_Reducer_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 3137547697
+INFO  :    OUTPUT_BYTES_PHYSICAL: 2855587676
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 3708317391
+INFO  :    OUTPUT_RECORDS: 285297847
+INFO  :    SHUFFLE_CHUNK_COUNT: 58
+INFO  :    SPILLED_RECORDS: 285297847
++-------------+---------------+--------------------+--+
+| store_only  | catalog_only  | store_and_catalog  |
++-------------+---------------+--------------------+--+
+| 538572788   | 285038065     | 77627              |
++-------------+---------------+--------------------+--+
+1 row selected (103.807 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_1000;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+STOP hdp2.6_hivetez_run_2_1000_query97_sql_2017-04-07-05-55:  Fri Apr 7 05:57:45 CDT 2017

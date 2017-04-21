@@ -1,0 +1,221 @@
+START hdp2.6_llap_after_analyze100_query80_sql_2017-04-04-17-36:  Tue Apr 4 17:36:44 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2" -n hive --incremental=true -i test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+Connected to: Apache Hive (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.041 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> with ssr as
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  (select  s_store_id as store_id,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           sum(ss_ext_sales_price) as sales,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           sum(coalesce(sr_return_amt, 0)) as returns,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           sum(ss_net_profit - coalesce(sr_net_loss, 0)) as profit
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   from store_sales left outer join store_returns on
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          (ss_item_sk = sr_item_sk and ss_ticket_number = sr_ticket_number),
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      date_dim,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      store,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      item,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      promotion
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where ss_sold_date_sk = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        and d_date between cast('1998-08-04' as date) 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                   and (cast('1998-09-04' as date))
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        and ss_store_sk = s_store_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        and ss_item_sk = i_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        and i_current_price > 50
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        and ss_promo_sk = p_promo_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        and p_channel_tv = 'N'
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  group by s_store_id)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  csr as
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  (select  cp_catalog_page_id as catalog_page_id,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           sum(cs_ext_sales_price) as sales,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           sum(coalesce(cr_return_amount, 0)) as returns,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           sum(cs_net_profit - coalesce(cr_net_loss, 0)) as profit
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   from catalog_sales left outer join catalog_returns on
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          (cs_item_sk = cr_item_sk and cs_order_number = cr_order_number),
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      date_dim,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      catalog_page,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      item,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      promotion
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where cs_sold_date_sk = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        and d_date between cast('1998-08-04' as date)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                   and (cast('1998-09-04' as date))
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         and cs_catalog_page_sk = cp_catalog_page_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        and cs_item_sk = i_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        and i_current_price > 50
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        and cs_promo_sk = p_promo_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        and p_channel_tv = 'N'
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> group by cp_catalog_page_id)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  wsr as
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  (select  web_site_id,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           sum(ws_ext_sales_price) as sales,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           sum(coalesce(wr_return_amt, 0)) as returns,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           sum(ws_net_profit - coalesce(wr_net_loss, 0)) as profit
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   from web_sales left outer join web_returns on
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          (ws_item_sk = wr_item_sk and ws_order_number = wr_order_number),
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      date_dim,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      web_site,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      item,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      promotion
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where ws_sold_date_sk = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        and d_date between cast('1998-08-04' as date)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                   and (cast('1998-09-04' as date))
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         and ws_web_site_sk = web_site_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        and ws_item_sk = i_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        and i_current_price > 50
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        and ws_promo_sk = p_promo_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        and p_channel_tv = 'N'
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> group by web_site_id)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   select  channel
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         , id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         , sum(sales) as sales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         , sum(returns) as returns
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         , sum(profit) as profit
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  (select 'store channel' as channel
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         , concat('store', store_id) as id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         , sales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         , returns
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         , profit
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from   ssr
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  union all
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  select 'catalog channel' as channel
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         , concat('catalog_page', catalog_page_id) as id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         , sales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         , returns
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         , profit
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from  csr
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  union all
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  select 'web channel' as channel
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         , concat('web_site', web_site_id) as id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         , sales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         , returns
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         , profit
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from   wsr
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ) x
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  group by channel, id with rollup
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  order by channel
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          ,id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  limit 100;
++------------------+-------------------------------+-----------------------+-----------------------+------------------------+--+
+|     channel      |              id               |         sales         |        returns        |         profit         |
++------------------+-------------------------------+-----------------------+-----------------------+------------------------+--+
+| NULL             | NULL                          | 1.3617037624084105E9  | 6.71962718418043E7    | -3.9307089776387715E8  |
+| catalog channel  | NULL                          | 4.7025575928168404E8  | 2.3219963677854627E7  | -6.0698765663550854E7  |
+| catalog channel  | catalog_pageAAAAAAAAAABAAAAA  | 1231947.4179814458    | 44818.120515584946    | -126331.44842541218    |
+| catalog channel  | catalog_pageAAAAAAAAAACAAAAA  | 603923.8693673611     | 30116.700073242188    | -102778.78073108196    |
+| catalog channel  | catalog_pageAAAAAAAAAAFAAAAA  | 28407.890426635742    | 1116.7099609375       | -25832.540378570557    |
+| catalog channel  | catalog_pageAAAAAAAAABBAAAAA  | 1327264.0871417522    | 51804.49001789093     | -145997.00022155046    |
+| catalog channel  | catalog_pageAAAAAAAAABCAAAAA  | 582089.520550251      | 32226.409768104553    | -93651.7702973485      |
+| catalog channel  | catalog_pageAAAAAAAAABFAAAAA  | 41866.290367126465    | 0.0                   | 65.86003470420837      |
+| catalog channel  | catalog_pageAAAAAAAAACBAAAAA  | 1267399.6395204067    | 65309.329421043396    | -193151.5698542595     |
+| catalog channel  | catalog_pageAAAAAAAAACCAAAAA  | 654002.6365332603     | 20794.290019989014    | -118011.0007506609     |
+| catalog channel  | catalog_pageAAAAAAAAACFAAAAA  | 71717.8097372055      | 1958.0000610351562    | 14777.970226347446     |
+| catalog channel  | catalog_pageAAAAAAAAADBAAAAA  | 1178343.553753093     | 75147.79999637604     | -201969.92074143887    |
+| catalog channel  | catalog_pageAAAAAAAAADCAAAAA  | 661799.3586807251     | 18545.65003967285     | -42419.9383148849      |
+| catalog channel  | catalog_pageAAAAAAAAADFAAAAA  | 513502.3708810806     | 11024.370232582092    | -41670.659532666206    |
+| catalog channel  | catalog_pageAAAAAAAAAEBAAAAA  | 1120319.7501186728    | 56248.57083797455     | -155197.54099988937    |
+| catalog channel  | catalog_pageAAAAAAAAAEFAAAAA  | 578379.419408232      | 33367.31023311615     | -96023.2104524672      |
+| catalog channel  | catalog_pageAAAAAAAAAFBAAAAA  | 1193290.2197806835    | 61351.060150146484    | -247499.75935697556    |
+| catalog channel  | catalog_pageAAAAAAAAAFFAAAAA  | 582013.8625411987     | 18023.21995449066     | -42542.599823221564    |
+| catalog channel  | catalog_pageAAAAAAAAAGBAAAAA  | 1430672.5117242336    | 62692.72048723698     | -120675.91108059883    |
+| catalog channel  | catalog_pageAAAAAAAAAGFAAAAA  | 510513.8623199463     | 33453.499473810196    | -72022.83942270279     |
+| catalog channel  | catalog_pageAAAAAAAAAHBAAAAA  | 1282986.239189148     | 62904.55976676941     | -172520.88183951378    |
+| catalog channel  | catalog_pageAAAAAAAAAHEAAAAA  | 94956.48991394043     | 2852.560001373291     | -8793.350368499756     |
+| catalog channel  | catalog_pageAAAAAAAAAHFAAAAA  | 493536.12849617004    | 45920.829862594604    | -92032.66976165771     |
+| catalog channel  | catalog_pageAAAAAAAAAIBAAAAA  | 632377.7608528137     | 21480.950039863586    | -111186.92010313272    |
+| catalog channel  | catalog_pageAAAAAAAAAIEAAAAA  | 92874.06968688965     | 1786.5600337982178    | -4680.700419425964     |
+| catalog channel  | catalog_pageAAAAAAAAAIFAAAAA  | 502338.45035529137    | 18660.200038909912    | -63086.17956262827     |
+| catalog channel  | catalog_pageAAAAAAAAAJBAAAAA  | 558660.3901124        | 31467.979942321777    | -115922.6001420021     |
+| catalog channel  | catalog_pageAAAAAAAAAJEAAAAA  | 26823.520027160645    | 0.0                   | -7963.499682664871     |
+| catalog channel  | catalog_pageAAAAAAAAAJFAAAAA  | 600822.9889740944     | 28582.050443649292    | -126550.16969704628    |
+| catalog channel  | catalog_pageAAAAAAAAAKBAAAAA  | 577849.5776910782     | 64447.22998911142     | -33464.969504356384    |
+| catalog channel  | catalog_pageAAAAAAAAAKEAAAAA  | 60292.12972640991     | 495.8999938964844     | -10130.200393676758    |
+| catalog channel  | catalog_pageAAAAAAAAAKFAAAAA  | 539333.3000094891     | 31824.339916229248    | -64362.269348323345    |
+| catalog channel  | catalog_pageAAAAAAAAALBAAAAA  | 636675.8415446281     | 17108.799606323242    | -76618.67158508301     |
+| catalog channel  | catalog_pageAAAAAAAAALEAAAAA  | 52421.98036193848     | 52.349998474121094    | 8617.350212097168      |
+| catalog channel  | catalog_pageAAAAAAAAALFAAAAA  | 652407.4273309708     | 70529.24890136719     | -49569.50118970871     |
+| catalog channel  | catalog_pageAAAAAAAAAMAAAAAA  | 1097422.6884512901    | 54139.47955751419     | -194870.76796758175    |
+| catalog channel  | catalog_pageAAAAAAAAAMBAAAAA  | 609223.279844284      | 25626.710111618042    | -82951.13984251022     |
+| catalog channel  | catalog_pageAAAAAAAAAMEAAAAA  | 79883.9794883728      | 61.709999084472656    | -1167.3398733139038    |
+| catalog channel  | catalog_pageAAAAAAAAAMFAAAAA  | 516943.7208766937     | 18176.61017179489     | -81439.48056674004     |
+| catalog channel  | catalog_pageAAAAAAAAANAAAAAA  | 1133202.5778985023    | 41012.9603395462      | -110383.98106408119    |
+| catalog channel  | catalog_pageAAAAAAAAANBAAAAA  | 608072.8805246353     | 25067.54011631012     | -70353.42018845677     |
+| catalog channel  | catalog_pageAAAAAAAAANEAAAAA  | 53813.43013000488     | 197.8000030517578     | -10724.569921314716    |
+| catalog channel  | catalog_pageAAAAAAAAANFAAAAA  | 416377.12854385376    | 17202.390120506287    | -120877.74010109901    |
+| catalog channel  | catalog_pageAAAAAAAAAOAAAAAA  | 1355902.9299211502    | 97207.39926719666     | -127837.22970211506    |
+| catalog channel  | catalog_pageAAAAAAAAAOBAAAAA  | 599884.7492021322     | 50691.889985084534    | -22058.247571974993    |
+| catalog channel  | catalog_pageAAAAAAAAAOEAAAAA  | 39534.660415649414    | 66.83999633789062     | -1641.9703180789948    |
+| catalog channel  | catalog_pageAAAAAAAAAOFAAAAA  | 547032.9486169815     | 23691.539716959       | -52189.660595715046    |
+| catalog channel  | catalog_pageAAAAAAAAAPAAAAAA  | 1110911.3106651306    | 77179.56054401398     | -183376.23934534192    |
+| catalog channel  | catalog_pageAAAAAAAAAPBAAAAA  | 627854.8704401255     | 17264.830097198486    | -72536.9416668415      |
+| catalog channel  | catalog_pageAAAAAAAAAPEAAAAA  | 117380.68011182547    | 8270.449890136719     | 8846.64052772522       |
+| catalog channel  | catalog_pageAAAAAAAABABAAAAA  | 1239543.6093066335    | 61368.240419626236    | -162396.1392787695     |
+| catalog channel  | catalog_pageAAAAAAAABACAAAAA  | 603974.8105077744     | 49802.54001522064     | -36626.309935092926    |
+| catalog channel  | catalog_pageAAAAAAAABAFAAAAA  | 41134.37022399902     | 2377.999984741211     | -20551.829627990723    |
+| catalog channel  | catalog_pageAAAAAAAABBBAAAAA  | 1265136.611647129     | 57735.72964477539     | -171695.92051023245    |
+| catalog channel  | catalog_pageAAAAAAAABBCAAAAA  | 609726.8002009392     | 41397.029733777046    | -91395.65024504066     |
+| catalog channel  | catalog_pageAAAAAAAABBFAAAAA  | 64433.02011489868     | 4179.21005821228      | -31485.989674568176    |
+| catalog channel  | catalog_pageAAAAAAAABCBAAAAA  | 1252513.8796834946    | 72993.33067941666     | -173867.96862125397    |
+| catalog channel  | catalog_pageAAAAAAAABCCAAAAA  | 715843.4610414505     | 27350.849866867065    | -113634.77818512917    |
+| catalog channel  | catalog_pageAAAAAAAABCFAAAAA  | 94284.52062606812     | 3626.419921875        | 9187.669761657715      |
+| catalog channel  | catalog_pageAAAAAAAABDBAAAAA  | 1386991.3887293339    | 91812.19029450417     | -45508.009747982025    |
+| catalog channel  | catalog_pageAAAAAAAABDCAAAAA  | 801265.2076007724     | 30234.550117969513    | -49574.04048100114     |
+| catalog channel  | catalog_pageAAAAAAAABDFAAAAA  | 527718.7324876785     | 68062.4711151123      | -114155.33923101425    |
+| catalog channel  | catalog_pageAAAAAAAABEBAAAAA  | 1267452.520934403     | 95699.45907211304     | -138729.63191354275    |
+| catalog channel  | catalog_pageAAAAAAAABEFAAAAA  | 634497.5912818909     | 18396.70969772339     | -29534.751843690872    |
+| catalog channel  | catalog_pageAAAAAAAABFBAAAAA  | 1356147.2905707955    | 69257.61972999573     | -105320.49916800857    |
+| catalog channel  | catalog_pageAAAAAAAABFFAAAAA  | 635909.610499382      | 22007.050144195557    | -32685.178438186646    |
+| catalog channel  | catalog_pageAAAAAAAABGBAAAAA  | 1212895.2100827694    | 54265.20011138916     | -122447.21264183521    |
+| catalog channel  | catalog_pageAAAAAAAABGFAAAAA  | 629190.8774766922     | 26018.020614624023    | -60220.85039627552     |
+| catalog channel  | catalog_pageAAAAAAAABHBAAAAA  | 1155577.4579453468    | 49296.350048065186    | -250100.39952874184    |
+| catalog channel  | catalog_pageAAAAAAAABHEAAAAA  | 51925.15979766846     | 253.52000427246094    | 1225.840263724327      |
+| catalog channel  | catalog_pageAAAAAAAABHFAAAAA  | 563560.0582222939     | 13589.349796295166    | -85619.99949002266     |
+| catalog channel  | catalog_pageAAAAAAAABIBAAAAA  | 618051.9677283764     | 13732.610049247742    | -69564.48967075348     |
+| catalog channel  | catalog_pageAAAAAAAABIEAAAAA  | 62530.79108929634     | 0.0                   | 287.9100909233093      |
+| catalog channel  | catalog_pageAAAAAAAABIFAAAAA  | 647344.8592963219     | 29197.67984008789     | -42964.3086502552      |
+| catalog channel  | catalog_pageAAAAAAAABJBAAAAA  | 577265.5997271538     | 20517.36029815674     | -45737.01967281103     |
+| catalog channel  | catalog_pageAAAAAAAABJEAAAAA  | 32732.76947402954     | 245.6999969482422     | -13126.849948883057    |
+| catalog channel  | catalog_pageAAAAAAAABJFAAAAA  | 481084.4585442543     | 32496.10984134674     | -133843.55890870094    |
+| catalog channel  | catalog_pageAAAAAAAABKBAAAAA  | 577634.0681679249     | 14984.610314130783    | -103279.08995103836    |
+| catalog channel  | catalog_pageAAAAAAAABKEAAAAA  | 55589.93029022217     | 888.3100128173828     | -13939.350248336792    |
+| catalog channel  | catalog_pageAAAAAAAABKFAAAAA  | 632363.841270566      | 23239.29009246826     | -23439.009078502655    |
+| catalog channel  | catalog_pageAAAAAAAABLBAAAAA  | 682850.1891444325     | 24810.190348148346    | -48109.39013206959     |
+| catalog channel  | catalog_pageAAAAAAAABLEAAAAA  | 44828.53003692627     | 74.80000305175781     | -22361.999546051025    |
+| catalog channel  | catalog_pageAAAAAAAABLFAAAAA  | 587341.9113564491     | 16047.449905395508    | -95831.44023609161     |
+| catalog channel  | catalog_pageAAAAAAAABMAAAAAA  | 1341337.9699378014    | 99011.06961685419     | -169775.66457641125    |
+| catalog channel  | catalog_pageAAAAAAAABMBAAAAA  | 587720.2095456123     | 20035.440159201622    | -133888.1095497012     |
+| catalog channel  | catalog_pageAAAAAAAABMEAAAAA  | 38611.899909973145    | 3643.760009765625     | -18714.17002081871     |
+| catalog channel  | catalog_pageAAAAAAAABMFAAAAA  | 497390.5201392174     | 18142.14998626709     | -65689.84072089195     |
+| catalog channel  | catalog_pageAAAAAAAABNAAAAAA  | 1467615.1877863407    | 72994.5403573513      | -183669.27999544144    |
+| catalog channel  | catalog_pageAAAAAAAABNBAAAAA  | 671358.8425098658     | 17226.14033985138     | -65709.21966600418     |
+| catalog channel  | catalog_pageAAAAAAAABNEAAAAA  | 43704.80984210968     | 2.700000047683716     | -883.8999042510986     |
+| catalog channel  | catalog_pageAAAAAAAABNFAAAAA  | 505062.1001148224     | 28939.150316476822    | -88597.44932249002     |
+| catalog channel  | catalog_pageAAAAAAAABOAAAAAA  | 1226009.8303313255    | 64154.289611816406    | -293390.3290054798     |
+| catalog channel  | catalog_pageAAAAAAAABOBAAAAA  | 668699.7396166325     | 34192.81978082657     | -82704.73982870579     |
+| catalog channel  | catalog_pageAAAAAAAABOEAAAAA  | 57327.13042926788     | 0.0                   | -4958.5603613853455    |
+| catalog channel  | catalog_pageAAAAAAAABPAAAAAA  | 1327654.063438654     | 59333.280594587326    | -53945.8095805496      |
+| catalog channel  | catalog_pageAAAAAAAABPBAAAAA  | 668039.7134462595     | 38988.06986618042     | -69641.42889523506     |
+| catalog channel  | catalog_pageAAAAAAAABPEAAAAA  | 65620.87977099419     | 4783.939968109131     | -1926.4298572540283    |
+| catalog channel  | catalog_pageAAAAAAAACABAAAAA  | 1373194.4499015808    | 70631.7201461792      | -323490.3109357916     |
+| catalog channel  | catalog_pageAAAAAAAACACAAAAA  | 616692.2011361122     | 30508.77003479004     | -69195.1804497242      |
+| catalog channel  | catalog_pageAAAAAAAACAFAAAAA  | 78256.9298171997      | 1544.269941329956     | 4008.8998699188232     |
++------------------+-------------------------------+-----------------------+-----------------------+------------------------+--+
+100 rows selected (10.457 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+STOP hdp2.6_llap_after_analyze100_query80_sql_2017-04-04-17-36:  Tue Apr 4 17:36:58 CDT 2017
+
+ South Results Number of Nodes:  9
+ Avg CPU Busy:   Peak Cpu Avg:  100.000 Count > 90% Busy:  0
+ Avg Disk Busy:   Peak Disk Avg:  0 Count > 90% busy 0
+ Avg Disk Reads per sec:   Avg Write per sec: 
+ Avg Net TX:    Peak TX Avg: 
+ Avg Net RX:    Peak RX Avg: 
+ Mem Utilized: 
+South CSV
+| 100.000 | 0 | | 0 | 0 | | | | | | |

@@ -1,0 +1,61 @@
+START hdp2.6_spark21_run_1000_1_query68_sql_2017-04-08-20-57:  Sat Apr 8 20:57:09 CDT 2017
+ /usr/hdp/current/spark2-client/bin/beeline -u "jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_$SF" -n hive --incremental=true  -i settings/spark.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_1000
+17/04/08 20:57:09 INFO Utils: Supplied authorities: h01hn02.hadoop:10016
+17/04/08 20:57:09 INFO Utils: Resolved authority: h01hn02.hadoop:10016
+17/04/08 20:57:09 INFO HiveConnection: Will try to open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_1000
+Connected to: Spark SQL (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1.spark2.hdp)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script settings/spark.settings
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> select  c_last_name
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,c_first_name
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,ca_city
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,bought_city
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,ss_ticket_number
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,extended_price
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,extended_tax
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,list_price
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  from (select ss_ticket_number
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,ss_customer_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,ca_city bought_city
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,sum(ss_ext_sales_price) extended_price 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,sum(ss_ext_list_price) list_price
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ,sum(ss_ext_tax) extended_tax 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        from store_sales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>            ,date_dim
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>            ,store
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>            ,household_demographics
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>            ,customer_address 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        where store_sales.ss_sold_date_sk = date_dim.d_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and store_sales.ss_store_sk = store.s_store_sk  
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         and store_sales.ss_hdemo_sk = household_demographics.hd_demo_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         and store_sales.ss_addr_sk = customer_address.ca_address_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         and date_dim.d_dom between 1 and 2 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         and (household_demographics.hd_dep_count = 4 or
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              household_demographics.hd_vehicle_count= 2)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         and date_dim.d_year in (1998,1998+1,1998+2)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         and store.s_city in ('Rosedale','Bethlehem')
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        group by ss_ticket_number
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                ,ss_customer_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                ,ss_addr_sk,ca_city) dn
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>       ,customer
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>       ,customer_address current_addr
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  where dn.ss_customer_sk = customer.c_customer_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>    and customer.c_current_addr_sk = current_addr.ca_address_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>    and current_addr.ca_city <> bought_city
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  order by c_last_name
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          ,ss_ticket_number
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  limit 100;
++-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+--+
+|   c_last_name   |  c_first_name   |     ca_city     |   bought_city   | ss_ticket_number | extended_price  |  extended_tax   |   list_price    |
++-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+--+
++-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+--+
+No rows selected (15.005 seconds)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+Closing: 0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_1000
+STOP hdp2.6_spark21_run_1000_1_query68_sql_2017-04-08-20-57:  Sat Apr 8 20:57:24 CDT 2017

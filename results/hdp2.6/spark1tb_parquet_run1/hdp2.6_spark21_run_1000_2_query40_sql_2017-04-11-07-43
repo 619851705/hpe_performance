@@ -1,0 +1,144 @@
+START hdp2.6_spark21_run_1000_2_query40_sql_2017-04-11-07-43:  Tue Apr 11 07:43:41 CDT 2017
+Connecting to jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_1000
+17/04/11 07:43:41 INFO Utils: Supplied authorities: h01hn02.hadoop:10016
+17/04/11 07:43:41 INFO Utils: Resolved authority: h01hn02.hadoop:10016
+17/04/11 07:43:41 INFO HiveConnection: Will try to open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_1000
+Connected to: Spark SQL (version 2.1.0.2.6.0.3-8)
+Driver: Hive JDBC (version 1.2.1.spark2.hdp)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script settings/spark.settings
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> select  
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>    w_state
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   ,i_item_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   ,sum(case when (cast(d_date as date) < cast ('1998-04-08' as date)) 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  then cs_sales_price - coalesce(cr_refunded_cash,0) else 0 end) as sales_before
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   ,sum(case when (cast(d_date as date) >= cast ('1998-04-08' as date)) 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  then cs_sales_price - coalesce(cr_refunded_cash,0) else 0 end) as sales_after
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  from
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>    catalog_sales left outer join catalog_returns on
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        (catalog_sales.cs_order_number = catalog_returns.cr_order_number 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         and catalog_sales.cs_item_sk = catalog_returns.cr_item_sk)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   ,warehouse 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   ,item
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   ,date_dim
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  where
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>      i_current_price between 0.99 and 1.49
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and item.i_item_sk          = catalog_sales.cs_item_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and catalog_sales.cs_warehouse_sk    = warehouse.w_warehouse_sk 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and catalog_sales.cs_sold_date_sk    = date_dim.d_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and date_dim.d_date between '1998-03-09' and '1998-05-08'
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  group by
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     w_state,i_item_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  order by w_state,i_item_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> limit 100;
++-----------------+-----------------+-----------------+-----------------+--+
+|     w_state     |    i_item_id    |  sales_before   |   sales_after   |
++-----------------+-----------------+-----------------+-----------------+--+
+| AL              | AAAAAAAAAAAACAAA | -825.2800335884094 | -952.6400468349457 |
+| AL              | AAAAAAAAAAADCAAA | 537.7199954986572 | 200.49000358581543 |
+| AL              | AAAAAAAAAAANAAAA | 360.2300045490265 | -509.16000175476074 |
+| AL              | AAAAAAAAAABFBAAA | 478.58000802993774 | -381.5799951553345 |
+| AL              | AAAAAAAAAABJDAAA | 530.989990234375 | -45.17998653650284 |
+| AL              | AAAAAAAAAABPBAAA | 199.45999956130981 | 86.89002323150635 |
+| AL              | AAAAAAAAAACCEAAA | 284.4799919128418 | 805.9400053024292 |
+| AL              | AAAAAAAAAACDAAAA | 390.1799964904785 | 819.1399898529053 |
+| AL              | AAAAAAAAAACGDAAA | 648.2900009155273 | -154.35998725891113 |
+| AL              | AAAAAAAAAACNCAAA | -2904.1799488067627 | -1175.3000512123108 |
+| AL              | AAAAAAAAAAEDDAAA | 311.9500341415405 | 498.9599943161011 |
+| AL              | AAAAAAAAAAEFBAAA | 743.5799979567528 | 272.66000843048096 |
+| AL              | AAAAAAAAAAEGDAAA | -1805.2498741149902 | 365.3899989128113 |
+| AL              | AAAAAAAAAAEIBAAA | 228.37000465393066 | 37.8799991607666 |
+| AL              | AAAAAAAAAAEJDAAA | -299.5299701690674 | 368.21000480651855 |
+| AL              | AAAAAAAAAAEKCAAA | 418.03000259399414 | 274.9800052642822 |
+| AL              | AAAAAAAAAAFACAAA | -327.36996698379517 | 392.39999890327454 |
+| AL              | AAAAAAAAAAFADAAA | 700.7300071716309 | 212.71999597549438 |
+| AL              | AAAAAAAAAAFBBAAA | 269.49000453948975 | 240.68000507354736 |
+| AL              | AAAAAAAAAAFFBAAA | 725.8899947404861 | -50.990021109580994 |
+| AL              | AAAAAAAAAAFKBAAA | -668.3600072264671 | 326.8499970436096 |
+| AL              | AAAAAAAAAAFLAAAA | -1071.9299325942993 | 222.3900022506714 |
+| AL              | AAAAAAAAAAFPAAAA | 423.6599922180176 | -1191.3800288438797 |
+| AL              | AAAAAAAAAAGCCAAA | 146.89000183343887 | 260.24000120162964 |
+| AL              | AAAAAAAAAAGFDAAA | -366.030011177063 | 321.8799891471863 |
+| AL              | AAAAAAAAAAGHDAAA | 315.0200037956238 | 2.899991989135742 |
+| AL              | AAAAAAAAAAGJBAAA | 438.4200012385845 | -1090.4699730575085 |
+| AL              | AAAAAAAAAAGOCAAA | 237.15999794006348 | -188.3700029850006 |
+| AL              | AAAAAAAAAAHECAAA | -106.65001344680786 | -724.8800230026245 |
+| AL              | AAAAAAAAAAHGEAAA | 286.1300001144409 | 150.18000000715256 |
+| AL              | AAAAAAAAAAHMAAAA | -2534.149947166443 | 327.2200081348419 |
+| AL              | AAAAAAAAAAHPBAAA | 290.10000228881836 | 282.0200023651123 |
+| AL              | AAAAAAAAAAIIAAAA | 893.439995765686 | -992.4699954986572 |
+| AL              | AAAAAAAAAAJFCAAA | 134.85000944137573 | 1185.5299897193909 |
+| AL              | AAAAAAAAAAJMBAAA | 353.4799995422363 | 223.91000187397003 |
+| AL              | AAAAAAAAAAKBDAAA | 229.38000416755676 | 648.6400108337402 |
+| AL              | AAAAAAAAAAKKDAAA | 473.39000034332275 | -73.79997324943542 |
+| AL              | AAAAAAAAAAKNAAAA | 588.680004119873 | -3.2800064086914062 |
+| AL              | AAAAAAAAAALAAAAA | -424.09997510910034 | 450.15000039339066 |
+| AL              | AAAAAAAAAALADAAA | 280.8999996185303 | 518.7600026130676 |
+| AL              | AAAAAAAAAALCBAAA | 167.46000289916992 | 463.2399934530258 |
+| AL              | AAAAAAAAAALFEAAA | 271.7099962234497 | 464.67999428510666 |
+| AL              | AAAAAAAAAALGDAAA | -825.9199643135071 | 150.6199997663498 |
+| AL              | AAAAAAAAAAMJBAAA | 226.91000175476074 | -165.01999759674072 |
+| AL              | AAAAAAAAAAMLDAAA | -893.5600652694702 | 213.41000175476074 |
+| AL              | AAAAAAAAAANCBAAA | -196.92995196580887 | 503.55999732017517 |
+| AL              | AAAAAAAAAANDAAAA | 356.14999866485596 | 216.58999848365784 |
+| AL              | AAAAAAAAAANKAAAA | -1063.8900153636932 | 796.2800028324127 |
+| AL              | AAAAAAAAAAOCAAAA | 384.2699909210205 | 355.31000512838364 |
+| AL              | AAAAAAAAAAOFDAAA | 50.19999980926514 | 578.2300109863281 |
+| AL              | AAAAAAAAAAOHCAAA | 394.5900025367737 | 737.7300094366074 |
+| AL              | AAAAAAAAAAPBBAAA | 352.8599920272827 | 515.3499948978424 |
+| AL              | AAAAAAAAAAPEDAAA | 228.47998905181885 | 232.3200023174286 |
+| AL              | AAAAAAAAABAGDAAA | -4232.829960823059 | 823.2799952030182 |
+| AL              | AAAAAAAAABBIEAAA | -1992.520158290863 | -662.1600770950317 |
+| AL              | AAAAAAAAABBLDAAA | -443.2900288105011 | 395.45000076293945 |
+| AL              | AAAAAAAAABCFAAAA | 351.72999942302704 | 167.43000358343124 |
+| AL              | AAAAAAAAABCHEAAA | -3523.7698917388916 | 291.6299945116043 |
+| AL              | AAAAAAAAABCLDAAA | 863.5000044107437 | 323.15999937057495 |
+| AL              | AAAAAAAAABCPBAAA | 154.20999670028687 | 361.6799883842468 |
+| AL              | AAAAAAAAABDAAAAA | 436.5299997329712 | 607.0999917984009 |
+| AL              | AAAAAAAAABDHAAAA | -1.91998291015625 | -665.5199579000473 |
+| AL              | AAAAAAAAABDHCAAA | 435.7199993133545 | -220.91999530792236 |
+| AL              | AAAAAAAAABDPDAAA | -14.119993209838867 | -67.47000789642334 |
+| AL              | AAAAAAAAABECBAAA | -151.00999689102173 | -2568.9700570106506 |
+| AL              | AAAAAAAAABEDCAAA | 697.0699977874756 | 248.4599950313568 |
+| AL              | AAAAAAAAABEECAAA | 27.75           | 366.56999111175537 |
+| AL              | AAAAAAAAABEFAAAA | 130.0899864435196 | 375.4399924278259 |
+| AL              | AAAAAAAAABEFEAAA | -530.379958152771 | 55.7400016784668 |
+| AL              | AAAAAAAAABENBAAA | 48.42997992038727 | 675.3499910831451 |
+| AL              | AAAAAAAAABEOAAAA | 397.1599991321564 | -1884.6999769210815 |
+| AL              | AAAAAAAAABFABAAA | 397.81999349594116 | 209.95000410079956 |
+| AL              | AAAAAAAAABFCCAAA | 203.5800266265869 | 352.92999839782715 |
+| AL              | AAAAAAAAABGDDAAA | 464.81999588012695 | 734.0000038146973 |
+| AL              | AAAAAAAAABGHCAAA | 132.5400020480156 | -1289.7200045585632 |
+| AL              | AAAAAAAAABGMAAAA | 627.3399965763092 | 272.81998443603516 |
+| AL              | AAAAAAAAABGNAAAA | 320.97998118400574 | -550.0199601650238 |
+| AL              | AAAAAAAAABHDCAAA | -2264.1401176452637 | 150.38999462127686 |
+| AL              | AAAAAAAAABHEEAAA | 304.48000144958496 | 548.3599967956543 |
+| AL              | AAAAAAAAABHFBAAA | 405.76999616622925 | 594.4899864196777 |
+| AL              | AAAAAAAAABHFDAAA | 215.5600025653839 | 817.9000043869019 |
+| AL              | AAAAAAAAABHLDAAA | 153.32999801635742 | 436.30000483989716 |
+| AL              | AAAAAAAAABIHAAAA | 332.3399987220764 | -594.1400570869446 |
+| AL              | AAAAAAAAABIMBAAA | 104.00000190734863 | -133.1200041770935 |
+| AL              | AAAAAAAAABJFCAAA | 431.38998794555664 | 468.38000524044037 |
+| AL              | AAAAAAAAABJHCAAA | 741.479998588562 | -4301.499990239739 |
+| AL              | AAAAAAAAABKLDAAA | 699.9199934005737 | 329.36000674963 |
+| AL              | AAAAAAAAABLFAAAA | -1094.4199477434158 | -330.6999931335449 |
+| AL              | AAAAAAAAABLGEAAA | -2219.870051383972 | 723.749993801117 |
+| AL              | AAAAAAAAABLHBAAA | 220.6000006198883 | -8550.930180072784 |
+| AL              | AAAAAAAAABLNAAAA | 624.3700008392334 | 299.10999965667725 |
+| AL              | AAAAAAAAABMBCAAA | 601.8099961280823 | 234.9900131225586 |
+| AL              | AAAAAAAAABMHCAAA | 653.870005607605 | 651.0000057220459 |
+| AL              | AAAAAAAAABMKCAAA | 559.1200000047684 | 580.8599964380264 |
+| AL              | AAAAAAAAABMLBAAA | -4827.150249481201 | 23.739992141723633 |
+| AL              | AAAAAAAAABNIBAAA | -1280.0699900388718 | 444.6300058364868 |
+| AL              | AAAAAAAAABOKBAAA | 574.6899871826172 | 462.0299952030182 |
+| AL              | AAAAAAAAABOLDAAA | 160.0200014412403 | 276.0399968624115 |
+| AL              | AAAAAAAAABOMBAAA | 366.01000213623047 | -10.419994831085205 |
+| AL              | AAAAAAAAABONBAAA | 593.5400072336197 | 990.2300033569336 |
++-----------------+-----------------+-----------------+-----------------+--+
+100 rows selected (20.924 seconds)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+Closing: 0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_1000
+STOP hdp2.6_spark21_run_1000_2_query40_sql_2017-04-11-07-43:  Tue Apr 11 07:44:02 CDT 2017

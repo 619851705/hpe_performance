@@ -1,0 +1,715 @@
+START hdp2.6_hivetez_run_3_1000_query73_sql_2017-04-07-04-56:  Fri Apr 7 04:56:07 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2" -n hive --incremental=true -i settings/test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_1000;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+Connected to: Apache Hive (version 1.2.1000.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.041 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.exec.reducers.bytes.per.reducer=67108864;
+No rows affected (0.002 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> select c_last_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,c_first_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,c_salutation
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,c_preferred_cust_flag 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,ss_ticket_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,cnt from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    (select ss_ticket_number
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           ,ss_customer_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           ,count(*) cnt
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     from store_sales,date_dim,store,household_demographics
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     where store_sales.ss_sold_date_sk = date_dim.d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     and store_sales.ss_store_sk = store.s_store_sk  
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     and store_sales.ss_hdemo_sk = household_demographics.hd_demo_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     and date_dim.d_dom between 1 and 2 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     and (household_demographics.hd_buy_potential = '1001-5000' or
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          household_demographics.hd_buy_potential = '5001-10000')
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     and household_demographics.hd_vehicle_count > 0
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     and case when household_demographics.hd_vehicle_count > 0 then 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>              household_demographics.hd_dep_count/ household_demographics.hd_v ehicle_count else null end > 1
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     and date_dim.d_year in (1998,1998+1,1998+2)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     and store.s_county in ('Kittitas County','Adams County','Richland County' ,'Furnas County')
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     group by ss_ticket_number,ss_customer_sk) dj,customer
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     where dj.ss_customer_sk = customer.c_customer_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       and cnt between 1 and 5
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     order by cnt desc;
+INFO  : Tez session hasn't been created yet. Opening session
+INFO  : Dag name: select c_last_name
+       ,c_first_na...desc(Stage-1)
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Status: Running (Executing on YARN cluster with App id application_1491366857972_0473)
+
+INFO  : Map 1: -/-	Map 3: -/-	Map 5: -/-	Map 6: -/-	Map 7: -/-	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: -/-	Map 5: 0/1	Map 6: 0/1	Map 7: 0/1	Reducer 2: 0/1	Reducer 4: 0/2	
+[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                 INITED    101          0        0      101       0       0
+Map 3                RUNNING     69          3        0       66       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2             INITED      1          0        0        1       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 03/07  [>>--------------------------] 3%    ELAPSED TIME: 6.06 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[13A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                 INITED    101          0        0      101       0       0
+Map 3                RUNNING     69          3       66        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2             INITED      1          0        0        1       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 03/07  [>>--------------------------] 3%    ELAPSED TIME: 11.07 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[13A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                RUNNING    101         10       66       25       0       0
+Map 3 ..........   SUCCEEDED     69         69        0        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2             INITED      1          0        0        1       0       0
+Reducer 4 ......   SUCCEEDED      1          1        0        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 05/07  [============>>--------------] 47%   ELAPSED TIME: 16.07 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[13A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED    101        101        0        0       0       0
+Map 3 ..........   SUCCEEDED     69         69        0        0       0       0
+Map 5 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED      1          1        0        0       0       0
+Reducer 4 ......   SUCCEEDED      1          1        0        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 07/07  [==========================>>] 100%  ELAPSED TIME: 21.06 s    
+[22;0m[2K--------------------------------------------------------------------------------
+INFO  : Map 1: 0/101	Map 3: -/-	Map 5: 0(+1)/1	Map 6: 0(+1)/1	Map 7: 0(+1)/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: -/-	Map 5: 0(+1)/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: -/-	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: 0(+3)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: 1(+2)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: 3(+0)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: 3(+3)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: 3(+14)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: 3(+42)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: 3(+60)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: 3(+66)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: 3(+66)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: 4(+65)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: 6(+63)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: 9(+60)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: 15(+54)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: 20(+49)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: 31(+38)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: 37(+32)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0/101	Map 3: 46(+23)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0/2	
+INFO  : Map 1: 0(+39)/101	Map 3: 55(+14)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0(+1)/1	
+INFO  : Map 1: 0(+55)/101	Map 3: 58(+11)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0(+1)/1	
+INFO  : Map 1: 0(+59)/101	Map 3: 63(+6)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0(+1)/1	
+INFO  : Map 1: 0(+62)/101	Map 3: 67(+2)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0(+1)/1	
+INFO  : Map 1: 0(+66)/101	Map 3: 68(+1)/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0(+1)/1	
+INFO  : Map 1: 0(+66)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0(+1)/1	
+INFO  : Map 1: 0(+71)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0(+1)/1	
+INFO  : Map 1: 0(+73)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 0(+1)/1	
+INFO  : Map 1: 0(+76)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 1/1	
+INFO  : Map 1: 10(+66)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 4: 1/1	
+INFO  : Map 1: 37(+39)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 4: 1/1	
+INFO  : Map 1: 62(+24)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 4: 1/1	
+INFO  : Map 1: 66(+21)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 4: 1/1	
+INFO  : Map 1: 66(+32)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 4: 1/1	
+INFO  : Map 1: 66(+35)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 4: 1/1	
+INFO  : Map 1: 72(+29)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 4: 1/1	
+INFO  : Map 1: 74(+27)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 4: 1/1	
+INFO  : Map 1: 76(+25)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 4: 1/1	
+INFO  : Map 1: 85(+16)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 4: 1/1	
+INFO  : Map 1: 87(+14)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 4: 1/1	
+INFO  : Map 1: 88(+13)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 4: 1/1	
+INFO  : Map 1: 94(+7)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 4: 1/1	
+INFO  : Map 1: 99(+2)/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 4: 1/1	
+INFO  : Map 1: 101/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 4: 1/1	
+INFO  : Map 1: 101/101	Map 3: 69/69	Map 5: 1/1	Map 6: 1/1	Map 7: 1/1	Reducer 2: 1/1	Reducer 4: 1/1	
+INFO  : Status: DAG finished successfully in 21.01 seconds
+INFO  : 
+INFO  : Query Execution Summary
+INFO  : --------------------------------------------------------------------------------
+INFO  : OPERATION                            DURATION
+INFO  : --------------------------------------------------------------------------------
+INFO  : Compile Query                           0.79s
+INFO  : Prepare Plan                            3.27s
+INFO  : Submit Plan                             0.26s
+INFO  : Start DAG                               0.41s
+INFO  : Run DAG                                21.01s
+INFO  : --------------------------------------------------------------------------------
+INFO  : 
+INFO  : Task Execution Summary
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  :   VERTICES  TOTAL_TASKS  FAILED_ATTEMPTS  KILLED_TASKS   DURATION(ms)  CPU_TIME(ms)  GC_TIME(ms)  INPUT_RECORDS  OUTPUT_RECORDS
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  :      Map 1          101                0             0        7048.00       467,000       31,648     12,000,270             270
+INFO  :      Map 3           69                0             0       17557.00     1,028,430       30,884    105,262,032          84,525
+INFO  :      Map 5            1                0             0       19177.00         3,790           20         10,000              72
+INFO  :      Map 6            1                0             0       19177.00         4,000           41          7,200           1,040
+INFO  :      Map 7            1                0             0       19177.00         3,490           25          1,002              77
+INFO  :  Reducer 2            1                0             0        4818.00           860            0            270               0
+INFO  :  Reducer 4            1                0             0        7048.00         2,950            0         84,525             270
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : org.apache.tez.common.counters.DAGCounter:
+INFO  :    NUM_SUCCEEDED_TASKS: 175
+INFO  :    TOTAL_LAUNCHED_TASKS: 175
+INFO  :    DATA_LOCAL_TASKS: 153
+INFO  :    RACK_LOCAL_TASKS: 20
+INFO  :    AM_CPU_MILLISECONDS: 17880
+INFO  :    AM_GC_TIME_MILLIS: 53
+INFO  : File System Counters:
+INFO  :    FILE_BYTES_READ: 1174594
+INFO  :    FILE_BYTES_WRITTEN: 1627589
+INFO  :    HDFS_BYTES_READ: 463716697
+INFO  :    HDFS_BYTES_WRITTEN: 8403
+INFO  :    HDFS_READ_OPS: 348
+INFO  :    HDFS_WRITE_OPS: 2
+INFO  :    HDFS_OP_CREATE: 1
+INFO  :    HDFS_OP_GET_FILE_STATUS: 2
+INFO  :    HDFS_OP_OPEN: 346
+INFO  :    HDFS_OP_RENAME: 1
+INFO  : org.apache.tez.common.counters.TaskCounter:
+INFO  :    REDUCE_INPUT_GROUPS: 84528
+INFO  :    REDUCE_INPUT_RECORDS: 84795
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    SPILLED_RECORDS: 169590
+INFO  :    NUM_SHUFFLED_INPUTS: 537
+INFO  :    NUM_SKIPPED_INPUTS: 10
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    MERGED_MAP_OUTPUTS: 229
+INFO  :    GC_TIME_MILLIS: 62618
+INFO  :    CPU_MILLISECONDS: 1510520
+INFO  :    PHYSICAL_MEMORY_BYTES: 369063100416
+INFO  :    VIRTUAL_MEMORY_BYTES: 982271627264
+INFO  :    COMMITTED_HEAP_BYTES: 369063100416
+INFO  :    INPUT_RECORDS_PROCESSED: 231167
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 5097183068
+INFO  :    OUTPUT_RECORDS: 86254
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_BYTES: 1117579
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 1289978
+INFO  :    OUTPUT_BYTES_PHYSICAL: 981790
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 638671
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 934530
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    SHUFFLE_CHUNK_COUNT: 170
+INFO  :    SHUFFLE_BYTES: 1647310
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 2234106
+INFO  :    SHUFFLE_BYTES_TO_MEM: 1269575
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 377735
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    SHUFFLE_PHASE_TIME: 266925
+INFO  :    MERGE_PHASE_TIME: 5994
+INFO  :    FIRST_EVENT_RECEIVED: 244110
+INFO  :    LAST_EVENT_RECEIVED: 249895
+INFO  : HIVE:
+INFO  :    CREATED_FILES: 1
+INFO  :    DESERIALIZE_ERRORS: 0
+INFO  :    RECORDS_IN_Map_1: 12000000
+INFO  :    RECORDS_IN_Map_3: 105260843
+INFO  :    RECORDS_IN_Map_5: 10000
+INFO  :    RECORDS_IN_Map_6: 7200
+INFO  :    RECORDS_IN_Map_7: 1002
+INFO  :    RECORDS_OUT_0: 270
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_1: 270
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_3: 84525
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_5: 72
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_6: 1040
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_7: 77
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_4: 270
+INFO  : Shuffle Errors:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_2_INPUT_Map_1:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_4_INPUT_Map_3:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : TaskCounter_Map_1_INPUT_Reducer_4:
+INFO  :    FIRST_EVENT_RECEIVED: 122808
+INFO  :    INPUT_RECORDS_PROCESSED: 27270
+INFO  :    LAST_EVENT_RECEIVED: 122808
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 101
+INFO  :    SHUFFLE_BYTES: 319665
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 380770
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 66465
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 253200
+INFO  :    SHUFFLE_PHASE_TIME: 125890
+INFO  : TaskCounter_Map_1_INPUT_customer:
+INFO  :    INPUT_RECORDS_PROCESSED: 11800
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 460633191
+INFO  : TaskCounter_Map_1_OUTPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 9585
+INFO  :    OUTPUT_BYTES_PHYSICAL: 10224
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 9164
+INFO  :    OUTPUT_RECORDS: 270
+INFO  :    SHUFFLE_CHUNK_COUNT: 101
+INFO  :    SPILLED_RECORDS: 270
+INFO  : TaskCounter_Map_3_INPUT_Map_5:
+INFO  :    FIRST_EVENT_RECEIVED: 40439
+INFO  :    INPUT_RECORDS_PROCESSED: 4968
+INFO  :    LAST_EVENT_RECEIVED: 40439
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 69
+INFO  :    SHUFFLE_BYTES: 22011
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 35190
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 957
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 21054
+INFO  :    SHUFFLE_PHASE_TIME: 45113
+INFO  : TaskCounter_Map_3_INPUT_Map_6:
+INFO  :    FIRST_EVENT_RECEIVED: 40499
+INFO  :    INPUT_RECORDS_PROCESSED: 71760
+INFO  :    LAST_EVENT_RECEIVED: 40499
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 69
+INFO  :    SHUFFLE_BYTES: 309603
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 502734
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 13461
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 296142
+INFO  :    SHUFFLE_PHASE_TIME: 45168
+INFO  : TaskCounter_Map_3_INPUT_Map_7:
+INFO  :    FIRST_EVENT_RECEIVED: 40316
+INFO  :    INPUT_RECORDS_PROCESSED: 5313
+INFO  :    LAST_EVENT_RECEIVED: 40316
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 69
+INFO  :    SHUFFLE_BYTES: 22839
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 37605
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 993
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 21846
+INFO  :    SHUFFLE_PHASE_TIME: 44916
+INFO  : TaskCounter_Map_3_INPUT_store_sales:
+INFO  :    INPUT_RECORDS_PROCESSED: 102845
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 4636129218
+INFO  : TaskCounter_Map_3_OUTPUT_Reducer_4:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1098825
+INFO  :    OUTPUT_BYTES_PHYSICAL: 963168
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 1268703
+INFO  :    OUTPUT_RECORDS: 84525
+INFO  :    SHUFFLE_CHUNK_COUNT: 69
+INFO  :    SPILLED_RECORDS: 84525
+INFO  : TaskCounter_Map_5_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 10
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 361420
+INFO  : TaskCounter_Map_5_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 360
+INFO  :    OUTPUT_BYTES_PHYSICAL: 343
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 510
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 72
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_6_INPUT_household_demographics:
+INFO  :    INPUT_RECORDS_PROCESSED: 7200
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 629
+INFO  : TaskCounter_Map_6_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 5200
+INFO  :    OUTPUT_BYTES_PHYSICAL: 4511
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 7286
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1040
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_7_INPUT_store:
+INFO  :    INPUT_RECORDS_PROCESSED: 1
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 58610
+INFO  : TaskCounter_Map_7_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 385
+INFO  :    OUTPUT_BYTES_PHYSICAL: 355
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 545
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 77
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_2_INPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 6763
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 4396
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 13
+INFO  :    LAST_EVENT_RECEIVED: 4511
+INFO  :    MERGED_MAP_OUTPUTS: 91
+INFO  :    MERGE_PHASE_TIME: 4534
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 91
+INFO  :    NUM_SKIPPED_INPUTS: 10
+INFO  :    REDUCE_INPUT_GROUPS: 3
+INFO  :    REDUCE_INPUT_RECORDS: 270
+INFO  :    SHUFFLE_BYTES: 10024
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 9104
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 2367
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 7657
+INFO  :    SHUFFLE_PHASE_TIME: 4513
+INFO  :    SPILLED_RECORDS: 270
+INFO  : TaskCounter_Reducer_2_OUTPUT_out_Reducer_2:
+INFO  :    OUTPUT_RECORDS: 0
+INFO  : TaskCounter_Reducer_4_INPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 927767
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 634275
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 35
+INFO  :    LAST_EVENT_RECEIVED: 1322
+INFO  :    MERGED_MAP_OUTPUTS: 138
+INFO  :    MERGE_PHASE_TIME: 1460
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 138
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 84525
+INFO  :    REDUCE_INPUT_RECORDS: 84525
+INFO  :    SHUFFLE_BYTES: 963168
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 1268703
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 293492
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 669676
+INFO  :    SHUFFLE_PHASE_TIME: 1325
+INFO  :    SPILLED_RECORDS: 84525
+INFO  : TaskCounter_Reducer_4_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 3224
+INFO  :    OUTPUT_BYTES_PHYSICAL: 3189
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 3770
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 270
+INFO  :    SPILLED_RECORDS: 0
++--------------+---------------+---------------+------------------------+-------------------+------+--+
+| c_last_name  | c_first_name  | c_salutation  | c_preferred_cust_flag  | ss_ticket_number  | cnt  |
++--------------+---------------+---------------+------------------------+-------------------+------+--+
+| Lockhart     | Ruben         | Sir           | Y                      | 91230022          | 5    |
+| Baker        | Rene          | Sir           | N                      | 191550049         | 5    |
+| Peters       | Pennie        | Dr.           | N                      | 206731608         | 5    |
+| Burden       | Nancy         | Dr.           | N                      | 173604648         | 5    |
+|              |               | Ms.           |                        | 19428519          | 5    |
+| Bonds        | Kaye          | Mrs.          | N                      | 146887238         | 5    |
+| Groff        | Eloisa        | Dr.           | Y                      | 147854835         | 5    |
+| Hoyt         | Michael       | Dr.           | N                      | 193519571         | 5    |
+| Sheffield    | Todd          | Dr.           | Y                      | 118246514         | 5    |
+| Parker       | Cornelia      | Miss          | Y                      | 167693987         | 5    |
+| Hill         | Jose          | Dr.           | N                      | 146074401         | 5    |
+| Price        | Rose          | Miss          | Y                      | 85894907          | 5    |
+| Burns        | Hannah        | Miss          | Y                      | 67099683          | 5    |
+| Pennington   | Donna         | Mrs.          | Y                      | 31526921          | 5    |
+| Dill         | Kylie         | Dr.           | N                      | 77710218          | 5    |
+| Bermudez     | Michael       | Mr.           | N                      | 2983022           | 5    |
+| Weatherford  | Jason         | Sir           | Y                      | 193814456         | 5    |
+| Potter       | Nina          | Dr.           | N                      | 184546234         | 5    |
+| Mccaskill    | Emily         | Dr.           | N                      | 116683587         | 5    |
+| Mooney       | Robert        | Mr.           | Y                      | 204281570         | 5    |
+| Lewis        | Darren        | Dr.           | Y                      | 41233252          | 5    |
+| Boucher      | Cynthia       | Dr.           | Y                      | 53492218          | 5    |
+| Lindsey      | Guy           | Mr.           | Y                      | 86860264          | 5    |
+| Love         | Sharon        | Miss          | Y                      | 22429959          | 5    |
+|              | Lee           | Sir           | Y                      | 177877582         | 5    |
+|              |               | Ms.           | Y                      | 56986698          | 5    |
+| Webber       | James         | Dr.           | N                      | 36926875          | 5    |
+| Cole         | Kenneth       | Sir           | Y                      | 165280849         | 5    |
+| Obrien       | Newton        | Dr.           | Y                      | 139942496         | 5    |
+| Bolduc       |               |               |                        | 206323321         | 5    |
+| Parker       | Hannah        | Mrs.          | N                      | 15123416          | 5    |
+| Scott        | Irene         | Dr.           | Y                      | 208144047         | 5    |
+| Stark        | Larry         | Dr.           | N                      | 133052214         | 5    |
+| Blankenship  | Susan         | Miss          | Y                      | 88198504          | 5    |
+| Turner       | Chrystal      | Ms.           | N                      | 63185288          | 5    |
+| Riddle       | Eunice        | Dr.           | Y                      | 119611105         | 5    |
+| Donato       | Ernest        | Mr.           | Y                      | 77616661          | 5    |
+| Neeley       | Michelle      |               |                        | 143984674         | 5    |
+| Sandoval     | Michele       | Dr.           | N                      | 191018540         | 5    |
+| Parks        | Peggy         | Ms.           | Y                      | 167238013         | 5    |
+| Guy          | Albert        | Miss          | Y                      | 213203301         | 5    |
+| Patterson    | Dale          | Sir           | Y                      | 153159187         | 5    |
+| Albrecht     | Paul          | Dr.           | N                      | 2956217           | 5    |
+| Schmidt      | Kareen        | Dr.           | Y                      | 149962050         | 5    |
+| White        | Holly         | Dr.           | Y                      | 173603053         | 5    |
+| Preston      | Dora          | Mrs.          | Y                      | 12093176          | 5    |
+| Preston      | Karen         | Mrs.          | N                      | 197138833         | 5    |
+| Owens        | Robert        | Mr.           | N                      | 212237057         | 5    |
+| Douglass     |               |               | Y                      | 136666051         | 5    |
+| Hayes        | Kelvin        | Sir           | N                      | 19629363          | 5    |
+| Crane        | Mariana       | Mrs.          | Y                      | 97381007          | 5    |
+| Rosenbaum    | Jose          | Sir           | Y                      | 37446944          | 5    |
+| Sherman      | Lucia         | Miss          | N                      | 220908942         | 5    |
+| Ulrich       | Robert        | Sir           | N                      | 130462257         | 5    |
+| Barrett      | Jason         | Dr.           | N                      | 138986792         | 5    |
+| Schumacher   | Roy           | Dr.           | N                      | 119718487         | 5    |
+| Hall         | Catherine     | Ms.           | N                      | 146222743         | 5    |
+| Dunn         | Ivey          | Miss          | N                      | 22651477          | 5    |
+| Branch       | Bobby         | Sir           | N                      | 120204057         | 5    |
+| Vasquez      | Virgie        | Miss          | N                      | 104733033         | 5    |
+| Morse        | Art           | Mr.           | N                      | 85459639          | 5    |
+| Patten       | Allen         | Miss          | N                      | 184594116         | 5    |
+| Carpenter    | Elizabeth     | Ms.           | Y                      | 214465352         | 5    |
+| Caldwell     | Matthew       | Sir           | N                      | 162754069         | 5    |
+| Menard       | Penelope      | Miss          | N                      | 195187950         | 5    |
+| Furman       | Virginia      | Miss          | N                      | 203004766         | 5    |
+| Blankenship  | Marjorie      | Ms.           | Y                      | 219098504         | 5    |
+| Barry        | Jeffrey       | Mr.           | N                      | 147757870         | 5    |
+|              |               | Mrs.          | N                      | 87191492          | 5    |
+| Davis        | Brenda        | Ms.           | N                      | 114317316         | 5    |
+| Garcia       | Edward        | Dr.           | Y                      | 133143997         | 5    |
+| Johnston     | Tyson         | Mr.           | N                      | 36709317          | 5    |
+| Passmore     | Douglas       | Dr.           | N                      | 339489            | 5    |
+| Castillo     | Jay           | Mr.           | Y                      | 134377356         | 5    |
+| Combs        | Jane          | Dr.           | Y                      | 9136607           | 5    |
+| Hudson       | Ronald        | Mr.           | N                      | 119816429         | 5    |
+| Roark        | Julian        | Mr.           | N                      | 88478406          | 5    |
+| Short        | Mike          | Dr.           | Y                      | 222542984         | 5    |
+| Turpin       | Daniel        | Sir           | Y                      | 172959701         | 5    |
+| Hickman      | George        | Dr.           | Y                      | 191519799         | 5    |
+| Ross         | Glenda        | Miss          | Y                      | 274419            | 5    |
+| Gardner      | Sabrina       | Mrs.          | Y                      | 168386505         | 5    |
+| Washington   | Rosalie       | Ms.           | N                      | 105132451         | 5    |
+| Mcdaniel     | David         | Mr.           | N                      | 35955555          | 5    |
+| Hines        | Jane          | Mrs.          | Y                      | 166698659         | 5    |
+| Long         | Jason         | Mr.           | N                      | 133326683         | 5    |
+| Underwood    | Cheryl        | Miss          | N                      | 173239291         | 5    |
+| Hagan        | Jason         | Dr.           | Y                      | 157404341         | 5    |
+| Bell         | Jack          | Sir           | Y                      | 52022531          | 5    |
+| Peek         | Vernon        | Dr.           | Y                      | 5345540           | 5    |
+| Phillips     | Fred          | Mr.           | Y                      | 87160395          | 5    |
+| Robinson     | Violet        | Mrs.          | Y                      | 208531664         | 5    |
+| Hughes       | George        | Dr.           | Y                      | 92961585          | 5    |
+| Yeager       | Gary          | Mr.           | Y                      | 191886491         | 5    |
+| Smith        | Nicholas      | Dr.           | Y                      | 130920425         | 5    |
+| Obrien       | Edwin         | Dr.           | N                      | 116353070         | 5    |
+| Jackson      | Jeremiah      |               |                        | 133885472         | 5    |
+| Kimbrell     | Irma          | Mrs.          | Y                      | 120319387         | 5    |
+| Murray       | Vera          | Mrs.          | N                      | 224798031         | 5    |
+| Tapp         | Marilyn       | Mrs.          | Y                      | 111688005         | 5    |
++--------------+---------------+---------------+------------------------+-------------------+------+--+
+| c_last_name  | c_first_name  | c_salutation  | c_preferred_cust_flag  | ss_ticket_number  | cnt  |
++--------------+---------------+---------------+------------------------+-------------------+------+--+
+| Melton       | Eric          | Dr.           | Y                      | 195637091         | 5    |
+| Mcguire      | Stephen       | Dr.           | Y                      | 211667823         | 5    |
+| Rosario      | Michael       | Sir           | N                      | 159896056         | 5    |
+| Long         | Lewis         | Sir           | Y                      | 204850681         | 5    |
+| Crews        | Amalia        | Ms.           | N                      | 37691224          | 5    |
+| Haney        | Garnet        | Dr.           | Y                      | 218498910         | 5    |
+| Bryson       | Brian         | Dr.           | N                      | 146281052         | 5    |
+|              |               |               | Y                      | 94428716          | 5    |
+| Keith        | Everett       | Sir           | N                      | 92983124          | 5    |
+| Lima         | Maggie        | Miss          | N                      | 143514317         | 5    |
+| Rodriguez    | Jim           | Mr.           | N                      | 144321746         | 5    |
+| Medina       | Linda         | Ms.           | Y                      | 72299572          | 5    |
+| Perez        | Moshe         | Dr.           | N                      | 218570638         | 5    |
+| Payton       | Henrietta     | Dr.           | Y                      | 126411526         | 5    |
+| Clark        | Eddie         | Sir           | N                      | 79412484          | 5    |
+| Lyman        | Robert        | Dr.           | N                      | 67855431          | 5    |
+| Ross         | Cherri        | Dr.           | Y                      | 186062268         | 5    |
+| Green        | Carla         | Mrs.          | N                      | 69676             | 5    |
+| Barnett      | Beverly       | Dr.           | Y                      | 51030449          | 5    |
+| Hilliard     | Sandra        | Miss          | N                      | 92785614          | 5    |
+| Werner       | William       | Mr.           | Y                      | 70906811          | 5    |
+| Grissom      | Cora          | Miss          | N                      | 220052684         | 5    |
+| Winslow      | Deborah       | Ms.           | Y                      | 232952044         | 5    |
+| Mitchell     | Todd          | Sir           | Y                      | 131498498         | 5    |
+| Maldonado    |               |               |                        | 190729367         | 5    |
+| Gunther      | Ernest        | Sir           | N                      | 175997480         | 5    |
+| Walker       | Robert        | Sir           | Y                      | 148421423         | 5    |
+| Spaulding    | James         | Sir           | N                      | 53497251          | 5    |
+| Honeycutt    | Gary          | Sir           | N                      | 15704888          | 5    |
+| Furr         | Earnest       | Sir           | N                      | 58437753          | 5    |
+| Cox          | Sanjuanita    | Mrs.          | N                      | 89802076          | 5    |
+| Wilson       | Dawn          | Mrs.          | Y                      | 125567593         | 5    |
+| Cooper       | June          | Ms.           | Y                      | 170013730         | 5    |
+| Noble        | Bobby         | Sir           | N                      | 38857185          | 5    |
+| Copeland     | Victoria      | Mrs.          | N                      | 124838196         | 5    |
+| Woods        | James         | Sir           | N                      | 8254107           | 5    |
+| Williams     | David         | Dr.           | Y                      | 23243572          | 5    |
+| Soto         | Hugh          | Mr.           | Y                      | 156135399         | 5    |
+| Simone       | Alfred        | Sir           | Y                      | 143844274         | 5    |
+| Thomas       | Mathew        | Mr.           | Y                      | 68089677          | 5    |
+| Janssen      | Michael       | Sir           | Y                      | 130374403         | 5    |
+| Kitchen      | Maureen       | Ms.           | N                      | 187502382         | 5    |
+| Preston      | Eleanore      | Miss          | N                      | 203779644         | 5    |
+| Taylor       | Carolyn       | Dr.           | Y                      | 133682369         | 5    |
+| Devine       | Jason         | Mr.           | Y                      | 206037948         | 5    |
+| Obrien       | Christopher   | Dr.           | Y                      | 67910912          | 5    |
+| Warren       | Abdul         | Dr.           | N                      | 210898389         | 5    |
+| Soto         | Efren         | Dr.           | Y                      | 131261771         | 5    |
+| Stone        | Robert        | Sir           | N                      | 181847463         | 5    |
+| Smith        | Charlotte     | Mrs.          | N                      | 170510160         | 5    |
+| Pulido       | Holly         | Mrs.          | Y                      | 99671341          | 5    |
+| Slater       | Paula         | Dr.           | Y                      | 50906096          | 5    |
+| Woods        | Heather       | Miss          | Y                      | 46801043          | 5    |
+| Torres       | Delois        | Miss          | Y                      | 43042700          | 5    |
+| Hass         | Lena          | Mrs.          | N                      | 144324817         | 5    |
+| Elliott      | Tracey        | Dr.           | Y                      | 123604982         | 5    |
+| Maple        | Henry         | Sir           | Y                      | 80299651          | 5    |
+| Norris       | Kimberly      | Miss          | N                      | 45475924          | 5    |
+| Wilson       | Jennifer      | Mrs.          | N                      | 64762956          | 5    |
+| Patten       | Efren         | Mr.           | Y                      | 12109375          | 5    |
+| Marks        | Jose          | Dr.           | N                      | 19777907          | 5    |
+| Goforth      | Jack          | Sir           | N                      | 130526920         | 5    |
+| Ball         | Joe           | Sir           | Y                      | 62791282          | 5    |
+| Shaw         | Andrew        | Miss          | N                      | 192250219         | 5    |
+| Rivera       | Brenda        | Miss          | N                      | 171099878         | 5    |
+|              |               |               |                        | 79626559          | 5    |
+| Bridges      | Shara         | Miss          | Y                      | 7065080           | 5    |
+| Minnick      | Michael       | Sir           | Y                      | 44568325          | 5    |
+| Slater       | Larry         | Mr.           | N                      | 117717737         | 5    |
+| Talbott      | Adam          | Dr.           | Y                      | 8317845           | 5    |
+| Munn         | Linda         | Miss          | N                      | 61960576          | 5    |
+| Romero       | Rose          | Dr.           | N                      | 174208777         | 5    |
+| Bell         | Tamiko        | Mrs.          | Y                      | 237460082         | 5    |
+| Talbot       | Craig         | Dr.           | N                      | 88660912          | 5    |
+| Moss         | Rocio         | Dr.           | Y                      | 179844345         | 5    |
+|              | Debby         | Ms.           |                        | 203020858         | 5    |
+| Murray       | Alice         | Mrs.          | Y                      | 203481475         | 5    |
+| Humphrey     | Imogene       | Miss          | N                      | 95042427          | 5    |
+| Huber        | Rose          | Ms.           | N                      | 231292403         | 5    |
+| Luna         | Bridget       | Ms.           | N                      | 35071916          | 5    |
+| Peterson     | Ernestine     | Dr.           | Y                      | 53042080          | 5    |
+| Hartwell     | Roy           | Dr.           | N                      | 159673866         | 5    |
+| Stevens      | Isabel        | Ms.           | N                      | 178326632         | 5    |
+|              |               | Dr.           | Y                      | 192073974         | 5    |
+| Bone         | Henry         | Dr.           | N                      | 78001995          | 5    |
+| Lowe         | Mike          |               |                        | 189701193         | 5    |
+| Rodriguez    | Janine        | Mrs.          | Y                      | 181040313         | 5    |
+| Perez        | Sharon        | Mrs.          | N                      | 85278301          | 5    |
+| Jackson      | Arthur        | Miss          | N                      | 188275358         | 5    |
+| Stoddard     | Beverly       | Ms.           | N                      | 205448658         | 5    |
+| Lancaster    | Hubert        | Mr.           | N                      | 128386111         | 5    |
+| Martin       | Alison        | Miss          | N                      | 172977836         | 5    |
+| Haskell      | Martha        | Mrs.          | N                      | 172930229         | 5    |
+|              | Russell       | Dr.           |                        | 169492553         | 5    |
+| Fletcher     | David         | Mr.           | Y                      | 234008491         | 5    |
+| Farmer       | Julia         | Miss          | N                      | 232910716         | 5    |
+| Felix        | Joseph        | Sir           | Y                      | 129389549         | 5    |
+| Riley        | Michael       | Sir           | Y                      | 206586867         | 5    |
+| Walker       | Earl          | Sir           | N                      | 79225407          | 5    |
+| Crowley      | Kendall       | Sir           | Y                      | 191721764         | 5    |
++--------------+---------------+---------------+------------------------+-------------------+------+--+
+| c_last_name  | c_first_name  | c_salutation  | c_preferred_cust_flag  | ss_ticket_number  | cnt  |
++--------------+---------------+---------------+------------------------+-------------------+------+--+
+| Cass         | Thomas        | Mr.           | N                      | 51363068          | 5    |
+| Hudson       | Charles       | Mr.           | Y                      | 71954904          | 5    |
+| Chadwick     | John          | Mr.           | Y                      | 35147601          | 5    |
+| Beach        |               |               |                        | 154799905         | 5    |
+| Tyson        | Kathryn       | Miss          | N                      | 114212920         | 5    |
+| Salazar      | Justin        | Mr.           | N                      | 164971594         | 5    |
+| Koenig       | Luis          | Sir           | N                      | 43109945          | 5    |
+| Wilhelm      | Denise        | Mrs.          | N                      | 180705114         | 5    |
+| Hernandez    | Danny         | Sir           | Y                      | 150939339         | 5    |
+| Griffin      | Sara          | Mrs.          | N                      | 79995702          | 5    |
+| Davis        | Dennis        | Sir           | Y                      | 107342588         | 5    |
+| Mullen       | George        | Mr.           | N                      | 46542809          | 5    |
+| Burnett      | Marie         | Dr.           | Y                      | 202023665         | 5    |
+| Wilkerson    | Wilson        | Mr.           | N                      | 88404486          | 5    |
+| Wallace      | Zelma         | Miss          | N                      | 221461916         | 5    |
+| Waterman     | Jennifer      | Ms.           | Y                      | 114773960         | 5    |
+| Beckett      | Joseph        | Sir           | N                      | 210302350         | 5    |
+| Marquez      | Kevin         | Sir           | N                      | 210875202         | 5    |
+| Griggs       | James         | Mr.           | N                      | 167062791         | 5    |
+| Butler       | Mitchell      | Mr.           | Y                      | 29250288          | 5    |
+| Mcculloch    | David         | Dr.           | N                      | 28065572          | 5    |
+| Holly        | Jonnie        | Miss          | N                      | 127450635         | 5    |
+|              | Sigrid        |               |                        | 50151355          | 5    |
+| Linton       | Cheryl        | Miss          | Y                      | 172280869         | 5    |
+| Buchanan     |               |               |                        | 235980158         | 5    |
+| Brown        | Stephen       | Dr.           | N                      | 24621006          | 5    |
+| Mock         | Stephen       | Dr.           | N                      | 202249870         | 5    |
+| Baptiste     | Joyce         | Mrs.          | Y                      | 130116843         | 5    |
+| Keefer       | Anna          | Miss          | N                      | 63496280          | 5    |
+| Freedman     | Sarah         | Dr.           | Y                      | 225537287         | 5    |
+| Yang         | Richard       | Sir           | Y                      | 156118692         | 5    |
+| Oliver       | Ramiro        | Dr.           | Y                      | 25446046          | 5    |
+| Mcguire      | Kenneth       | Mr.           | Y                      | 152158287         | 5    |
+| Bonds        | Walter        | Dr.           | Y                      | 150132265         | 5    |
+| Layman       | Lawrence      | Mr.           | N                      | 195451030         | 5    |
+| Brown        | Steven        | Sir           | N                      | 82131662          | 5    |
+| Bradshaw     | Jeremiah      | Sir           | N                      | 173477566         | 5    |
+| Miller       | Jennifer      | Miss          | Y                      | 12660363          | 5    |
+| Lee          | Renee         | Mrs.          | N                      | 195327209         | 5    |
+| Wright       | Raymond       | Mr.           | Y                      | 97742912          | 5    |
+| Townes       | Donald        | Sir           | Y                      | 220066027         | 5    |
+| Marshall     | Valerie       | Mrs.          | Y                      | 31864886          | 4    |
+| Clemons      | Jorge         | Sir           | N                      | 93120770          | 4    |
+| Frazier      | Lawrence      | Mr.           | N                      | 7560009           | 4    |
+| Carson       | Mitchell      | Mr.           | Y                      | 226167141         | 4    |
+| Anderson     | Jessica       | Dr.           | N                      | 36729659          | 4    |
+| Hendricks    | David         | Mr.           | N                      | 117492134         | 4    |
+| Denney       | Peter         | Mr.           | Y                      | 210307202         | 4    |
+| Brown        | Nellie        | Miss          | N                      | 27625548          | 4    |
+| Gomez        | Martha        | Mrs.          | N                      | 213637211         | 4    |
+| Reese        | Gerald        | Sir           | N                      | 188528128         | 4    |
+| Arnold       | James         | Dr.           | N                      | 225574319         | 4    |
+| Perry        | Seth          | Sir           | Y                      | 225644139         | 4    |
+| Moore        | Paul          | Sir           | N                      | 223586701         | 4    |
+| Finch        | Faye          | Miss          | N                      | 155781691         | 4    |
+| Barnett      | William       | Mr.           | Y                      | 88160693          | 4    |
+| Henderson    | Mike          | Mr.           | Y                      | 236120802         | 4    |
+| Crespo       | Craig         | Dr.           | Y                      | 155465666         | 4    |
+| Perry        | Peter         | Sir           | Y                      | 220313920         | 4    |
+| Hein         | David         | Dr.           | N                      | 112522285         | 4    |
+| Chambers     | Francis       | Mr.           | Y                      | 155141167         | 4    |
+| Owens        | Maggie        | Ms.           | N                      | 195276205         | 4    |
+| Peak         | Foster        | Sir           | N                      | 125724882         | 4    |
+| Tatum        | Wade          | Mr.           | Y                      | 87177976          | 4    |
+| Abernathy    | Anne          | Mrs.          | N                      | 73658864          | 4    |
+| Oleary       | Hazel         | Ms.           | N                      | 94106206          | 4    |
+| Wright       | Russell       | Sir           |                        | 50369241          | 4    |
+| Smith        | Deborah       | Miss          | Y                      | 162842299         | 4    |
+| Hatfield     | Charles       | Sir           | N                      | 20303592          | 3    |
+| Davis        | Ethel         | Mrs.          | Y                      | 204678744         | 3    |
++--------------+---------------+---------------+------------------------+-------------------+------+--+
+270 rows selected (25.841 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_1000;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+STOP hdp2.6_hivetez_run_3_1000_query73_sql_2017-04-07-04-56:  Fri Apr 7 04:56:37 CDT 2017

@@ -1,0 +1,43 @@
+START hdp2.6_spark21_run_100_1_query70_sql_2017-04-11-09-52:  Tue Apr 11 09:52:34 CDT 2017
+Connecting to jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_100
+17/04/11 09:52:34 INFO Utils: Supplied authorities: h01hn02.hadoop:10016
+17/04/11 09:52:34 INFO Utils: Resolved authority: h01hn02.hadoop:10016
+17/04/11 09:52:34 INFO HiveConnection: Will try to open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_100
+Connected to: Spark SQL (version 2.1.0.2.6.0.3-8)
+Driver: Hive JDBC (version 1.2.1.spark2.hdp)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script settings/spark.settings
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> select  
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     sum(ss_net_profit) as total_sum
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>    ,s_state
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>    ,s_county
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>    ,grouping__id as lochierarchy
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>    , rank() over(partition by grouping__id, case when grouping__id == 2 then s_state end order by sum(ss_net_pro fit)) as rank_within_parent
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> from
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     store_sales ss join date_dim d1 on d1.d_date_sk = ss.ss_sold_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     join store s on s.s_store_sk  = ss.ss_store_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  where
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     d1.d_month_seq between 1193 and 1193+11
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and s.s_state in
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              ( select s_state
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                from  (select s_state as s_state, sum(ss_net_profit),
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                              rank() over ( partition by s_state order by sum(ss_net_profit) desc) as ranking
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                       from   store_sales, store, date_dim
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                       where  d_month_seq between 1193 and 1193+11
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                             and date_dim.d_date_sk = store_sales.ss_sold_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                             and store.s_store_sk  = store_sales.ss_store_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                       group by s_state
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                      ) tmp1 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                where ranking <= 5
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>              )
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  group by s_state,s_county with rollup
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> order by
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>    lochierarchy desc
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   ,case when lochierarchy = 0 then s_state end
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   ,rank_within_parent
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  limit 100;
+Error: org.apache.spark.sql.AnalysisException: grouping__id is deprecated; use grouping_id() instead; (state=,code=0)
+
+Closing: 0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_100
+STOP hdp2.6_spark21_run_100_1_query70_sql_2017-04-11-09-52:  Tue Apr 11 09:52:35 CDT 2017

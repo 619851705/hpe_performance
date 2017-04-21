@@ -1,0 +1,61 @@
+START hdp2.6_spark21_run_5000_3_query51_sql_2017-04-09-13-16:  Sun Apr 9 13:16:33 CDT 2017
+ /usr/hdp/current/spark2-client/bin/beeline -u "jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_$SF" -n hive --incremental=true  -i settings/spark.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_5000
+17/04/09 13:16:34 INFO Utils: Supplied authorities: h01hn02.hadoop:10016
+17/04/09 13:16:34 INFO Utils: Resolved authority: h01hn02.hadoop:10016
+17/04/09 13:16:34 INFO HiveConnection: Will try to open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_5000
+Connected to: Spark SQL (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1.spark2.hdp)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script settings/spark.settings
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> WITH web_v1 as (
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> select
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   ws_item_sk item_sk, d_date, sum(ws_sales_price),
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   sum(sum(ws_sales_price))
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>       over (partition by ws_item_sk order by d_date rows between unbounded preceding and current row) cume_sales 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> from web_sales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     ,date_dim
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> where ws_sold_date_sk=d_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   and d_month_seq between 1193 and 1193+11
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   and ws_item_sk is not NULL
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> group by ws_item_sk, d_date),
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> store_v1 as (
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> select
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   ss_item_sk item_sk, d_date, sum(ss_sales_price),
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   sum(sum(ss_sales_price))
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>       over (partition by ss_item_sk order by d_date rows between unbounded preceding and current row) cume_sales 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> from store_sales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     ,date_dim
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> where ss_sold_date_sk=d_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   and d_month_seq between 1193 and 1193+11
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   and ss_item_sk is not NULL
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> group by ss_item_sk, d_date)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  select  *
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> from (select item_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>      ,d_date
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>      ,web_sales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>      ,store_sales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>      ,max(web_sales)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          over (partition by item_sk order by d_date rows between unbounded preceding and current row) web_cumula tive
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>      ,max(store_sales)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          over (partition by item_sk order by d_date rows between unbounded preceding and current row) store_cumu lative
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>      from (select case when web.item_sk is not null then web.item_sk else store.item_sk end item_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                  ,case when web.d_date is not null then web.d_date else store.d_date end d_date
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                  ,web.cume_sales web_sales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                  ,store.cume_sales store_sales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>            from web_v1 web full outer join store_v1 store on (web.item_sk = store.item_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                                                           and web.d_date = store.d_date)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           )x )y
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> where web_cumulative > store_cumulative
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> order by item_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,d_date
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> limit 100;
++-------------+-----------------+-----------------+-----------------+-----------------+-----------------+--+
+|   item_sk   |     d_date      |    web_sales    |   store_sales   | web_cumulative  | store_cumulative |
++-------------+-----------------+-----------------+-----------------+-----------------+-----------------+--+
++-------------+-----------------+-----------------+-----------------+-----------------+-----------------+--+
+No rows selected (19.966 seconds)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+Closing: 0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_5000
+STOP hdp2.6_spark21_run_5000_3_query51_sql_2017-04-09-13-16:  Sun Apr 9 13:16:54 CDT 2017

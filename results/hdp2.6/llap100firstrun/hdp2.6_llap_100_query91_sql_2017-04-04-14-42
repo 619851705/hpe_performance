@@ -1,0 +1,995 @@
+START hdp2.6_llap_100_query91_sql_2017-04-04-14-42:  Tue Apr 4 14:42:57 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2" -n hive --incremental=true -i test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+Connected to: Apache Hive (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.042 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> select  
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         cc_call_center_id Call_Center,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         cc_name Call_Center_Name,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         cc_manager Manager,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         sum(cr_net_loss) Returns_Loss
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         call_center,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         catalog_returns,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         date_dim,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         customer,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         customer_address,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         customer_demographics,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         household_demographics
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> where
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         catalog_returns.cr_call_center_sk       = call_center.cc_call_center_sk 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and     catalog_returns.cr_returned_date_sk     = date_dim.d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and     catalog_returns.cr_returning_customer_sk= customer.c_customer_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and     customer_demographics.cd_demo_sk              = customer.c_current_cdem o_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and     household_demographics.hd_demo_sk              = customer.c_current_hde mo_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and     customer_address.ca_address_sk           = customer.c_current_addr_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and     d_year                  = 1999 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and     d_moy                   = 11
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and     ( (cd_marital_status       = 'M' and cd_education_status     = 'Unknown ')
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         or(cd_marital_status       = 'W' and cd_education_status     = 'Advance d Degree'))
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and     hd_buy_potential like '0-500%'
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> and     ca_gmt_offset           = -7
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> group by cc_call_center_id,cc_name,cc_manager,cd_marital_status,cd_education_st atus
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> order by Returns_Loss desc;
+INFO  : Compiling command(queryId=hive_20170404144301_11407eba-e1f9-47aa-bb58-575d6f1dfbe5): select
+        cc_call_center_id Call_Center,
+        cc_name Call_Center_Name,
+        cc_manager Manager,
+        sum(cr_net_loss) Returns_Loss
+from
+        call_center,
+        catalog_returns,
+        date_dim,
+        customer,
+        customer_address,
+        customer_demographics,
+        household_demographics
+where
+        catalog_returns.cr_call_center_sk       = call_center.cc_call_center_sk
+and     catalog_returns.cr_returned_date_sk     = date_dim.d_date_sk
+and     catalog_returns.cr_returning_customer_sk= customer.c_customer_sk
+and     customer_demographics.cd_demo_sk              = customer.c_current_cdemo_sk
+and     household_demographics.hd_demo_sk              = customer.c_current_hdemo_sk
+and     customer_address.ca_address_sk           = customer.c_current_addr_sk
+and     d_year                  = 1999 
+and     d_moy                   = 11
+and     ( (cd_marital_status       = 'M' and cd_education_status     = 'Unknown')
+        or(cd_marital_status       = 'W' and cd_education_status     = 'Advanced Degree'))
+and     hd_buy_potential like '0-500%'
+and     ca_gmt_offset           = -7
+group by cc_call_center_id,cc_name,cc_manager,cd_marital_status,cd_education_status
+order by Returns_Loss desc
+INFO  : We are setting the hadoop caller context from HIVE_SSN_ID:adbe86b5-9f7b-47a8-84f9-e39589f164d5 to hive_20170404144301_11407eba-e1f9-47aa-bb58-575d6f1dfbe5
+INFO  : Semantic Analysis Completed
+INFO  : Returning Hive schema: Schema(fieldSchemas:[FieldSchema(name:call_center, type:string, comment:null), FieldSchema(name:call_center_name, type:string, comment:null), FieldSchema(name:manager, type:string, comment:null), FieldSchema(name:returns_loss, type:double, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=hive_20170404144301_11407eba-e1f9-47aa-bb58-575d6f1dfbe5); Time taken: 1.095 seconds
+INFO  : We are resetting the hadoop caller context to HIVE_SSN_ID:adbe86b5-9f7b-47a8-84f9-e39589f164d5
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Setting caller context to query id hive_20170404144301_11407eba-e1f9-47aa-bb58-575d6f1dfbe5
+INFO  : Executing command(queryId=hive_20170404144301_11407eba-e1f9-47aa-bb58-575d6f1dfbe5): select
+        cc_call_center_id Call_Center,
+        cc_name Call_Center_Name,
+        cc_manager Manager,
+        sum(cr_net_loss) Returns_Loss
+from
+        call_center,
+        catalog_returns,
+        date_dim,
+        customer,
+        customer_address,
+        customer_demographics,
+        household_demographics
+where
+        catalog_returns.cr_call_center_sk       = call_center.cc_call_center_sk
+and     catalog_returns.cr_returned_date_sk     = date_dim.d_date_sk
+and     catalog_returns.cr_returning_customer_sk= customer.c_customer_sk
+and     customer_demographics.cd_demo_sk              = customer.c_current_cdemo_sk
+and     household_demographics.hd_demo_sk              = customer.c_current_hdemo_sk
+and     customer_address.ca_address_sk           = customer.c_current_addr_sk
+and     d_year                  = 1999 
+and     d_moy                   = 11
+and     ( (cd_marital_status       = 'M' and cd_education_status     = 'Unknown')
+        or(cd_marital_status       = 'W' and cd_education_status     = 'Advanced Degree'))
+and     hd_buy_potential like '0-500%'
+and     ca_gmt_offset           = -7
+group by cc_call_center_id,cc_name,cc_manager,cd_marital_status,cd_education_status
+order by Returns_Loss desc
+INFO  : Query ID = hive_20170404144301_11407eba-e1f9-47aa-bb58-575d6f1dfbe5
+INFO  : Total jobs = 1
+INFO  : Launching Job 1 out of 1
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Session is already open
+INFO  : Dag name: select
+        cc_call_center_id Call...desc(Stage-1)
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Status: Running (Executing on YARN cluster with App id application_1490972295983_0148)
+
+INFO  : Map 1: 1/1	Map 11: 5(+2)/7	Map 13: 1/1	Map 3: -/-	Map 5: 1/1	Map 6: 0/9	Map 9: 5/5	Reducer 10: 0(+1)/1	Reducer 12: 0(+1)/1	Reducer 14: 1/1	Reducer 2: 0(+1)/1	Reducer 4: 0/1	Reducer 7: 0/4	Reducer 8: 0/1	
+INFO  : Map 1: 1/1	Map 11: 7/7	Map 13: 1/1	Map 3: 0(+9)/9	Map 5: 1/1	Map 6: 0(+9)/9	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 4: 0/1	Reducer 7: 0/4	Reducer 8: 0/1	
+[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 11 .........        llap  SUCCEEDED          7        7        0       0       0
+Map 13 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 3 ........          llap  RUNNING          9        8        1       0       0
+Map 5 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 6                   llap  RUNNING          9        0        9       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 14 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 4               llap  RUNNING          1        0        1       0       0
+Reducer 7               llap  INITED          4        0        0       4       0
+Reducer 8               llap  INITED          1        0        0       1       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 09/14  [================>>----------] 62%   ELAPSED TIME: 0.73 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[20A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 11 .........        llap  SUCCEEDED          7        7        0       0       0
+Map 13 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 3 ..........        llap  SUCCEEDED          9        9        0       0       0
+Map 5 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 6                   llap  RUNNING          9        0        9       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 14 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 4               llap  RUNNING          1        0        1       0       0
+Reducer 7               llap  INITED          4        0        0       4       0
+Reducer 8               llap  INITED          1        0        0       1       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 10/14  [================>>----------] 65%   ELAPSED TIME: 1.24 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[20A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 11 .........        llap  SUCCEEDED          7        7        0       0       0
+Map 13 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 3 ..........        llap  SUCCEEDED          9        9        0       0       0
+Map 5 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 6                   llap  RUNNING          9        0        9       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 14 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 4 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 7               llap  INITED          4        0        0       4       0
+Reducer 8               llap  INITED          1        0        0       1       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 11/14  [=================>>---------] 67%   ELAPSED TIME: 1.74 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[20A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 11 .........        llap  SUCCEEDED          7        7        0       0       0
+Map 13 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 3 ..........        llap  SUCCEEDED          9        9        0       0       0
+Map 5 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 6 ..........        llap  SUCCEEDED          9        9        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 14 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 4 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 7 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 14/14  [==========================>>] 100%  ELAPSED TIME: 2.24 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[20A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES        MODE  STATUS      TOTAL  COMPLETED  RUNNING  PENDING  FAILED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 11 .........        llap  SUCCEEDED          7        7        0       0       0
+Map 13 .........        llap  SUCCEEDED          1        1        0       0       0
+Map 3 ..........        llap  SUCCEEDED          9        9        0       0       0
+Map 5 ..........        llap  SUCCEEDED          1        1        0       0       0
+Map 6 ..........        llap  SUCCEEDED          9        9        0       0       0
+Map 9 ..........        llap  SUCCEEDED          5        5        0       0       0
+Reducer 10 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 12 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 14 .....        llap  SUCCEEDED          1        1        0       0       0
+Reducer 2 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 4 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 7 ......        llap  SUCCEEDED          1        1        0       0       0
+Reducer 8 ......        llap  SUCCEEDED          1        1        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 14/14  [==========================>>] 100%  ELAPSED TIME: 2.31 s     
+[22;0m[2K--------------------------------------------------------------------------------
+INFO  : Map 1: 1/1	Map 11: 7/7	Map 13: 1/1	Map 3: 6(+3)/9	Map 5: 1/1	Map 6: 0(+9)/9	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 4: 0(+1)/1	Reducer 7: 0/4	Reducer 8: 0/1	
+INFO  : Map 1: 1/1	Map 11: 7/7	Map 13: 1/1	Map 3: 8(+1)/9	Map 5: 1/1	Map 6: 0(+9)/9	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 4: 0(+1)/1	Reducer 7: 0/4	Reducer 8: 0/1	
+INFO  : Map 1: 1/1	Map 11: 7/7	Map 13: 1/1	Map 3: 9/9	Map 5: 1/1	Map 6: 0(+9)/9	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 4: 0(+1)/1	Reducer 7: 0/4	Reducer 8: 0/1	
+INFO  : Map 1: 1/1	Map 11: 7/7	Map 13: 1/1	Map 3: 9/9	Map 5: 1/1	Map 6: 0(+9)/9	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 4: 1/1	Reducer 7: 0/4	Reducer 8: 0/1	
+INFO  : Map 1: 1/1	Map 11: 7/7	Map 13: 1/1	Map 3: 9/9	Map 5: 1/1	Map 6: 9/9	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 4: 1/1	Reducer 7: 0(+1)/1	Reducer 8: 0/1	
+INFO  : Map 1: 1/1	Map 11: 7/7	Map 13: 1/1	Map 3: 9/9	Map 5: 1/1	Map 6: 9/9	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 4: 1/1	Reducer 7: 1/1	Reducer 8: 0(+1)/1	
+INFO  : Map 1: 1/1	Map 11: 7/7	Map 13: 1/1	Map 3: 9/9	Map 5: 1/1	Map 6: 9/9	Map 9: 5/5	Reducer 10: 1/1	Reducer 12: 1/1	Reducer 14: 1/1	Reducer 2: 1/1	Reducer 4: 1/1	Reducer 7: 1/1	Reducer 8: 1/1	
+INFO  : Status: DAG finished successfully in 2.23 seconds
+INFO  : 
+INFO  : Query Execution Summary
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : OPERATION                            DURATION
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : Compile Query                           1.09s
+INFO  : Prepare Plan                            0.47s
+INFO  : Submit Plan                             0.12s
+INFO  : Start DAG                               0.20s
+INFO  : Run DAG                                 2.23s
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : Task Execution Summary
+INFO  : --------------------------------------------------------------------------------------------------------------------------------
+INFO  :   VERTICES  TOTAL_TASKS  FAILED_ATTEMPTS  KILLED_TASKS   DURATION(ms)  CPU_TIME(ms)  GC_TIME(ms)  INPUT_RECORDS  OUTPUT_RECORDS
+INFO  : --------------------------------------------------------------------------------------------------------------------------------
+INFO  :      Map 1            1                0             0        2224.00             0            0             30              31
+INFO  :     Map 11            7                0             0        2224.00             0            0      1,920,800         109,767
+INFO  :     Map 13            1                0             0        2224.00             0            0          7,200           1,201
+INFO  :      Map 3            9                0             0        2022.00             0            0        192,857         187,061
+INFO  :      Map 5            1                0             0        2224.00             0            0         73,049              30
+INFO  :      Map 6            9                0             0        2022.00             0            0      2,406,711             112
+INFO  :      Map 9            5                0             0        2224.00             0            0      1,000,000         108,678
+INFO  : Reducer 10            1                0             0        2224.00             0            0        108,678               1
+INFO  : Reducer 12            1                0             0        2224.00             0            0        109,767               1
+INFO  : Reducer 14            1                0             0        2224.00             0            0          1,201               1
+INFO  :  Reducer 2            1                0             0        2224.00             0            0             31               1
+INFO  :  Reducer 4            1                0             0        1820.00             0            0        187,061               1
+INFO  :  Reducer 7            1                0             0         211.00             0            0            112              30
+INFO  :  Reducer 8            1                0             0           9.00             0            0             30               0
+INFO  : --------------------------------------------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : LLAP IO Summary
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :   VERTICES ROWGROUPS  META_HIT  META_MISS  DATA_HIT  DATA_MISS  ALLOCATION     USED  TOTAL_IO
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :      Map 1         1         0          2        0B       520B      1.31MB     851B     0.01s
+INFO  :     Map 11       196        14          0   25.47KB         0B          0B       0B     0.08s
+INFO  :     Map 13         1         2          0      134B         0B          0B       0B     0.00s
+INFO  :      Map 3        30        30         30  618.36KB   675.19KB     15.73MB 780.66KB     0.51s
+INFO  :      Map 5         8         2          0      730B         0B          0B       0B     0.00s
+INFO  :      Map 6       200        42          0   14.93MB         0B          0B       0B     0.11s
+INFO  :      Map 9       100        16          0  603.57KB         0B          0B       0B     0.04s
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : FileSystem Counters Summary
+INFO  : 
+INFO  : Scheme: FILE
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :   VERTICES      BYTES_READ      READ_OPS     LARGE_READ_OPS      BYTES_WRITTEN     WRITE_OPS
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :      Map 1             64B             0                  0               858B             0
+INFO  :     Map 11            448B             0                  0             1.81MB             0
+INFO  :     Map 13             64B             0                  0             7.91KB             0
+INFO  :      Map 3            632B             0                  0            10.34MB             0
+INFO  :      Map 5              0B             0                  0               180B             0
+INFO  :      Map 6          3.20MB             0                  0             7.52KB             0
+INFO  :      Map 9            320B             0                  0             1.26MB             0
+INFO  : Reducer 10        547.65KB             0                  0           361.97KB             0
+INFO  : Reducer 12        908.42KB             0                  0           522.02KB             0
+INFO  : Reducer 14              0B             0                  0             2.88KB             0
+INFO  :  Reducer 2              0B             0                  0                88B             0
+INFO  :  Reducer 4          7.13MB             0                  0             2.32MB             0
+INFO  :  Reducer 7             64B             0                  0               846B             0
+INFO  :  Reducer 8              0B             0                  0                 0B             0
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : Scheme: HDFS
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :   VERTICES      BYTES_READ      READ_OPS     LARGE_READ_OPS      BYTES_WRITTEN     WRITE_OPS
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  :      Map 1          8.24KB             4                  0                 0B             0
+INFO  :     Map 11              0B             0                  0                 0B             0
+INFO  :     Map 13              0B             0                  0                 0B             0
+INFO  :      Map 3        688.28KB            60                  0                 0B             0
+INFO  :      Map 5              0B             0                  0                 0B             0
+INFO  :      Map 6              0B             0                  0                 0B             0
+INFO  :      Map 9              0B             0                  0                 0B             0
+INFO  : Reducer 10              0B             0                  0                 0B             0
+INFO  : Reducer 12              0B             0                  0                 0B             0
+INFO  : Reducer 14              0B             0                  0                 0B             0
+INFO  :  Reducer 2              0B             0                  0                 0B             0
+INFO  :  Reducer 4              0B             0                  0                 0B             0
+INFO  :  Reducer 7              0B             0                  0                 0B             0
+INFO  :  Reducer 8              0B             2                  0             2.36KB             2
+INFO  : ----------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : org.apache.tez.common.counters.DAGCounter:
+INFO  :    NUM_SUCCEEDED_TASKS: 40
+INFO  :    TOTAL_LAUNCHED_TASKS: 40
+INFO  :    DATA_LOCAL_TASKS: 33
+INFO  :    AM_CPU_MILLISECONDS: 530
+INFO  :    AM_GC_TIME_MILLIS: 0
+INFO  : File System Counters:
+INFO  :    FILE_BYTES_READ: 11794166
+INFO  :    FILE_BYTES_WRITTEN: 16626382
+INFO  :    FILE_READ_OPS: 0
+INFO  :    FILE_LARGE_READ_OPS: 0
+INFO  :    FILE_WRITE_OPS: 0
+INFO  :    HDFS_BYTES_READ: 696518
+INFO  :    HDFS_BYTES_WRITTEN: 2357
+INFO  :    HDFS_READ_OPS: 66
+INFO  :    HDFS_LARGE_READ_OPS: 0
+INFO  :    HDFS_WRITE_OPS: 2
+INFO  : org.apache.tez.common.counters.TaskCounter:
+INFO  :    REDUCE_INPUT_GROUPS: 65
+INFO  :    REDUCE_INPUT_RECORDS: 165
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    SPILLED_RECORDS: 330
+INFO  :    NUM_SHUFFLED_INPUTS: 317
+INFO  :    NUM_SKIPPED_INPUTS: 4
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    MERGED_MAP_OUTPUTS: 56
+INFO  :    INPUT_RECORDS_PROCESSED: 3665960
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 101639615
+INFO  :    OUTPUT_RECORDS: 406915
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_BYTES: 157142972
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 157957412
+INFO  :    OUTPUT_BYTES_PHYSICAL: 16624446
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 8289472
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 9349482
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    SHUFFLE_CHUNK_COUNT: 33
+INFO  :    SHUFFLE_BYTES: 74779926
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 385918476
+INFO  :    SHUFFLE_BYTES_TO_MEM: 66450384
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 8329542
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    SHUFFLE_PHASE_TIME: 14110
+INFO  :    MERGE_PHASE_TIME: 1369
+INFO  :    FIRST_EVENT_RECEIVED: 12430
+INFO  :    LAST_EVENT_RECEIVED: 13526
+INFO  : HIVE:
+INFO  :    CREATED_FILES: 1
+INFO  :    DESERIALIZE_ERRORS: 0
+INFO  :    RECORDS_IN_Map_1: 30
+INFO  :    RECORDS_IN_Map_11: 1920800
+INFO  :    RECORDS_IN_Map_13: 7200
+INFO  :    RECORDS_IN_Map_3: 192795
+INFO  :    RECORDS_IN_Map_5: 73049
+INFO  :    RECORDS_IN_Map_6: 2000000
+INFO  :    RECORDS_IN_Map_9: 1000000
+INFO  :    RECORDS_OUT_0: 30
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_1: 31
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_11: 109767
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_13: 1201
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_3: 187061
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_5: 30
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_6: 112
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_9: 108678
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_10: 1
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_12: 1
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_14: 1
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_2: 1
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_4: 1
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_7: 30
+INFO  : Shuffle Errors:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_10_INPUT_Map_9:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_12_INPUT_Map_11:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_14_INPUT_Map_13:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_2_INPUT_Map_1:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_4_INPUT_Map_3:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_7_INPUT_Map_6:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_8_INPUT_Reducer_7:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : TaskCounter_Map_11_INPUT_customer_demographics:
+INFO  :    INPUT_RECORDS_PROCESSED: 1924
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 73617
+INFO  : TaskCounter_Map_11_OUTPUT_Map_6:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 2195200
+INFO  :    OUTPUT_BYTES_PHYSICAL: 640426
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 2414762
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 109760
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_11_OUTPUT_Reducer_12:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 5239936
+INFO  :    OUTPUT_BYTES_PHYSICAL: 1170676
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 5240013
+INFO  :    OUTPUT_RECORDS: 7
+INFO  :    SHUFFLE_CHUNK_COUNT: 7
+INFO  :    SPILLED_RECORDS: 7
+INFO  : TaskCounter_Map_13_INPUT_household_demographics:
+INFO  :    INPUT_RECORDS_PROCESSED: 8
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 629
+INFO  : TaskCounter_Map_13_OUTPUT_Map_6:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 6000
+INFO  :    OUTPUT_BYTES_PHYSICAL: 5018
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 8406
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1200
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_13_OUTPUT_Reducer_14:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 2822
+INFO  :    OUTPUT_BYTES_PHYSICAL: 2850
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 2832
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SHUFFLE_CHUNK_COUNT: 1
+INFO  :    SPILLED_RECORDS: 1
+INFO  : TaskCounter_Map_1_INPUT_call_center:
+INFO  :    INPUT_RECORDS_PROCESSED: 1
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 5428
+INFO  : TaskCounter_Map_1_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1519
+INFO  :    OUTPUT_BYTES_PHYSICAL: 762
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 1585
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 30
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_1_OUTPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 34
+INFO  :    OUTPUT_BYTES_PHYSICAL: 56
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 42
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SHUFFLE_CHUNK_COUNT: 1
+INFO  :    SPILLED_RECORDS: 1
+INFO  : TaskCounter_Map_3_INPUT_Map_1:
+INFO  :    FIRST_EVENT_RECEIVED: 5
+INFO  :    INPUT_RECORDS_PROCESSED: 270
+INFO  :    LAST_EVENT_RECEIVED: 5
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 9
+INFO  :    SHUFFLE_BYTES: 6642
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 14265
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 738
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 5904
+INFO  :    SHUFFLE_PHASE_TIME: 18
+INFO  : TaskCounter_Map_3_INPUT_Map_5:
+INFO  :    FIRST_EVENT_RECEIVED: 4
+INFO  :    INPUT_RECORDS_PROCESSED: 270
+INFO  :    LAST_EVENT_RECEIVED: 4
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 9
+INFO  :    SHUFFLE_BYTES: 1332
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 1944
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 148
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 1184
+INFO  :    SHUFFLE_PHASE_TIME: 14
+INFO  : TaskCounter_Map_3_INPUT_Reducer_2:
+INFO  :    FIRST_EVENT_RECEIVED: 7
+INFO  :    INPUT_RECORDS_PROCESSED: 9
+INFO  :    LAST_EVENT_RECEIVED: 7
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 9
+INFO  :    SHUFFLE_BYTES: 504
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 378
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 56
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 448
+INFO  :    SHUFFLE_PHASE_TIME: 22
+INFO  : TaskCounter_Map_3_INPUT_catalog_returns:
+INFO  :    INPUT_RECORDS_PROCESSED: 204
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 11863244
+INFO  : TaskCounter_Map_3_OUTPUT_Map_6:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 10209617
+INFO  :    OUTPUT_BYTES_PHYSICAL: 2941773
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 10583775
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 187052
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_3_OUTPUT_Reducer_4:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 122260176
+INFO  :    OUTPUT_BYTES_PHYSICAL: 7395049
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 122260275
+INFO  :    OUTPUT_RECORDS: 9
+INFO  :    SHUFFLE_CHUNK_COUNT: 9
+INFO  :    SPILLED_RECORDS: 9
+INFO  : TaskCounter_Map_5_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 73
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 361420
+INFO  : TaskCounter_Map_5_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 150
+INFO  :    OUTPUT_BYTES_PHYSICAL: 172
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 216
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 30
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_6_INPUT_Map_11:
+INFO  :    FIRST_EVENT_RECEIVED: 6
+INFO  :    INPUT_RECORDS_PROCESSED: 987840
+INFO  :    LAST_EVENT_RECEIVED: 6
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 63
+INFO  :    SHUFFLE_BYTES: 5762322
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 21732858
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 640258
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 5122064
+INFO  :    SHUFFLE_PHASE_TIME: 139
+INFO  : TaskCounter_Map_6_INPUT_Map_13:
+INFO  :    FIRST_EVENT_RECEIVED: 6
+INFO  :    INPUT_RECORDS_PROCESSED: 10800
+INFO  :    LAST_EVENT_RECEIVED: 6
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 9
+INFO  :    SHUFFLE_BYTES: 44946
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 75654
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 4994
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 39952
+INFO  :    SHUFFLE_PHASE_TIME: 14
+INFO  : TaskCounter_Map_6_INPUT_Map_3:
+INFO  :    FIRST_EVENT_RECEIVED: 9
+INFO  :    INPUT_RECORDS_PROCESSED: 1683468
+INFO  :    LAST_EVENT_RECEIVED: 10
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 81
+INFO  :    SHUFFLE_BYTES: 26474013
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 95253975
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 2941557
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 23532456
+INFO  :    SHUFFLE_PHASE_TIME: 45
+INFO  : TaskCounter_Map_6_INPUT_Map_9:
+INFO  :    FIRST_EVENT_RECEIVED: 9
+INFO  :    INPUT_RECORDS_PROCESSED: 978057
+INFO  :    LAST_EVENT_RECEIVED: 9
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 45
+INFO  :    SHUFFLE_BYTES: 4319136
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 6846669
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 479904
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 3839232
+INFO  :    SHUFFLE_PHASE_TIME: 24
+INFO  : TaskCounter_Map_6_INPUT_Reducer_10:
+INFO  :    FIRST_EVENT_RECEIVED: 8
+INFO  :    INPUT_RECORDS_PROCESSED: 9
+INFO  :    LAST_EVENT_RECEIVED: 8
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 9
+INFO  :    SHUFFLE_BYTES: 3257469
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 3507579
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 361941
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 2895528
+INFO  :    SHUFFLE_PHASE_TIME: 33
+INFO  : TaskCounter_Map_6_INPUT_Reducer_12:
+INFO  :    FIRST_EVENT_RECEIVED: 735
+INFO  :    INPUT_RECORDS_PROCESSED: 9
+INFO  :    LAST_EVENT_RECEIVED: 735
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 9
+INFO  :    SHUFFLE_BYTES: 4697874
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 6737139
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 521986
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 4175888
+INFO  :    SHUFFLE_PHASE_TIME: 767
+INFO  : TaskCounter_Map_6_INPUT_Reducer_14:
+INFO  :    FIRST_EVENT_RECEIVED: 21
+INFO  :    INPUT_RECORDS_PROCESSED: 9
+INFO  :    LAST_EVENT_RECEIVED: 21
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 9
+INFO  :    SHUFFLE_BYTES: 25650
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 25488
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 2850
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 22800
+INFO  :    SHUFFLE_PHASE_TIME: 30
+INFO  : TaskCounter_Map_6_INPUT_Reducer_4:
+INFO  :    FIRST_EVENT_RECEIVED: 11611
+INFO  :    INPUT_RECORDS_PROCESSED: 9
+INFO  :    LAST_EVENT_RECEIVED: 11611
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 9
+INFO  :    SHUFFLE_BYTES: 20835900
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 122260275
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 2315100
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 18520800
+INFO  :    SHUFFLE_PHASE_TIME: 11764
+INFO  : TaskCounter_Map_6_INPUT_customer:
+INFO  :    INPUT_RECORDS_PROCESSED: 2000
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 76514719
+INFO  : TaskCounter_Map_6_OUTPUT_Reducer_7:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 8275
+INFO  :    OUTPUT_BYTES_PHYSICAL: 6580
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 8715
+INFO  :    OUTPUT_RECORDS: 112
+INFO  :    SHUFFLE_CHUNK_COUNT: 9
+INFO  :    SPILLED_RECORDS: 112
+INFO  : TaskCounter_Map_9_INPUT_customer_address:
+INFO  :    INPUT_RECORDS_PROCESSED: 1000
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 12820558
+INFO  : TaskCounter_Map_9_OUTPUT_Map_6:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 543365
+INFO  :    OUTPUT_BYTES_PHYSICAL: 480024
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 760741
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 108673
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_9_OUTPUT_Reducer_10:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1948610
+INFO  :    OUTPUT_BYTES_PHYSICAL: 778193
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 1948665
+INFO  :    OUTPUT_RECORDS: 5
+INFO  :    SHUFFLE_CHUNK_COUNT: 5
+INFO  :    SPILLED_RECORDS: 5
+INFO  : TaskCounter_Reducer_10_INPUT_Map_9:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 778129
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 678720
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 1
+INFO  :    LAST_EVENT_RECEIVED: 98
+INFO  :    MERGED_MAP_OUTPUTS: 5
+INFO  :    MERGE_PHASE_TIME: 127
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 5
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 1
+INFO  :    REDUCE_INPUT_RECORDS: 5
+INFO  :    SHUFFLE_BYTES: 778193
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 1948665
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 99409
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 678784
+INFO  :    SHUFFLE_PHASE_TIME: 119
+INFO  :    SPILLED_RECORDS: 5
+INFO  : TaskCounter_Reducer_10_OUTPUT_Map_6:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 389720
+INFO  :    OUTPUT_BYTES_PHYSICAL: 361965
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 389731
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_12_INPUT_Map_11:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 1170568
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 959391
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 1
+INFO  :    LAST_EVENT_RECEIVED: 198
+INFO  :    MERGED_MAP_OUTPUTS: 7
+INFO  :    MERGE_PHASE_TIME: 215
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 7
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 1
+INFO  :    REDUCE_INPUT_RECORDS: 7
+INFO  :    SHUFFLE_BYTES: 1170676
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 5240013
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 211177
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 959499
+INFO  :    SHUFFLE_PHASE_TIME: 202
+INFO  :    SPILLED_RECORDS: 7
+INFO  : TaskCounter_Reducer_12_OUTPUT_Map_6:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 748560
+INFO  :    OUTPUT_BYTES_PHYSICAL: 522010
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 748571
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_14_INPUT_Map_13:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 2850
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 2850
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 3
+INFO  :    LAST_EVENT_RECEIVED: 3
+INFO  :    MERGED_MAP_OUTPUTS: 1
+INFO  :    MERGE_PHASE_TIME: 6
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 1
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 1
+INFO  :    REDUCE_INPUT_RECORDS: 1
+INFO  :    SHUFFLE_BYTES: 2850
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 2832
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 0
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 2850
+INFO  :    SHUFFLE_PHASE_TIME: 5
+INFO  :    SPILLED_RECORDS: 1
+INFO  : TaskCounter_Reducer_14_OUTPUT_Map_6:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 2822
+INFO  :    OUTPUT_BYTES_PHYSICAL: 2874
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 2832
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_2_INPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 56
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 56
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 1
+INFO  :    LAST_EVENT_RECEIVED: 1
+INFO  :    MERGED_MAP_OUTPUTS: 1
+INFO  :    MERGE_PHASE_TIME: 97
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 1
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 1
+INFO  :    REDUCE_INPUT_RECORDS: 1
+INFO  :    SHUFFLE_BYTES: 56
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 42
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 0
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 56
+INFO  :    SHUFFLE_PHASE_TIME: 96
+INFO  :    SPILLED_RECORDS: 1
+INFO  : TaskCounter_Reducer_2_OUTPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 34
+INFO  :    OUTPUT_BYTES_PHYSICAL: 80
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 42
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_4_INPUT_Map_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 7394897
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 6646316
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 1
+INFO  :    LAST_EVENT_RECEIVED: 699
+INFO  :    MERGED_MAP_OUTPUTS: 9
+INFO  :    MERGE_PHASE_TIME: 776
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 9
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 1
+INFO  :    REDUCE_INPUT_RECORDS: 9
+INFO  :    SHUFFLE_BYTES: 7395049
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 122260275
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 748581
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 6646468
+INFO  :    SHUFFLE_PHASE_TIME: 710
+INFO  :    SPILLED_RECORDS: 9
+INFO  : TaskCounter_Reducer_4_OUTPUT_Map_6:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 13584464
+INFO  :    OUTPUT_BYTES_PHYSICAL: 2315124
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 13584475
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_7_INPUT_Map_6:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 2168
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 1325
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 1
+INFO  :    LAST_EVENT_RECEIVED: 104
+INFO  :    MERGED_MAP_OUTPUTS: 32
+INFO  :    MERGE_PHASE_TIME: 109
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 32
+INFO  :    NUM_SKIPPED_INPUTS: 4
+INFO  :    REDUCE_INPUT_GROUPS: 30
+INFO  :    REDUCE_INPUT_RECORDS: 112
+INFO  :    SHUFFLE_BYTES: 6500
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 8691
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 843
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 5657
+INFO  :    SHUFFLE_PHASE_TIME: 106
+INFO  :    SPILLED_RECORDS: 112
+INFO  : TaskCounter_Reducer_7_OUTPUT_Reducer_8:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1668
+INFO  :    OUTPUT_BYTES_PHYSICAL: 814
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 1734
+INFO  :    OUTPUT_RECORDS: 30
+INFO  :    SHUFFLE_CHUNK_COUNT: 1
+INFO  :    SPILLED_RECORDS: 30
+INFO  : TaskCounter_Reducer_8_INPUT_Reducer_7:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 814
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 814
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 1
+INFO  :    LAST_EVENT_RECEIVED: 1
+INFO  :    MERGED_MAP_OUTPUTS: 1
+INFO  :    MERGE_PHASE_TIME: 39
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 1
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 30
+INFO  :    REDUCE_INPUT_RECORDS: 30
+INFO  :    SHUFFLE_BYTES: 814
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 1734
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 0
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 814
+INFO  :    SHUFFLE_PHASE_TIME: 2
+INFO  :    SPILLED_RECORDS: 30
+INFO  : TaskCounter_Reducer_8_OUTPUT_out_Reducer_8:
+INFO  :    OUTPUT_RECORDS: 0
+INFO  : org.apache.hadoop.hive.llap.counters.LlapIOCounters:
+INFO  :    ALLOCATED_BYTES: 17039360
+INFO  :    ALLOCATED_USED_BYTES: 781511
+INFO  :    CACHE_HIT_BYTES: 16179314
+INFO  :    CACHE_MISS_BYTES: 675713
+INFO  :    CONSUMER_TIME_NS: 1525443088
+INFO  :    DECODE_TIME_NS: 227985042
+INFO  :    HDFS_TIME_NS: 505035659
+INFO  :    METADATA_CACHE_HIT: 106
+INFO  :    METADATA_CACHE_MISS: 32
+INFO  :    NUM_DECODED_BATCHES: 536
+INFO  :    NUM_VECTOR_BATCHES: 5210
+INFO  :    ROWS_EMITTED: 5193874
+INFO  :    SELECTED_ROWGROUPS: 536
+INFO  :    TOTAL_IO_TIME_NS: 749176461
+INFO  : Resetting the caller context to HIVE_SSN_ID:adbe86b5-9f7b-47a8-84f9-e39589f164d5
+INFO  : Completed executing command(queryId=hive_20170404144301_11407eba-e1f9-47aa-bb58-575d6f1dfbe5); Time taken: 3.085 seconds
+INFO  : OK
++-------------------+----------------------+--------------------+---------------------+--+
+|    call_center    |   call_center_name   |      manager       |    returns_loss     |
++-------------------+----------------------+--------------------+---------------------+--+
+| AAAAAAAANAAAAAAA  | NY Metro_1           | Jack Little        | 7855.39981842041    |
+| AAAAAAAAHAAAAAAA  | Pacific Northwest    | Alden Snyder       | 6767.329971313477   |
+| AAAAAAAAHAAAAAAA  | Pacific Northwest    | Alden Snyder       | 6572.490020751953   |
+| AAAAAAAAIAAAAAAA  | California           | Wayne Ray          | 6025.429931640625   |
+| AAAAAAAAEAAAAAAA  | North Midwest        | Larry Mccray       | 5987.970069885254   |
+| AAAAAAAAMBAAAAAA  | North Midwest_2      | Ryan Burchett      | 5767.310035705566   |
+| AAAAAAAAEBAAAAAA  | California_1         | Jason Brito        | 5570.1199951171875  |
+| AAAAAAAAKAAAAAAA  | Hawaii/Alaska        | Gregory Altman     | 5471.040021896362   |
+| AAAAAAAAKBAAAAAA  | Mid Atlantic_2       | Rene Sampson       | 5245.130058288574   |
+| AAAAAAAAABAAAAAA  | North Midwest_1      | Timothy Bourgeois  | 4529.91007232666    |
+| AAAAAAAAJBAAAAAA  | NY Metro_2           | Richard James      | 4405.230239868164   |
+| AAAAAAAAMBAAAAAA  | North Midwest_2      | Ryan Burchett      | 3546.740062713623   |
+| AAAAAAAAGBAAAAAA  | Hawaii/Alaska_1      | Travis Wilson      | 3399.6799697875977  |
+| AAAAAAAABAAAAAAA  | NY Metro             | Bob Belcher        | 3100.0900802612305  |
+| AAAAAAAAJBAAAAAA  | NY Metro_2           | Richard James      | 2990.529962539673   |
+| AAAAAAAAOAAAAAAA  | Mid Atlantic_1       | Clyde Scott        | 2960.1500396728516  |
+| AAAAAAAABAAAAAAA  | NY Metro             | Bob Belcher        | 2767.569938659668   |
+| AAAAAAAAKBAAAAAA  | Mid Atlantic_2       | Rene Sampson       | 2725.0199184417725  |
+| AAAAAAAAGBAAAAAA  | Hawaii/Alaska_1      | Travis Wilson      | 2489.5599670410156  |
+| AAAAAAAAKAAAAAAA  | Hawaii/Alaska        | Gregory Altman     | 2408.1999855041504  |
+| AAAAAAAAIAAAAAAA  | California           | Wayne Ray          | 2211.1100273132324  |
+| AAAAAAAAOAAAAAAA  | Mid Atlantic_1       | Clyde Scott        | 2138.8200035095215  |
+| AAAAAAAAEBAAAAAA  | California_1         | Jason Brito        | 1848.2300491333008  |
+| AAAAAAAADBAAAAAA  | Pacific Northwest_1  | Roderick Walls     | 1629.4699974060059  |
+| AAAAAAAAEAAAAAAA  | North Midwest        | Larry Mccray       | 1506.4100341796875  |
+| AAAAAAAACAAAAAAA  | Mid Atlantic         | Felipe Perkins     | 1327.3400268554688  |
+| AAAAAAAAABAAAAAA  | North Midwest_1      | Timothy Bourgeois  | 1235.280029296875   |
+| AAAAAAAANAAAAAAA  | NY Metro_1           | Jack Little        | 1106.9600067138672  |
+| AAAAAAAACAAAAAAA  | Mid Atlantic         | Felipe Perkins     | 452.1000099182129   |
+| AAAAAAAADBAAAAAA  | Pacific Northwest_1  | Roderick Walls     | 75.44000148773193   |
++-------------------+----------------------+--------------------+---------------------+--+
+30 rows selected (4.232 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2-hive2
+STOP hdp2.6_llap_100_query91_sql_2017-04-04-14-42:  Tue Apr 4 14:43:05 CDT 2017
+
+ South Results Number of Nodes:  9
+ Avg CPU Busy:   Peak Cpu Avg:  100.000 Count > 90% Busy:  0
+ Avg Disk Busy:   Peak Disk Avg:  0 Count > 90% busy 0
+ Avg Disk Reads per sec:   Avg Write per sec: 
+ Avg Net TX:    Peak TX Avg: 
+ Avg Net RX:    Peak RX Avg: 
+ Mem Utilized: 
+South CSV
+| 100.000 | 0 | | 0 | 0 | | | | | | |

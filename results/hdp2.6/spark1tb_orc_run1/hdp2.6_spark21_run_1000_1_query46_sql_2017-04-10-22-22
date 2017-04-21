@@ -1,0 +1,153 @@
+START hdp2.6_spark21_run_1000_1_query46_sql_2017-04-10-22-22:  Mon Apr 10 22:22:41 CDT 2017
+Connecting to jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_orc_1000
+17/04/10 22:22:41 INFO Utils: Supplied authorities: h01hn02.hadoop:10016
+17/04/10 22:22:41 INFO Utils: Resolved authority: h01hn02.hadoop:10016
+17/04/10 22:22:41 INFO HiveConnection: Will try to open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_orc_1000
+Connected to: Spark SQL (version 2.1.0.2.6.0.3-8)
+Driver: Hive JDBC (version 1.2.1.spark2.hdp)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script settings/spark.settings
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> select  c_last_name
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,c_first_name
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,ca_city
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,bought_city
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,ss_ticket_number
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        ,amt,profit 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  from
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>    (select ss_ticket_number
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           ,ss_customer_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           ,ca_city bought_city
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           ,sum(ss_coupon_amt) amt
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           ,sum(ss_net_profit) profit
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     from store_sales,date_dim,store,household_demographics,customer_address 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     where store_sales.ss_sold_date_sk = date_dim.d_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     and store_sales.ss_store_sk = store.s_store_sk  
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     and store_sales.ss_hdemo_sk = household_demographics.hd_demo_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     and store_sales.ss_addr_sk = customer_address.ca_address_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     and (household_demographics.hd_dep_count = 4 or
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          household_demographics.hd_vehicle_count= 2)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     and date_dim.d_dow in (6,0)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     and date_dim.d_year in (1998,1998+1,1998+2) 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     and store.s_city in ('Rosedale','Bethlehem','Clinton','Clifton','Springfield') 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     group by ss_ticket_number,ss_customer_sk,ss_addr_sk,ca_city) dn,customer,customer_address current_addr
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     where dn.ss_customer_sk = customer.c_customer_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>       and customer.c_current_addr_sk = current_addr.ca_address_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>       and current_addr.ca_city <> bought_city
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   order by c_last_name
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           ,c_first_name
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           ,ca_city
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           ,bought_city
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           ,ss_ticket_number
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   limit 100;
++-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+--+
+|   c_last_name   |  c_first_name   |     ca_city     |   bought_city   | ss_ticket_number |       amt       |     profit      |
++-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+--+
+|                 |                 |                 | Ashland         | 213701649       | 4957.5400390625 | -16661.05999660492 |
+|                 |                 |                 | Belmont         | 45094144        | 719.9099807739258 | -4970.490089416504 |
+|                 |                 |                 | Bethel          | 180867310       | 1151.3600330352783 | -7385.249900817871 |
+|                 |                 |                 | Buena Vista     | 104802406       | 0.0             | -16210.46007156372 |
+|                 |                 |                 | Bunker Hill     | 111057823       | 0.0             | -3933.510009765625 |
+|                 |                 |                 | Bunker Hill     | 161655950       | 2775.719970703125 | -8116.849924087524 |
+|                 |                 |                 | Clifton         | 220875289       | 7821.709823608398 | -19516.230326652527 |
+|                 |                 |                 | Concord         | 238124827       | 3176.3798828125 | -5186.639948129654 |
+|                 |                 |                 | Deerfield       | 77867862        | 3105.690079689026 | -14321.870124816895 |
+|                 |                 |                 | Deerfield       | 119333912       | 1337.7499809265137 | -9855.070018053055 |
+|                 |                 |                 | Doyle           | 90696131        | 15.140000343322754 | -7630.679918289185 |
+|                 |                 |                 | Edgewood        | 84733324        | 551.8500061035156 | -8562.729904174805 |
+|                 |                 |                 | Five Forks      | 23824274        | 2322.9599390029907 | -9853.81008529663 |
+|                 |                 |                 | Forest          | 187390156       | 43.33000183105469 | -20710.609748840332 |
+|                 |                 |                 | Friendship      | 157068985       | 477.2199935913086 | -6659.120023727417 |
+|                 |                 |                 | Gary            | 42222070        | 108.97999954223633 | 5283.589988708496 |
+|                 |                 |                 | Glenwood        | 38812964        | 4359.599761962891 | -4368.010061264038 |
+|                 |                 |                 | Glenwood        | 160113508       | 3166.619999885559 | -11945.439819335938 |
+|                 |                 |                 | Green Acres     | 28110550        | 1442.8699951171875 | -11249.05025100708 |
+|                 |                 |                 | Greenfield      | 120276860       | 36.599998474121094 | -6248.899914741516 |
+|                 |                 |                 | Harvey          | 85892272        | 0.0             | -8036.550182342529 |
+|                 |                 |                 | Highland        | 11895235        | 2795.7199745178223 | -12227.439846217632 |
+|                 |                 |                 | Highland        | 67896631        | 0.0             | -6662.679937362671 |
+|                 |                 |                 | Highland        | 70633163        | 0.0             | -12619.380052566528 |
+|                 |                 |                 | Highland        | 121878443       | 1439.0699844360352 | -15147.450090408325 |
+|                 |                 |                 | Hopewell        | 988581          | 482.87999534606934 | -9709.230173110962 |
+|                 |                 |                 | Kelly           | 208211547       | 786.1899795532227 | -19018.759647369385 |
+|                 |                 |                 | Kingston        | 191620021       | 0.0             | -3455.400161743164 |
+|                 |                 |                 | Kingston        | 195974801       | 468.30999755859375 | -828.5200462341309 |
+|                 |                 |                 | Lakeview        | 81193767        | 726.3000183105469 | -11024.369812011719 |
+|                 |                 |                 | Lakeview        | 91330751        | 0.0             | -3977.899902045727 |
+|                 |                 |                 | Lakeview        | 149936541       | 0.0             | -3215.7099208831787 |
+|                 |                 |                 | Lakeview        | 173278660       | 959.8799743652344 | 6934.709945678711 |
+|                 |                 |                 | Lakeview        | 181938326       | 0.0             | -4359.619836807251 |
+|                 |                 |                 | Lakewood        | 102326045       | 1891.089973449707 | -9060.630111694336 |
+|                 |                 |                 | Lenox           | 96105023        | 3959.64990234375 | -1405.6099128723145 |
+|                 |                 |                 | Liberty         | 150837136       | 194.5399932861328 | -9361.81997680664 |
+|                 |                 |                 | Liberty         | 180041516       | 1005.6199707984924 | -26750.629866600037 |
+|                 |                 |                 | Liberty         | 188222000       | 173.69000244140625 | -6152.230000495911 |
+|                 |                 |                 | Lone Oak        | 201661242       | 1524.5700149536133 | -12754.540056228638 |
+|                 |                 |                 | Macedonia       | 96542227        | 664.1700115203857 | -8836.719841003418 |
+|                 |                 |                 | Midway          | 107140946       | 526.3399963378906 | -10471.299964427948 |
+|                 |                 |                 | Mount Olive     | 18854643        | 0.23999999463558197 | -7831.580108344555 |
+|                 |                 |                 | Mount Olive     | 133320663       | 2479.7800817489624 | -14577.870303630829 |
+|                 |                 |                 | Mount Olive     | 147993653       | 1.809999942779541 | -10846.869613647461 |
+|                 |                 |                 | Mount Vernon    | 56101859        | 1258.5099487304688 | -4974.3498611450195 |
+|                 |                 |                 | Newtown         | 174121753       | 2166.33992767334 | 465.0597553253174 |
+|                 |                 |                 | Oak Grove       | 6267450         | 1266.2199630737305 | -4833.540016174316 |
+|                 |                 |                 | Oak Grove       | 120366980       | 3772.3298873901367 | -11077.109981536865 |
+|                 |                 |                 | Oak Grove       | 128597502       | 545.9299850463867 | -7436.930145263672 |
+|                 |                 |                 | Oak Ridge       | 26178903        | 1535.0700225830078 | -954.7000389099121 |
+|                 |                 |                 | Perkins         | 121005708       | 6174.390186309814 | -9602.509914278984 |
+|                 |                 |                 | Peru            | 135921215       | 1519.4000301361084 | -10226.699890136719 |
+|                 |                 |                 | Plainview       | 20921513        | 117.63999938964844 | -7273.819921255112 |
+|                 |                 |                 | Red Hill        | 7609634         | 2861.550054550171 | 1202.9099159240723 |
+|                 |                 |                 | Riverdale       | 193869983       | 6582.330097198486 | -11897.23027420044 |
+|                 |                 |                 | Riverdale       | 236050373       | 2167.249969482422 | -19454.159912109375 |
+|                 |                 |                 | Riverview       | 54906453        | 5633.480113983154 | -16412.290064811707 |
+|                 |                 |                 | Salem           | 172060838       | 1231.9499816894531 | -15033.420135498047 |
+|                 |                 |                 | Shaw            | 68886671        | 6869.780059814453 | -6583.979999542236 |
+|                 |                 |                 | Somerville      | 66869131        | 259.0           | -14671.190276384354 |
+|                 |                 |                 | Spring Valley   | 199146715       | 296.86000579595566 | -3028.390049934387 |
+|                 |                 |                 | Springdale      | 87149845        | 3002.159912109375 | 2379.6199321746826 |
+|                 |                 |                 | Springfield     | 169309828       | 1405.8199768066406 | -3037.7900466918945 |
+|                 |                 |                 | Stringtown      | 25164642        | 973.4199829101562 | -8495.059677124023 |
+|                 |                 |                 | Stringtown      | 219601870       | 2478.4900512695312 | -7653.880027770996 |
+|                 |                 |                 | Summit          | 893787          | 569.9000196456909 | -8924.099700927734 |
+|                 |                 |                 | Summit          | 145781020       | 86.16000366210938 | -8020.339891433716 |
+|                 |                 |                 | Union           | 143191219       | 4331.910177230835 | -16367.489936828613 |
+|                 |                 |                 | Union Hill      | 124932401       | 1422.7599954605103 | -4470.230070114136 |
+|                 |                 |                 | Unionville      | 183747299       | 0.0             | -5155.090051651001 |
+|                 |                 |                 | Walnut Grove    | 114178732       | 5392.940185546875 | -2747.0099487304688 |
+|                 |                 |                 | Waterloo        | 230761996       | 3125.489990234375 | -22746.86037158966 |
+|                 |                 |                 | White Oak       | 104317480       | 2237.6299896240234 | -19357.759857177734 |
+|                 |                 |                 | Woodland        | 6247502         | 1098.0799713134766 | -9675.020141601562 |
+|                 |                 |                 | Woodland        | 125891061       | 2313.1201171875 | -14930.869934082031 |
+|                 |                 |                 | Woodland Park   | 79698718        | 0.0             | -1202.3098449707031 |
+|                 |                 |                 | Woodruff        | 94689883        | 6682.310119628906 | -9404.760009765625 |
+|                 |                 |                 | Woodville       | 12835117        | 1390.4400024414062 | -516.9699077606201 |
+|                 |                 |                 | Youngstown      | 188235079       | 560.2899932861328 | -14422.339544296265 |
+|                 |                 | Aberdeen        | Deerfield       | 9424518         | 1423.790054321289 | -10078.82007598877 |
+|                 |                 | Aberdeen        | Pleasant Hill   | 28903285        | 5046.430084228516 | -22994.279861450195 |
+|                 |                 | Acme            | Lakeside        | 50458555        | 0.0             | -10843.68017578125 |
+|                 |                 | Adrian          | Bethel          | 28586555        | 2339.699951171875 | -8493.689975738525 |
+|                 |                 | Adrian          | Lincoln         | 111139856       | 5206.7601318359375 | -10670.970003128052 |
+|                 |                 | Allentown       |                 | 124298199       | 2.799999952316284 | -3607.1699542999268 |
+|                 |                 | Allentown       | Bay View        | 48986208        | 3360.6601028442383 | -8329.560012817383 |
+|                 |                 | Allentown       | Woodlawn        | 125848836       | 0.0             | -1581.099949836731 |
+|                 |                 | Allison         | Shady Grove     | 59793237        | 2867.949912108481 | -1765.6799664497375 |
+|                 |                 | Amherst         | Oak Grove       | 14921656        | 1982.6399536132812 | -10659.719802856445 |
+|                 |                 | Amherst         | Red Hill        | 103763861       | 508.81998658180237 | -10890.629797935486 |
+|                 |                 | Amity           | Georgetown      | 130756284       | 2793.030029296875 | -9475.73989868164 |
+|                 |                 | Antioch         | Auburn          | 136625952       | 1187.6399850845337 | -18816.819643974304 |
+|                 |                 | Antioch         | Burns           | 120896040       | 4567.83984375   | -17608.960037231445 |
+|                 |                 | Antioch         | Chestnut Ridge  | 126479736       | 4662.8099365234375 | -6722.759906768799 |
+|                 |                 | Antioch         | Enterprise      | 121962970       | 195.0399932861328 | -18988.699996948242 |
+|                 |                 | Antioch         | Fairview        | 40140302        | 3278.669952392578 | -2246.2101078033447 |
+|                 |                 | Antioch         | Farmington      | 21406872        | 3993.8899841308594 | -6134.559539794922 |
+|                 |                 | Antioch         | Forestville     | 43625498        | 1935.3799743652344 | -16439.51008605957 |
+|                 |                 | Antioch         | Friendship      | 94752366        | 123.20000076293945 | -9561.660039901733 |
++-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+--+
+100 rows selected (50.275 seconds)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+Closing: 0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_orc_1000
+STOP hdp2.6_spark21_run_1000_1_query46_sql_2017-04-10-22-22:  Mon Apr 10 22:23:32 CDT 2017

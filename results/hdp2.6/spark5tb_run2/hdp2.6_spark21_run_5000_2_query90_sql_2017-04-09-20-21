@@ -1,0 +1,82 @@
+START hdp2.6_spark21_run_5000_2_query90_sql_2017-04-09-20-21:  Sun Apr 9 20:21:14 CDT 2017
+ /usr/hdp/current/spark2-client/bin/beeline -u "jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_$SF" -n hive --incremental=true  -i settings/spark.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_5000
+17/04/09 20:21:15 INFO Utils: Supplied authorities: h01hn02.hadoop:10016
+17/04/09 20:21:15 INFO Utils: Resolved authority: h01hn02.hadoop:10016
+17/04/09 20:21:15 INFO HiveConnection: Will try to open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_5000
+Connected to: Spark SQL (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1.spark2.hdp)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script settings/spark.settings
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> select  cast(amc as decimal(15,4))/cast(pmc as decimal(15,4)) am_pm_ratio
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  from ( select count(*) amc
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        from web_sales, household_demographics , time_dim, web_page
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        where ws_sold_time_sk = time_dim.t_time_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and ws_ship_hdemo_sk = household_demographics.hd_demo_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and ws_web_page_sk = web_page.wp_web_page_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and time_dim.t_hour between 6 and 6+1
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and household_demographics.hd_dep_count = 8
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and web_page.wp_char_count between 5000 and 5200) at,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>       ( select count(*) pmc
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        from web_sales, household_demographics , time_dim, web_page
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        where ws_sold_time_sk = time_dim.t_time_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and ws_ship_hdemo_sk = household_demographics.hd_demo_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and ws_web_page_sk = web_page.wp_web_page_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and time_dim.t_hour between 14 and 14+1
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and household_demographics.hd_dep_count = 8
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          and web_page.wp_char_count between 5000 and 5200) pt
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  order by am_pm_ratio
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  limit 100;
+Error: org.apache.spark.sql.AnalysisException: Detected cartesian product for INNER join between logical plans
+Aggregate [count(1) AS amc#86154L]
++- Project
+   +- Join Inner, (ws_web_page_sk#86169 = wp_web_page_sk#86206)
+      :- Project [ws_web_page_sk#86169]
+      :  +- Join Inner, (ws_sold_time_sk#86158 = t_time_sk#86196)
+      :     :- Project [ws_sold_time_sk#86158, ws_web_page_sk#86169]
+      :     :  +- Join Inner, (ws_ship_hdemo_sk#86167 = hd_demo_sk#86191)
+      :     :     :- Project [ws_sold_time_sk#86158, ws_ship_hdemo_sk#86167, ws_web_page_sk#86169]
+      :     :     :  +- Filter ((isnotnull(ws_ship_hdemo_sk#86167) && isnotnull(ws_sold_time_sk#86158)) && isnotnull(ws_web_page_sk#86169))
+      :     :     :     +- Relation[ws_sold_time_sk#86158,ws_ship_date_sk#86159,ws_item_sk#86160,ws_bill_customer_sk#86161,ws_bill_cdemo_sk#86162,ws_bill_hdemo_sk#86163,ws_bill_addr_sk#86164,ws_ship_customer_sk#86165,ws_ship_cdemo_sk#86166,ws_ship_hdemo_sk#86167,ws_ship_addr_sk#86168,ws_web_page_sk#86169,ws_web_site_sk#86170,ws_ship_mode_sk#86171,ws_warehouse_sk#86172,ws_promo_sk#86173,ws_order_number#86174,ws_quantity#86175,ws_wholesale_cost#86176,ws_list_price#86177,ws_sales_price#86178,ws_ext_discount_amt#86179,ws_ext_sales_price#86180,ws_ext_wholesale_cost#86181,... 10 more fields] parquet
+      :     :     +- Project [hd_demo_sk#86191]
+      :     :        +- Filter ((isnotnull(hd_dep_count#86194) && (hd_dep_count#86194 = 8)) && isnotnull(hd_demo_sk#86191))
+      :     :           +- InMemoryRelation [hd_demo_sk#86191, hd_income_band_sk#86192, hd_buy_potential#86193, hd_dep_count#86194, hd_vehicle_count#86195], true, 10000, StorageLevel(disk, memory, deserialized, 1 replicas), `household_demographics`
+      :     :                 +- *FileScan parquet tpcds_bin_partitioned_parquet_5000.household_demographics[hd_demo_sk#1622,hd_income_band_sk#1623,hd_buy_potential#1624,hd_dep_count#1625,hd_vehicle_count#1626] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://h01hn01.hadoop:8020/apps/hive/warehouse/tpcds_bin_partitioned_parquet_50..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<hd_demo_sk:int,hd_income_band_sk:int,hd_buy_potential:string,hd_dep_count:int,hd_vehicle_c...
+      :     +- Project [t_time_sk#86196]
+      :        +- Filter ((isnotnull(t_hour#86199) && ((t_hour#86199 >= 6) && (t_hour#86199 <= 7))) && isnotnull(t_time_sk#86196))
+      :           +- InMemoryRelation [t_time_sk#86196, t_time_id#86197, t_time#86198, t_hour#86199, t_minute#86200, t_second#86201, t_am_pm#86202, t_shift#86203, t_sub_shift#86204, t_meal_time#86205], true, 10000, StorageLevel(disk, memory, deserialized, 1 replicas), `time_dim`
+      :                 +- *FileScan parquet tpcds_bin_partitioned_parquet_5000.time_dim[t_time_sk#516,t_time_id#517,t_time#518,t_hour#519,t_minute#520,t_second#521,t_am_pm#522,t_shift#523,t_sub_shift#524,t_meal_time#525] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://h01hn01.hadoop:8020/apps/hive/warehouse/tpcds_bin_partitioned_parquet_50..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<t_time_sk:int,t_time_id:string,t_time:int,t_hour:int,t_minute:int,t_second:int,t_am_pm:str...
+      +- Project [wp_web_page_sk#86206]
+         +- Filter ((isnotnull(wp_char_count#86216) && ((wp_char_count#86216 >= 5000) && (wp_char_count#86216 <= 5200))) && isnotnull(wp_web_page_sk#86206))
+            +- InMemoryRelation [wp_web_page_sk#86206, wp_web_page_id#86207, wp_rec_start_date#86208, wp_rec_end_date#86209, wp_creation_date_sk#86210, wp_access_date_sk#86211, wp_autogen_flag#86212, wp_customer_sk#86213, wp_url#86214, wp_type#86215, wp_char_count#86216, wp_link_count#86217, wp_image_count#86218, wp_max_ad_count#86219], true, 10000, StorageLevel(disk, memory, deserialized, 1 replicas), `web_page`
+                  +- *FileScan parquet tpcds_bin_partitioned_parquet_5000.web_page[wp_web_page_sk#3935,wp_web_page_id#3936,wp_rec_start_date#3937,wp_rec_end_date#3938,wp_creation_date_sk#3939,wp_access_date_sk#3940,wp_autogen_flag#3941,wp_customer_sk#3942,wp_url#3943,wp_type#3944,wp_char_count#3945,wp_link_count#3946,wp_image_count#3947,wp_max_ad_count#3948] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://h01hn01.hadoop:8020/apps/hive/warehouse/tpcds_bin_partitioned_parquet_50..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<wp_web_page_sk:int,wp_web_page_id:string,wp_rec_start_date:string,wp_rec_end_date:string,w...
+and
+Aggregate [count(1) AS pmc#86155L]
++- Project
+   +- Join Inner, (ws_web_page_sk#86232 = wp_web_page_sk#86269)
+      :- Project [ws_web_page_sk#86232]
+      :  +- Join Inner, (ws_sold_time_sk#86221 = t_time_sk#86259)
+      :     :- Project [ws_sold_time_sk#86221, ws_web_page_sk#86232]
+      :     :  +- Join Inner, (ws_ship_hdemo_sk#86230 = hd_demo_sk#86254)
+      :     :     :- Project [ws_sold_time_sk#86221, ws_ship_hdemo_sk#86230, ws_web_page_sk#86232]
+      :     :     :  +- Filter ((isnotnull(ws_ship_hdemo_sk#86230) && isnotnull(ws_sold_time_sk#86221)) && isnotnull(ws_web_page_sk#86232))
+      :     :     :     +- Relation[ws_sold_time_sk#86221,ws_ship_date_sk#86222,ws_item_sk#86223,ws_bill_customer_sk#86224,ws_bill_cdemo_sk#86225,ws_bill_hdemo_sk#86226,ws_bill_addr_sk#86227,ws_ship_customer_sk#86228,ws_ship_cdemo_sk#86229,ws_ship_hdemo_sk#86230,ws_ship_addr_sk#86231,ws_web_page_sk#86232,ws_web_site_sk#86233,ws_ship_mode_sk#86234,ws_warehouse_sk#86235,ws_promo_sk#86236,ws_order_number#86237,ws_quantity#86238,ws_wholesale_cost#86239,ws_list_price#86240,ws_sales_price#86241,ws_ext_discount_amt#86242,ws_ext_sales_price#86243,ws_ext_wholesale_cost#86244,... 10 more fields] parquet
+      :     :     +- Project [hd_demo_sk#86254]
+      :     :        +- Filter ((isnotnull(hd_dep_count#86257) && (hd_dep_count#86257 = 8)) && isnotnull(hd_demo_sk#86254))
+      :     :           +- InMemoryRelation [hd_demo_sk#86254, hd_income_band_sk#86255, hd_buy_potential#86256, hd_dep_count#86257, hd_vehicle_count#86258], true, 10000, StorageLevel(disk, memory, deserialized, 1 replicas), `household_demographics`
+      :     :                 +- *FileScan parquet tpcds_bin_partitioned_parquet_5000.household_demographics[hd_demo_sk#1622,hd_income_band_sk#1623,hd_buy_potential#1624,hd_dep_count#1625,hd_vehicle_count#1626] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://h01hn01.hadoop:8020/apps/hive/warehouse/tpcds_bin_partitioned_parquet_50..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<hd_demo_sk:int,hd_income_band_sk:int,hd_buy_potential:string,hd_dep_count:int,hd_vehicle_c...
+      :     +- Project [t_time_sk#86259]
+      :        +- Filter ((isnotnull(t_hour#86262) && ((t_hour#86262 >= 14) && (t_hour#86262 <= 15))) && isnotnull(t_time_sk#86259))
+      :           +- InMemoryRelation [t_time_sk#86259, t_time_id#86260, t_time#86261, t_hour#86262, t_minute#86263, t_second#86264, t_am_pm#86265, t_shift#86266, t_sub_shift#86267, t_meal_time#86268], true, 10000, StorageLevel(disk, memory, deserialized, 1 replicas), `time_dim`
+      :                 +- *FileScan parquet tpcds_bin_partitioned_parquet_5000.time_dim[t_time_sk#516,t_time_id#517,t_time#518,t_hour#519,t_minute#520,t_second#521,t_am_pm#522,t_shift#523,t_sub_shift#524,t_meal_time#525] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://h01hn01.hadoop:8020/apps/hive/warehouse/tpcds_bin_partitioned_parquet_50..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<t_time_sk:int,t_time_id:string,t_time:int,t_hour:int,t_minute:int,t_second:int,t_am_pm:str...
+      +- Project [wp_web_page_sk#86269]
+         +- Filter ((isnotnull(wp_char_count#86279) && ((wp_char_count#86279 >= 5000) && (wp_char_count#86279 <= 5200))) && isnotnull(wp_web_page_sk#86269))
+            +- InMemoryRelation [wp_web_page_sk#86269, wp_web_page_id#86270, wp_rec_start_date#86271, wp_rec_end_date#86272, wp_creation_date_sk#86273, wp_access_date_sk#86274, wp_autogen_flag#86275, wp_customer_sk#86276, wp_url#86277, wp_type#86278, wp_char_count#86279, wp_link_count#86280, wp_image_count#86281, wp_max_ad_count#86282], true, 10000, StorageLevel(disk, memory, deserialized, 1 replicas), `web_page`
+                  +- *FileScan parquet tpcds_bin_partitioned_parquet_5000.web_page[wp_web_page_sk#3935,wp_web_page_id#3936,wp_rec_start_date#3937,wp_rec_end_date#3938,wp_creation_date_sk#3939,wp_access_date_sk#3940,wp_autogen_flag#3941,wp_customer_sk#3942,wp_url#3943,wp_type#3944,wp_char_count#3945,wp_link_count#3946,wp_image_count#3947,wp_max_ad_count#3948] Batched: true, Format: Parquet, Location: InMemoryFileIndex[hdfs://h01hn01.hadoop:8020/apps/hive/warehouse/tpcds_bin_partitioned_parquet_50..., PartitionFilters: [], PushedFilters: [], ReadSchema: struct<wp_web_page_sk:int,wp_web_page_id:string,wp_rec_start_date:string,wp_rec_end_date:string,w...
+Join condition is missing or trivial.
+Use the CROSS JOIN syntax to allow cartesian products between these relations.; (state=,code=0)
+
+Closing: 0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_5000
+STOP hdp2.6_spark21_run_5000_2_query90_sql_2017-04-09-20-21:  Sun Apr 9 20:21:16 CDT 2017

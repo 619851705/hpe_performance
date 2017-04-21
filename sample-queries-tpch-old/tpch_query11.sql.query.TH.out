@@ -1,0 +1,40 @@
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> set tez.runtime.io.sort.mb=700;
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> -- set hive.execution.engine=mr;
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> 
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> drop view q11_part_tmp_cached;
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> drop view q11_sum_tmp_cached;
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> 
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> create view q11_part_tmp_cached as
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> select
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> ps_partkey,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> sum(ps_supplycost * ps_availqty) as part_value
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> from
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> partsupp,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> supplier,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> nation
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> where
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> ps_suppkey = s_suppkey
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> and s_nationkey = n_nationkey
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> and n_name = 'GERMANY'
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> group by ps_partkey;
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> 
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> create view q11_sum_tmp_cached as
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> select
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> sum(part_value) as total_value
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> from
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> q11_part_tmp_cached;
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> 
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> select
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> ps_partkey, part_value as value
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> from (
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> select
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> ps_partkey,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> part_value,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> total_value
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> from
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> q11_part_tmp_cached join q11_sum_tmp_cached
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> ) a
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> where
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> part_value > total_value * 0.0001
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> order by
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> value desc;

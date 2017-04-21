@@ -1,0 +1,260 @@
+query67.sql
+Format csv is deprecated, please use csv2
+Connecting to jdbc:hive2://h01hn02:10500/tpcds_bin_partitioned_orc_10000
+Connected to: Apache Hive (version 2.1.0.2.5.1.0-43)
+Driver: Hive JDBC (version 1.2.1000.2.5.1.0-43)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script bry.sql
+0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> No rows affected (0.036 seconds)
+0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 
+0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10500/tpcds_bin_parti> INFO  : Compiling command(queryId=hive_20161012121957_56333d65-cb9b-479c-b91c-bdcc3e3731c9): select  *
+from (select i_category
+            ,i_class
+            ,i_brand
+            ,i_product_name
+            ,d_year
+            ,d_qoy
+            ,d_moy
+            ,s_store_id
+            ,sumsales
+            ,rank() over (partition by i_category order by sumsales desc) rk
+      from (select i_category
+                  ,i_class
+                  ,i_brand
+                  ,i_product_name
+                  ,d_year
+                  ,d_qoy
+                  ,d_moy
+                  ,s_store_id
+                  ,sum(coalesce(ss_sales_price*ss_quantity,0)) sumsales
+            from store_sales
+                ,date_dim
+                ,store
+                ,item
+       where  store_sales.ss_sold_date_sk=date_dim.d_date_sk
+          and store_sales.ss_item_sk=item.i_item_sk
+          and store_sales.ss_store_sk = store.s_store_sk
+          and d_month_seq between 1193 and 1193+11
+       group by i_category, i_class, i_brand, i_product_name, d_year, d_qoy, d_moy,s_store_id with rollup)dw1) dw2
+where rk <= 100
+order by i_category
+        ,i_class
+        ,i_brand
+        ,i_product_name
+        ,d_year
+        ,d_qoy
+        ,d_moy
+        ,s_store_id
+        ,sumsales
+        ,rk
+limit 100
+INFO  : Semantic Analysis Completed
+INFO  : Returning Hive schema: Schema(fieldSchemas:[FieldSchema(name:dw2.i_category, type:string, comment:null), FieldSchema(name:dw2.i_class, type:string, comment:null), FieldSchema(name:dw2.i_brand, type:string, comment:null), FieldSchema(name:dw2.i_product_name, type:string, comment:null), FieldSchema(name:dw2.d_year, type:int, comment:null), FieldSchema(name:dw2.d_qoy, type:int, comment:null), FieldSchema(name:dw2.d_moy, type:int, comment:null), FieldSchema(name:dw2.s_store_id, type:string, comment:null), FieldSchema(name:dw2.sumsales, type:double, comment:null), FieldSchema(name:dw2.rk, type:int, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=hive_20161012121957_56333d65-cb9b-479c-b91c-bdcc3e3731c9); Time taken: 0.567 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=hive_20161012121957_56333d65-cb9b-479c-b91c-bdcc3e3731c9): select  *
+from (select i_category
+            ,i_class
+            ,i_brand
+            ,i_product_name
+            ,d_year
+            ,d_qoy
+            ,d_moy
+            ,s_store_id
+            ,sumsales
+            ,rank() over (partition by i_category order by sumsales desc) rk
+      from (select i_category
+                  ,i_class
+                  ,i_brand
+                  ,i_product_name
+                  ,d_year
+                  ,d_qoy
+                  ,d_moy
+                  ,s_store_id
+                  ,sum(coalesce(ss_sales_price*ss_quantity,0)) sumsales
+            from store_sales
+                ,date_dim
+                ,store
+                ,item
+       where  store_sales.ss_sold_date_sk=date_dim.d_date_sk
+          and store_sales.ss_item_sk=item.i_item_sk
+          and store_sales.ss_store_sk = store.s_store_sk
+          and d_month_seq between 1193 and 1193+11
+       group by i_category, i_class, i_brand, i_product_name, d_year, d_qoy, d_moy,s_store_id with rollup)dw1) dw2
+where rk <= 100
+order by i_category
+        ,i_class
+        ,i_brand
+        ,i_product_name
+        ,d_year
+        ,d_qoy
+        ,d_moy
+        ,s_store_id
+        ,sumsales
+        ,rk
+limit 100
+INFO  : Query ID = hive_20161012121957_56333d65-cb9b-479c-b91c-bdcc3e3731c9
+INFO  : Total jobs = 1
+INFO  : Launching Job 1 out of 1
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Session is already open
+INFO  : Dag name: select  *
+from (select i_category
+    ...100(Stage-1)
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Tez session was closed. Reopening...
+INFO  : Session re-established.
+INFO  : 
+
+INFO  : Status: Running (Executing on YARN cluster with App id application_1475705753313_0120)
+
+INFO  : Map 1: -/-	Map 5: -/-	Map 6: -/-	Map 7: -/-	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: -/-	Map 5: 0/1	Map 6: 0/1	Map 7: 0/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: -/-	Map 5: 0(+1)/1	Map 6: 1/1	Map 7: 0(+6)/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: -/-	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 0(+90)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Map 1: 1(+89)/90	Map 5: 1/1	Map 6: 1/1	Map 7: 7/7	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1	
+INFO  : Status: Killed
+ERROR : Application killed by user.
+ERROR : FAILED: Execution Error, return code 1 from org.apache.hadoop.hive.ql.exec.tez.TezTask. Application killed by user.
+INFO  : Completed executing command(queryId=hive_20161012121957_56333d65-cb9b-479c-b91c-bdcc3e3731c9); Time taken: 114.645 seconds
+Error: Error while processing statement: FAILED: Execution Error, return code 1 from org.apache.hadoop.hive.ql.exec.tez.TezTask. Application killed by user. (state=08S01,code=1)
+
+Closing: 0: jdbc:hive2://h01hn02:10500/tpcds_bin_partitioned_orc_10000
+Format csv is deprecated, please use csv2
+Connecting to jdbc:hive2://h01hn02:10000/tpcds_bin_partitioned_orc_10000
+Connected to: Apache Hive (version 1.2.1000.2.5.1.0-43)
+Driver: Hive JDBC (version 1.2.1000.2.5.1.0-43)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script testbench.settings-4g-container-tez
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.036 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.002 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.002 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.002 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.002 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.002 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.009 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.003 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.002 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> No rows affected (0.001 seconds)
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 
+0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> 0: jdbc:hive2://h01hn02:10000/tpcds_bin_parti> INFO  : Tez session hasn't been created yet. Opening session
+INFO  : Dag name: select  *
+from (select i_category
+    ...100(Stage-1)
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : 
+
+INFO  : Status: Running (Executing on YARN cluster with App id application_1475705753313_0121)
+
+INFO  : Map 1: -/-	Map 6: -/-	Map 7: -/-	Map 8: -/-	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 6: 0/1	Map 7: 0/1	Map 8: 0/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 6: 0(+1)/1	Map 7: 0(+1)/1	Map 8: 0(+7)/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 6: 1/1	Map 7: 1/1	Map 8: 0(+7)/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 6: 1/1	Map 7: 1/1	Map 8: 1(+6)/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 6: 1/1	Map 7: 1/1	Map 8: 4(+3)/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 6: 1/1	Map 7: 1/1	Map 8: 7/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: 0(+9)/507	Map 6: 1/1	Map 7: 1/1	Map 8: 7/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: 0(+17)/507	Map 6: 1/1	Map 7: 1/1	Map 8: 7/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: 0(+26)/507	Map 6: 1/1	Map 7: 1/1	Map 8: 7/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: 0(+65)/507	Map 6: 1/1	Map 7: 1/1	Map 8: 7/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: 0(+88)/507	Map 6: 1/1	Map 7: 1/1	Map 8: 7/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: 0(+89)/507	Map 6: 1/1	Map 7: 1/1	Map 8: 7/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: 0(+94)/507	Map 6: 1/1	Map 7: 1/1	Map 8: 7/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: 0(+124)/507	Map 6: 1/1	Map 7: 1/1	Map 8: 7/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: 0(+142)/507	Map 6: 1/1	Map 7: 1/1	Map 8: 7/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: 0(+147)/507	Map 6: 1/1	Map 7: 1/1	Map 8: 7/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: 0(+158)/507	Map 6: 1/1	Map 7: 1/1	Map 8: 7/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: 0(+158)/507	Map 6: 1/1	Map 7: 1/1	Map 8: 7/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: 0(+158)/507	Map 6: 1/1	Map 7: 1/1	Map 8: 7/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Map 1: 0(+158)/507	Map 6: 1/1	Map 7: 1/1	Map 8: 7/7	Reducer 2: 0/1002	Reducer 3: 0/1228	Reducer 4: 0/614	Reducer 5: 0/1	
+INFO  : Status: Killed
+ERROR : Application killed by user.
+Error: Error while processing statement: FAILED: Execution Error, return code 1 from org.apache.hadoop.hive.ql.exec.tez.TezTask. Application killed by user. (state=08S01,code=1)
+
+Closing: 0: jdbc:hive2://h01hn02:10000/tpcds_bin_partitioned_orc_10000

@@ -1,0 +1,17 @@
+cache table date_dim;
+cache table time_dim;
+cache table item;
+cache table customer;
+cache table customer_demographics;
+cache table household_demographics;
+cache table customer_address;
+cache table store;
+cache table promotion;
+cache table warehouse;
+cache table ship_mode;
+cache table reason;
+cache table income_band;
+cache table call_center;
+cache table web_page;
+cache table catalog_page;
+cache table web_site;

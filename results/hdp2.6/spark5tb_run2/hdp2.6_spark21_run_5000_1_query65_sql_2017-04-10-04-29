@@ -1,0 +1,55 @@
+START hdp2.6_spark21_run_5000_1_query65_sql_2017-04-10-04-29:  Mon Apr 10 04:29:47 CDT 2017
+Connecting to jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_orc_5000
+17/04/10 04:29:47 INFO Utils: Supplied authorities: h01hn02.hadoop:10016
+17/04/10 04:29:47 INFO Utils: Resolved authority: h01hn02.hadoop:10016
+17/04/10 04:29:47 INFO HiveConnection: Will try to open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_orc_5000
+Connected to: Spark SQL (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1.spark2.hdp)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script settings/spark.settings
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> select 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     s_store_name,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     i_item_desc,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     sc.revenue,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     i_current_price,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     i_wholesale_cost,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     i_brand
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> from
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     store,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     item,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     (select 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ss_store_sk, avg(revenue) as ave
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     from
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         (select 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ss_store_sk, ss_item_sk, sum(ss_sales_price) as revenue
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     from
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         store_sales, date_dim
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     where
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ss_sold_date_sk = d_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             and d_month_seq between 1212 and 1212 + 11
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     group by ss_store_sk , ss_item_sk) sa
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     group by ss_store_sk) sb,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     (select 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ss_store_sk, ss_item_sk, sum(ss_sales_price) as revenue
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     from
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         store_sales, date_dim
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     where
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ss_sold_date_sk = d_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             and d_month_seq between 1212 and 1212 + 11
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     group by ss_store_sk , ss_item_sk) sc
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> where
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>     sb.ss_store_sk = sc.ss_store_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         and sc.revenue <= 0.1 * sb.ave
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         and s_store_sk = sc.ss_store_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         and i_item_sk = sc.ss_item_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> order by s_store_name , i_item_desc
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> limit 100;
++-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+--+
+|  s_store_name   |   i_item_desc   |     revenue     | i_current_price | i_wholesale_cost |     i_brand     |
++-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+--+
++-----------------+-----------------+-----------------+-----------------+-----------------+-----------------+--+
+No rows selected (124.889 seconds)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+Closing: 0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_orc_5000
+STOP hdp2.6_spark21_run_5000_1_query65_sql_2017-04-10-04-29:  Mon Apr 10 04:31:52 CDT 2017

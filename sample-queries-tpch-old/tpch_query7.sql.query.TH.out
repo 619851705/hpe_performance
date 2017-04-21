@@ -1,0 +1,42 @@
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> set tez.runtime.io.sort.mb=700;
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> -- set hive.execution.engine=mr;
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> 
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> select
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> supp_nation,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> cust_nation,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> l_year,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> sum(volume) as revenue
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> from
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> (
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> select
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> n1.n_name as supp_nation,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> n2.n_name as cust_nation,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> year(l_shipdate) as l_year,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> l_extendedprice * (1 - l_discount) as volume
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> from
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> supplier,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> lineitem,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> orders,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> customer,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> nation n1,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> nation n2
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> where
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> s_suppkey = l_suppkey
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> and o_orderkey = l_orderkey
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> and c_custkey = o_custkey
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> and s_nationkey = n1.n_nationkey
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> and c_nationkey = n2.n_nationkey
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> and (
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> (n1.n_name = 'KENYA' and n2.n_name = 'PERU')
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> or (n1.n_name = 'PERU' and n2.n_name = 'KENYA')
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> )
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> and l_shipdate between '1995-01-01' and '1996-12-31'
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> ) as shipping
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> group by
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> supp_nation,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> cust_nation,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> l_year
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> order by
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> supp_nation,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> cust_nation,
+0: jdbc:hive2://h01hn02:10500/tpch_flat_orc_2> l_year;

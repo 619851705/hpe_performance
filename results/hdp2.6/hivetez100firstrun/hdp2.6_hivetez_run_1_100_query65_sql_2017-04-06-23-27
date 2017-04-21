@@ -1,0 +1,685 @@
+START hdp2.6_hivetez_run_1_100_query65_sql_2017-04-06-23-27:  Thu Apr 6 23:27:59 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2" -n hive --incremental=true -i settings/test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+Connected to: Apache Hive (version 1.2.1000.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.041 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.exec.reducers.bytes.per.reducer=67108864;
+No rows affected (0.002 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     s_store_name,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     i_item_desc,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     sc.revenue,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     i_current_price,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     i_wholesale_cost,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     i_brand
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     store,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     item,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     (select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ss_store_sk, avg(revenue) as ave
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         (select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ss_store_sk, ss_item_sk, sum(ss_sales_price) as revenue
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         store_sales, date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     where
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ss_sold_date_sk = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>             and d_month_seq between 1212 and 1212 + 11
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     group by ss_store_sk , ss_item_sk) sa
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     group by ss_store_sk) sb,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     (select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ss_store_sk, ss_item_sk, sum(ss_sales_price) as revenue
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         store_sales, date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     where
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ss_sold_date_sk = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>             and d_month_seq between 1212 and 1212 + 11
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     group by ss_store_sk , ss_item_sk) sc
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> where
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>     sb.ss_store_sk = sc.ss_store_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         and sc.revenue <= 0.1 * sb.ave
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         and s_store_sk = sc.ss_store_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         and i_item_sk = sc.ss_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> order by s_store_name , i_item_desc
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> limit 100;
+INFO  : Tez session hasn't been created yet. Opening session
+INFO  : Dag name: select
+    s_store_name,
+    i_item_de...100(Stage-1)
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Status: Running (Executing on YARN cluster with App id application_1491366857972_0258)
+
+INFO  : Map 1: -/-	Map 3: 0/1	Map 4: -/-	Map 7: 0/1	Map 8: 0/1	Map 9: 0/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                RUNNING     43          0       11       32       0       0
+Map 3 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 4                RUNNING     43          0       12       31       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 9 ..........   SUCCEEDED      4          4        0        0       0       0
+Reducer 2             INITED     32          0        0       32       0       0
+Reducer 5             INITED     32          0        0       32       0       0
+Reducer 6             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 04/09  [=>>-------------------------] 4%    ELAPSED TIME: 5.76 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[15A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                RUNNING     43          2       41        0       0       0
+Map 3 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 4 .              RUNNING     43          5       38        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 9 ..........   SUCCEEDED      4          4        0        0       0       0
+Reducer 2             INITED     32          0        0       32       0       0
+Reducer 5             INITED     32          0        0       32       0       0
+Reducer 6             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 04/09  [==>>------------------------] 8%    ELAPSED TIME: 10.76 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[15A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED     43         43        0        0       0       0
+Map 3 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 4 ..........   SUCCEEDED     43         43        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 9 ..........   SUCCEEDED      4          4        0        0       0       0
+Reducer 2            RUNNING     16          0       16        0       0       0
+Reducer 5            RUNNING     16          0       16        0       0       0
+Reducer 6             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 06/09  [===================>>-------] 73%   ELAPSED TIME: 15.76 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[15A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED     43         43        0        0       0       0
+Map 3 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 4 ..........   SUCCEEDED     43         43        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 9 ..........   SUCCEEDED      4          4        0        0       0       0
+Reducer 2 ......   SUCCEEDED     16         16        0        0       0       0
+Reducer 5            RUNNING     16          0       16        0       0       0
+Reducer 6             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 07/09  [======================>>----] 86%   ELAPSED TIME: 20.76 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[15A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED     43         43        0        0       0       0
+Map 3 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 4 ..........   SUCCEEDED     43         43        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 9 ..........   SUCCEEDED      4          4        0        0       0       0
+Reducer 2 ......   SUCCEEDED     16         16        0        0       0       0
+Reducer 5            RUNNING     16          0       16        0       0       0
+Reducer 6             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 07/09  [======================>>----] 86%   ELAPSED TIME: 25.77 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[15A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED     43         43        0        0       0       0
+Map 3 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 4 ..........   SUCCEEDED     43         43        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 9 ..........   SUCCEEDED      4          4        0        0       0       0
+Reducer 2 ......   SUCCEEDED     16         16        0        0       0       0
+Reducer 5            RUNNING     16          0       16        0       0       0
+Reducer 6             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 07/09  [======================>>----] 86%   ELAPSED TIME: 30.77 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[15A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED     43         43        0        0       0       0
+Map 3 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 4 ..........   SUCCEEDED     43         43        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 8 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 9 ..........   SUCCEEDED      4          4        0        0       0       0
+Reducer 2 ......   SUCCEEDED     16         16        0        0       0       0
+Reducer 5 ......   SUCCEEDED     16         16        0        0       0       0
+Reducer 6 ......   SUCCEEDED      1          1        0        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 09/09  [==========================>>] 100%  ELAPSED TIME: 33.86 s    
+[22;0m[2K--------------------------------------------------------------------------------
+INFO  : Map 1: -/-	Map 3: 0(+1)/1	Map 4: -/-	Map 7: 0(+1)/1	Map 8: 0/1	Map 9: 0(+4)/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: -/-	Map 3: 0(+1)/1	Map 4: -/-	Map 7: 0(+1)/1	Map 8: 0(+1)/1	Map 9: 0(+4)/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: -/-	Map 3: 1/1	Map 4: -/-	Map 7: 1/1	Map 8: 0(+1)/1	Map 9: 1(+3)/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: -/-	Map 3: 1/1	Map 4: -/-	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 0(+2)/43	Map 3: 1/1	Map 4: 0(+5)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 0(+5)/43	Map 3: 1/1	Map 4: 0(+10)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 0(+11)/43	Map 3: 1/1	Map 4: 0(+12)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 0(+19)/43	Map 3: 1/1	Map 4: 0(+21)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 0(+23)/43	Map 3: 1/1	Map 4: 0(+23)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 0(+27)/43	Map 3: 1/1	Map 4: 0(+30)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 0(+34)/43	Map 3: 1/1	Map 4: 0(+35)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 0(+36)/43	Map 3: 1/1	Map 4: 0(+38)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 0(+41)/43	Map 3: 1/1	Map 4: 0(+42)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 0(+43)/43	Map 3: 1/1	Map 4: 0(+43)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 0(+43)/43	Map 3: 1/1	Map 4: 1(+42)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 0(+43)/43	Map 3: 1/1	Map 4: 2(+41)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 0(+43)/43	Map 3: 1/1	Map 4: 4(+39)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 1(+42)/43	Map 3: 1/1	Map 4: 4(+39)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 2(+41)/43	Map 3: 1/1	Map 4: 5(+38)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 3(+40)/43	Map 3: 1/1	Map 4: 5(+38)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 3(+40)/43	Map 3: 1/1	Map 4: 6(+37)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 3(+40)/43	Map 3: 1/1	Map 4: 7(+36)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 4(+39)/43	Map 3: 1/1	Map 4: 7(+36)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 4(+39)/43	Map 3: 1/1	Map 4: 9(+34)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 7(+36)/43	Map 3: 1/1	Map 4: 11(+32)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/32	Reducer 5: 0/32	Reducer 6: 0/1	
+INFO  : Map 1: 11(+32)/43	Map 3: 1/1	Map 4: 14(+29)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0/16	Reducer 5: 0/16	Reducer 6: 0/1	
+INFO  : Map 1: 14(+29)/43	Map 3: 1/1	Map 4: 17(+26)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0(+2)/16	Reducer 5: 0(+5)/16	Reducer 6: 0/1	
+INFO  : Map 1: 16(+27)/43	Map 3: 1/1	Map 4: 19(+24)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0(+4)/16	Reducer 5: 0(+7)/16	Reducer 6: 0/1	
+INFO  : Map 1: 17(+26)/43	Map 3: 1/1	Map 4: 22(+21)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0(+5)/16	Reducer 5: 0(+9)/16	Reducer 6: 0/1	
+INFO  : Map 1: 20(+23)/43	Map 3: 1/1	Map 4: 26(+17)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0(+7)/16	Reducer 5: 0(+12)/16	Reducer 6: 0/1	
+INFO  : Map 1: 24(+19)/43	Map 3: 1/1	Map 4: 29(+14)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0(+8)/16	Reducer 5: 0(+13)/16	Reducer 6: 0/1	
+INFO  : Map 1: 29(+14)/43	Map 3: 1/1	Map 4: 32(+11)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0(+12)/16	Reducer 5: 0(+16)/16	Reducer 6: 0/1	
+INFO  : Map 1: 33(+10)/43	Map 3: 1/1	Map 4: 36(+7)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0(+16)/16	Reducer 5: 0(+16)/16	Reducer 6: 0/1	
+INFO  : Map 1: 37(+6)/43	Map 3: 1/1	Map 4: 37(+6)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0(+16)/16	Reducer 5: 0(+16)/16	Reducer 6: 0/1	
+INFO  : Map 1: 37(+6)/43	Map 3: 1/1	Map 4: 39(+4)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0(+16)/16	Reducer 5: 0(+16)/16	Reducer 6: 0/1	
+INFO  : Map 1: 39(+4)/43	Map 3: 1/1	Map 4: 41(+2)/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0(+16)/16	Reducer 5: 0(+16)/16	Reducer 6: 0/1	
+INFO  : Map 1: 40(+3)/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0(+16)/16	Reducer 5: 0(+16)/16	Reducer 6: 0/1	
+INFO  : Map 1: 42(+1)/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0(+16)/16	Reducer 5: 0(+16)/16	Reducer 6: 0/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0(+16)/16	Reducer 5: 0(+16)/16	Reducer 6: 0/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 0(+16)/16	Reducer 5: 0(+16)/16	Reducer 6: 0/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 8(+8)/16	Reducer 5: 0(+16)/16	Reducer 6: 0/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 11(+5)/16	Reducer 5: 0(+16)/16	Reducer 6: 0/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 12(+4)/16	Reducer 5: 0(+16)/16	Reducer 6: 0/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 15(+1)/16	Reducer 5: 0(+16)/16	Reducer 6: 0/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 16/16	Reducer 5: 0(+16)/16	Reducer 6: 0/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 16/16	Reducer 5: 0(+16)/16	Reducer 6: 0/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 16/16	Reducer 5: 0(+16)/16	Reducer 6: 0/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 16/16	Reducer 5: 0(+16)/16	Reducer 6: 0/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 16/16	Reducer 5: 2(+14)/16	Reducer 6: 0/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 16/16	Reducer 5: 4(+12)/16	Reducer 6: 0/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 16/16	Reducer 5: 5(+11)/16	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 16/16	Reducer 5: 9(+7)/16	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 16/16	Reducer 5: 11(+5)/16	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 16/16	Reducer 5: 12(+4)/16	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 16/16	Reducer 5: 13(+3)/16	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 16/16	Reducer 5: 14(+2)/16	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 16/16	Reducer 5: 15(+1)/16	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 16/16	Reducer 5: 16/16	Reducer 6: 0(+1)/1	
+INFO  : Map 1: 43/43	Map 3: 1/1	Map 4: 43/43	Map 7: 1/1	Map 8: 1/1	Map 9: 4/4	Reducer 2: 16/16	Reducer 5: 16/16	Reducer 6: 1/1	
+INFO  : Status: DAG finished successfully in 33.81 seconds
+INFO  : 
+INFO  : Query Execution Summary
+INFO  : --------------------------------------------------------------------------------
+INFO  : OPERATION                            DURATION
+INFO  : --------------------------------------------------------------------------------
+INFO  : Compile Query                           1.00s
+INFO  : Prepare Plan                            3.53s
+INFO  : Submit Plan                             0.27s
+INFO  : Start DAG                               0.45s
+INFO  : Run DAG                                33.81s
+INFO  : --------------------------------------------------------------------------------
+INFO  : 
+INFO  : Task Execution Summary
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  :   VERTICES  TOTAL_TASKS  FAILED_ATTEMPTS  KILLED_TASKS   DURATION(ms)  CPU_TIME(ms)  GC_TIME(ms)  INPUT_RECORDS  OUTPUT_RECORDS
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  :      Map 1           43                0             0       29942.00       829,710       15,899     54,727,850      53,429,791
+INFO  :      Map 3            1                0             0       31981.00         4,010           39         10,000             365
+INFO  :      Map 4           43                0             0       29942.00       811,380       15,870     54,727,850      53,429,791
+INFO  :      Map 7            1                0             0       31981.00         4,040           41         10,000             365
+INFO  :      Map 8            1                0             0       31775.00         3,660           28            402             402
+INFO  :      Map 9            4                0             0       31981.00        19,290          185        204,000         204,000
+INFO  :  Reducer 2           16                0             0       21402.00       179,870          335     53,429,791      18,992,883
+INFO  :  Reducer 5           16                0             0       21402.00       436,350        1,968     72,627,076           1,600
+INFO  :  Reducer 6            1                0             0        1574.00           890            0          1,600               0
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : org.apache.tez.common.counters.DAGCounter:
+INFO  :    NUM_SUCCEEDED_TASKS: 126
+INFO  :    TOTAL_LAUNCHED_TASKS: 126
+INFO  :    DATA_LOCAL_TASKS: 89
+INFO  :    RACK_LOCAL_TASKS: 4
+INFO  :    AM_CPU_MILLISECONDS: 25740
+INFO  :    AM_GC_TIME_MILLIS: 70
+INFO  : File System Counters:
+INFO  :    FILE_BYTES_READ: 3780108811
+INFO  :    FILE_BYTES_WRITTEN: 4493223336
+INFO  :    HDFS_BYTES_READ: 658787779
+INFO  :    HDFS_BYTES_WRITTEN: 12942
+INFO  :    HDFS_READ_OPS: 1472
+INFO  :    HDFS_WRITE_OPS: 2
+INFO  :    HDFS_OP_CREATE: 1
+INFO  :    HDFS_OP_GET_FILE_STATUS: 2
+INFO  :    HDFS_OP_OPEN: 1470
+INFO  :    HDFS_OP_RENAME: 1
+INFO  : org.apache.tez.common.counters.TaskCounter:
+INFO  :    REDUCE_INPUT_GROUPS: 37986464
+INFO  :    REDUCE_INPUT_RECORDS: 106861182
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    SPILLED_RECORDS: 213722364
+INFO  :    NUM_SHUFFLED_INPUTS: 3190
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    MERGED_MAP_OUTPUTS: 2768
+INFO  :    GC_TIME_MILLIS: 34365
+INFO  :    CPU_MILLISECONDS: 2289200
+INFO  :    PHYSICAL_MEMORY_BYTES: 277751005184
+INFO  :    VIRTUAL_MEMORY_BYTES: 709121871872
+INFO  :    COMMITTED_HEAP_BYTES: 277751005184
+INFO  :    INPUT_RECORDS_PROCESSED: 307295439
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 4729435406
+INFO  :    OUTPUT_RECORDS: 126059197
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_BYTES: 2489493044
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 2741723695
+INFO  :    OUTPUT_BYTES_PHYSICAL: 1271314539
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 700220229
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 817337017
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    SHUFFLE_CHUNK_COUNT: 102
+INFO  :    SHUFFLE_BYTES: 4202588976
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 8756077384
+INFO  :    SHUFFLE_BYTES_TO_MEM: 1161303744
+INFO  :    SHUFFLE_BYTES_TO_DISK: 2502071536
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 539213696
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    SHUFFLE_PHASE_TIME: 213300
+INFO  :    MERGE_PHASE_TIME: 110528
+INFO  :    FIRST_EVENT_RECEIVED: 137464
+INFO  :    LAST_EVENT_RECEIVED: 206928
+INFO  : HIVE:
+INFO  :    CREATED_FILES: 1
+INFO  :    DESERIALIZE_ERRORS: 0
+INFO  :    RECORDS_IN_Map_1: 54727485
+INFO  :    RECORDS_IN_Map_3: 10000
+INFO  :    RECORDS_IN_Map_4: 54727485
+INFO  :    RECORDS_IN_Map_7: 10000
+INFO  :    RECORDS_IN_Map_8: 402
+INFO  :    RECORDS_IN_Map_9: 204000
+INFO  :    RECORDS_OUT_0: 100
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_1: 53429791
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_3: 365
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_4: 53429791
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_7: 365
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_8: 402
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_9: 204000
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_2: 18992883
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_5: 1600
+INFO  : Shuffle Errors:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_2_INPUT_Map_1:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_5_INPUT_Map_4:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_6_INPUT_Reducer_5:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : TaskCounter_Map_1_INPUT_Map_3:
+INFO  :    FIRST_EVENT_RECEIVED: 15129
+INFO  :    INPUT_RECORDS_PROCESSED: 15695
+INFO  :    LAST_EVENT_RECEIVED: 15129
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 43
+INFO  :    SHUFFLE_BYTES: 63683
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 110123
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 5924
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 57759
+INFO  :    SHUFFLE_PHASE_TIME: 16551
+INFO  : TaskCounter_Map_1_INPUT_store_sales:
+INFO  :    INPUT_RECORDS_PROCESSED: 53633
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 2357770332
+INFO  : TaskCounter_Map_1_OUTPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1063434172
+INFO  :    OUTPUT_BYTES_PHYSICAL: 568297224
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 1170302010
+INFO  :    OUTPUT_RECORDS: 53429791
+INFO  :    SHUFFLE_CHUNK_COUNT: 43
+INFO  :    SPILLED_RECORDS: 53429791
+INFO  : TaskCounter_Map_3_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 10
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 361420
+INFO  : TaskCounter_Map_3_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1825
+INFO  :    OUTPUT_BYTES_PHYSICAL: 1505
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 2561
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 365
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_4_INPUT_Map_7:
+INFO  :    FIRST_EVENT_RECEIVED: 14930
+INFO  :    INPUT_RECORDS_PROCESSED: 15695
+INFO  :    LAST_EVENT_RECEIVED: 14930
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 43
+INFO  :    SHUFFLE_BYTES: 63683
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 110123
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 5924
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 57759
+INFO  :    SHUFFLE_PHASE_TIME: 16325
+INFO  : TaskCounter_Map_4_INPUT_store_sales:
+INFO  :    INPUT_RECORDS_PROCESSED: 53633
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 2357770332
+INFO  : TaskCounter_Map_4_OUTPUT_Reducer_5:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1063434172
+INFO  :    OUTPUT_BYTES_PHYSICAL: 507485838
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 1170302010
+INFO  :    OUTPUT_RECORDS: 53429791
+INFO  :    SHUFFLE_CHUNK_COUNT: 43
+INFO  :    SPILLED_RECORDS: 53429791
+INFO  : TaskCounter_Map_7_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 10
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 361420
+INFO  : TaskCounter_Map_7_OUTPUT_Map_4:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1825
+INFO  :    OUTPUT_BYTES_PHYSICAL: 1505
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 2561
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 365
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_8_INPUT_store:
+INFO  :    INPUT_RECORDS_PROCESSED: 1
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 25722
+INFO  : TaskCounter_Map_8_OUTPUT_Reducer_5:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 4389
+INFO  :    OUTPUT_BYTES_PHYSICAL: 2246
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 5199
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 402
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_9_INPUT_item:
+INFO  :    INPUT_RECORDS_PROCESSED: 202
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 13146180
+INFO  : TaskCounter_Map_9_OUTPUT_Reducer_5:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 27093618
+INFO  :    OUTPUT_BYTES_PHYSICAL: 15083027
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 27603735
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 204000
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_2_INPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 414005516
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 352730809
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 175
+INFO  :    LAST_EVENT_RECEIVED: 26609
+INFO  :    MERGED_MAP_OUTPUTS: 1376
+INFO  :    MERGE_PHASE_TIME: 55371
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 1376
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 18992883
+INFO  :    REDUCE_INPUT_RECORDS: 53429791
+INFO  :    SHUFFLE_BYTES: 568297224
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 1170302010
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 61274707
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 507022517
+INFO  :    SHUFFLE_PHASE_TIME: 26672
+INFO  :    SPILLED_RECORDS: 53429791
+INFO  : TaskCounter_Reducer_2_OUTPUT_Reducer_5:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 335347775
+INFO  :    OUTPUT_BYTES_PHYSICAL: 180325270
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 373333637
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 18992883
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_5_INPUT_Map_4:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 403258602
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 347416521
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 485
+INFO  :    LAST_EVENT_RECEIVED: 26772
+INFO  :    MERGED_MAP_OUTPUTS: 1376
+INFO  :    MERGE_PHASE_TIME: 53721
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 1376
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 18992883
+INFO  :    REDUCE_INPUT_RECORDS: 53429791
+INFO  :    SHUFFLE_BYTES: 507485838
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 1170302010
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 55842081
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 451643757
+INFO  :    SHUFFLE_PHASE_TIME: 27799
+INFO  :    SPILLED_RECORDS: 53429791
+INFO  : TaskCounter_Reducer_5_INPUT_Map_8:
+INFO  :    FIRST_EVENT_RECEIVED: 374
+INFO  :    INPUT_RECORDS_PROCESSED: 6432
+INFO  :    LAST_EVENT_RECEIVED: 374
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 16
+INFO  :    SHUFFLE_BYTES: 35552
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 83184
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 4444
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 31108
+INFO  :    SHUFFLE_PHASE_TIME: 919
+INFO  : TaskCounter_Reducer_5_INPUT_Map_9:
+INFO  :    FIRST_EVENT_RECEIVED: 325
+INFO  :    INPUT_RECORDS_PROCESSED: 3264000
+INFO  :    LAST_EVENT_RECEIVED: 358
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 64
+INFO  :    SHUFFLE_BYTES: 241326896
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 441659760
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 38953976
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 202372920
+INFO  :    SHUFFLE_PHASE_TIME: 1891
+INFO  : TaskCounter_Reducer_5_INPUT_Reducer_2:
+INFO  :    FIRST_EVENT_RECEIVED: 106036
+INFO  :    INPUT_RECORDS_PROCESSED: 303886128
+INFO  :    LAST_EVENT_RECEIVED: 121366
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 256
+INFO  :    SHUFFLE_BYTES: 2885198176
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 5973338192
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 383126640
+INFO  :    SHUFFLE_BYTES_TO_DISK: 2502071536
+INFO  :    SHUFFLE_BYTES_TO_MEM: 0
+INFO  :    SHUFFLE_PHASE_TIME: 121751
+INFO  : TaskCounter_Reducer_5_OUTPUT_Reducer_6:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 175268
+INFO  :    OUTPUT_BYTES_PHYSICAL: 117924
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 171982
+INFO  :    OUTPUT_RECORDS: 1600
+INFO  :    SHUFFLE_CHUNK_COUNT: 16
+INFO  :    SPILLED_RECORDS: 1600
+INFO  : TaskCounter_Reducer_6_INPUT_Reducer_5:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 72899
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 72899
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 10
+INFO  :    LAST_EVENT_RECEIVED: 1390
+INFO  :    MERGED_MAP_OUTPUTS: 16
+INFO  :    MERGE_PHASE_TIME: 1436
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 16
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 698
+INFO  :    REDUCE_INPUT_RECORDS: 1600
+INFO  :    SHUFFLE_BYTES: 117924
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 171982
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 0
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 117924
+INFO  :    SHUFFLE_PHASE_TIME: 1392
+INFO  :    SPILLED_RECORDS: 1600
+INFO  : TaskCounter_Reducer_6_OUTPUT_out_Reducer_6:
+INFO  :    OUTPUT_RECORDS: 0
++---------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------+------------------+-------------------+-----------------------+--+
+| s_store_name  |                                                                                             i_item_desc                                                                                              |      sc.revenue      | i_current_price  | i_wholesale_cost  |        i_brand        |
++---------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------+------------------+-------------------+-----------------------+--+
+|               |                                                                                                                                                                                                      | 3.140000104904175    | NULL             | 0.84              | univunivamalg #2      |
+|               |                                                                                                                                                                                                      | 4.710000038146973    | 2.07             | 0.8               | maxinameless #8       |
+|               |                                                                                                                                                                                                      | 6.349999904632568    | 1.97             | 0.61              | amalgbrand #4         |
+|               |                                                                                                                                                                                                      | 1.909999966621399    | 1.66             | NULL              | exportiexporti #2     |
+|               |                                                                                                                                                                                                      | 1.9399999380111694   | NULL             | NULL              |                       |
+|               |                                                                                                                                                                                                      | 8.899999618530273    | 4.58             | 17.88             |                       |
+|               |                                                                                                                                                                                                      | 4.789999961853027    | 2.39             | 1.24              | amalgimporto #2       |
+|               |                                                                                                                                                                                                      | 7.409999847412109    | NULL             | NULL              | exportiunivamalg #1   |
+|               |                                                                                                                                                                                                      | 1.690000057220459    | NULL             | 3.79              | importoedu pack #2    |
+|               |                                                                                                                                                                                                      | 5.510000228881836    | 1.08             | 0.87              | exportiamalg #2       |
+|               |                                                                                                                                                                                                      | 5.860000133514404    | NULL             | NULL              |                       |
+|               |                                                                                                                                                                                                      | 3.450000047683716    | 60.87            | 17.57             | edu packedu pack #2   |
+|               |                                                                                                                                                                                                      | 1.0800000429153442   | 1.89             | 0.62              |                       |
+|               |                                                                                                                                                                                                      | 7.759999752044678    | 5.4              | 3.67              |                       |
+|               | A                                                                                                                                                                                                    | 9.380000114440918    | 8.62             | 1.84              | importoscholar #2     |
+|               | A                                                                                                                                                                                                    | 2.0399999618530273   | 1.3              | 1.23              | amalgimporto #2       |
+|               | A little rich companies mean else purposes. Accidentally early clubs find by a expectations; small, important opportuni                                                                              | 1.4900000095367432   | 1.58             | 8.32              | edu packunivamalg #4  |
+|               | A.d. right others ask by                                                                                                                                                                             | 8.369999885559082    | 4.18             | 1.46              | scholarbrand #4       |
+|               | Aback medical leaders like perhaps public ages; professionals ought to govern annual, leading years; blue incomes account scenes. Reductions could no                                                | 6.380000114440918    | 5.1              | 4.64              | corpunivamalg #10     |
+|               | Able considerations may end even; financial, useful courts ought to dominate however. Daily, concerned interests should come clean, local services. More unlikely tea                                | 6.420000076293945    | 7.85             | 2.45              | importoscholar #2     |
+|               | Able days would not manage of                                                                                                                                                                        | 9.859999656677246    | 1.83             | 0.87              | amalgedu pack #2      |
+|               | Able decades give remarkable hands. Children c                                                                                                                                                       | 9.399999618530273    | 1.84             | 8.02              | importoedu pack #2    |
+|               | Able details should take therefore previous, solid friends. Now dark looks                                                                                                                           | 8.850000381469727    | 4.05             | 1.34              | namelessmaxi #4       |
+|               | Able houses may not give again                                                                                                                                                                       | 5.2200000286102295   | 6.48             | 3.36              | importomaxi #2        |
+|               | Able members might not start however sides. Requirements help great, old thing                                                                                                                       | 4.28000020980835     | 4.27             | 3.2               | importoamalg #2       |
+|               | Able memories understand at least champions. Social applications deliver well together successful experts. Economic, apparent dealers can ask clearly impossible, wrong restrictions. Alleged subje  | 7.6900001764297485   | 6.08             | 2.06              | exportibrand #4       |
+|               | Able rights run probably patients. Most physical kinds make. So whole men must                                                                                                                       | 9.369999885559082    | 5.37             | 2.44              | edu packscholar #2    |
+|               | Able services must tell thus patients; quiet, complex hundreds might forget fair aspects. Special, serio                                                                                             | 5.289999961853027    | 1.37             | 1.45              | importoedu pack #2    |
+|               | Able symp                                                                                                                                                                                            | 1.2899999618530273   | 0.73             | 0.48              | scholarunivamalg #4   |
+|               | Able women ought to attempt in the schools. Then clear lives will live suitable, gastric complaints. Months should say surely then sufficient doors. Genetic times sign from a options.              | 1.7400000095367432   | 1.02             | 0.83              | importoamalg #2       |
+|               | Able, important employees change quite. Primary operations must not feel seriously. Modest, dry flats consider too only drug                                                                         | 2.759999990463257    | 6.39             | 0.82              | edu packimporto #2    |
+|               | Able, mai                                                                                                                                                                                            | 8.119999885559082    | 5.89             | 2.13              | exportiexporti #2     |
+|               | Able, moral members may not see vividly familiar classes. Others may win on a commentators. Able legs would obtai                                                                                    | 8.680000305175781    | 9.9              | 8.91              | edu packunivamalg #8  |
+|               | Able, notable guidelines see. Away visual structures may not lead previous, hi                                                                                                                       | 2.380000114440918    | 6.0              | 4.02              | importocorp #2        |
+|               | Able, old museums know in a areas. Much lesser institutions shall find more toxic                                                                                                                    | 0.0                  | 1.67             | 1.08              | importoscholar #2     |
+|               | Able, other trees feel. Large, double complaints live suitably for no pounds; in order pleasant years involve                                                                                        | 1.5800000429153442   | 1.67             | 0.96              | amalgexporti #2       |
+|               | Able, royal unions come again clear hands. Specific relations attribute over social witnesses. Mean details ought to find immediately ordinary farmers                                               | 7.78000020980835     | 6.18             | 1.69              | importoimporto #2     |
+|               | Able, social members contain still to a records. New, spiritual results shall not get unnecessarily open experiments. More than poor countries visit more feet. Innocent, good                       | 2.2699999809265137   | 4.46             | 1.67              | exportiimporto #2     |
+|               | Able, super tasks ought to show other, official children; standards go diseases. Distinctive, long friends occur easily as contemporary fragments. Particularly financial animals hea                | 2.8499999046325684   | 4.13             | 1.85              | exportinameless #2    |
+|               | About decisive difficulties avoid therefore so public studies. Often able documents visualize just for the arts; political sons could become heavy friend                                            | 4.650000095367432    | 3.94             | 1.45              | exportiimporto #2     |
+|               | About electoral fears show now times; entirely friendly volunteers could not like far complete social opportunities. Inadequat                                                                       | 10.120000064373016   | 1.77             | 2.62              | edu packmaxi #10      |
+|               | About general weapons used to think more good hands. Main workers must not tell badly adult windows. Close teams see finally                                                                         | 0.20999999344348907  | 0.85             | 0.46              | exportischolar #2     |
+|               | About greek parents build tiny, changing laws. Alternative criteria distribute secondary, golden statements; numbers forget                                                                          | 5.449999809265137    | 3.8              | 1.31              | amalgimporto #2       |
+|               | About islamic years await already. Fathers achieve now                                                                                                                                               | 7.170000076293945    | 7.22             | 4.71              | amalgunivamalg #12    |
+|               | About likely bones cook still physical terms. Othe                                                                                                                                                   | 9.300000190734863    | 8.27             | 5.78              | edu packscholar #2    |
+|               | About local years keep gently in a nations. Actually broad orders will not k                                                                                                                         | 8.779999732971191    | 0.8              | 0.24              | univnameless #10      |
+|               | About long-term countries include worldwide.                                                                                                                                                         | 8.490000247955322    | 1.82             | 4.44              | brandmaxi #4          |
+|               | About national companies cannot buy clearly. Involved aspects will not pull ri                                                                                                                       | 0.6399999856948853   | 8.61             | 7.14              | edu packedu pack #2   |
+|               | About new machines would establish very small days. Central                                                                                                                                          | 6.090000033378601    | 6.58             | 3.55              | importoexporti #2     |
+|               | About obvious computers can forget outside at a clothes. Full, young times reflect also through the minutes. Anonymous                                                                               | 3.5299999713897705   | 2.37             | 2.03              | edu packedu pack #2   |
+|               | About other levels should proceed certainly fine, severe facts.                                                                                                                                      | 4.900000095367432    | 3.78             | 2.98              | univbrand #6          |
+|               | About overseas maps get happily real, willing opinions. Great demonstrations stop then. Much guilty effects w                                                                                        | 5.389999866485596    | 3.81             | 3.66              | exportiimporto #2     |
+|               | About patient standards use now at a procedures. Requirements will not clean ra                                                                                                                      | 0.7799999713897705   | 0.65             | 0.33              | importobrand #2       |
+|               | About unique cheeks consult better local, clear women. Rich schemes treat thus efficient profits. Attitudes go whole, difficult module                                                               | 7.190000057220459    | 4.47             | 1.6               | exportiunivamalg #3   |
+|               | Above different mechanisms work full, black reso                                                                                                                                                     | 4.110000133514404    | 4.12             | 2.84              | corpbrand #2          |
+|               | Above general customers control easy eyes. Current, pure copies prise almost by a strings. A bit new tasks assess divi                                                                               | 1.2599999904632568   | 1.61             | 0.98              | edu packamalg #2      |
+|               | Above twin transactions tell usually true years. Weapons must not manage front, important arguments. Gaps may cope. Vocational, expensive countries go fat risks. Local activities say over a        | 7.739999771118164    | 0.18             | 4.1               | corpnameless #2       |
+|               | Abroad careful years will me                                                                                                                                                                         | 4.710000038146973    | 0.26             | 0.15              | edu packscholar #2    |
+|               | Abroad easy types help sometimes risks. Far long-ter                                                                                                                                                 | 0.0                  | 1.69             | 0.54              | amalgcorp #4          |
+|               | Abroad very types might use less such as a times. Old, suff                                                                                                                                          | 8.970000267028809    | 3.73             | 1.82              | importoimporto #2     |
+|               | Abruptly other difficulties shall not feel low, great qualities. Individual systems participate almost old duties. Still political relationships go foreign actions. Women m                         | 9.940000057220459    | 2.78             | 2.16              | brandbrand #10        |
+|               | Absolute                                                                                                                                                                                             | 8.919999957084656    | 4.46             | 3.21              | exportinameless #6    |
+|               | Absolute partners expect really. All but formal years help in a groups. Full, recent levels cut. Neither tal                                                                                         | 2.059999942779541    | 4.25             | 1.48              | scholarbrand #2       |
+|               | Absolute proteins will happen huge, important unions. Varieties might not climb old, dead memories. Social, efficient governments form especially. Deputies may encourage for ever years.            | 1.75                 | 0.79             | 0.38              | edu packmaxi #2       |
+|               | Absolutely                                                                                                                                                                                           | 1.7100000381469727   | 1.4              | 0.78              | corpamalgamalg #10    |
+|               | Absolutely elegant women must gain well complete                                                                                                                                                     | 6.329999923706055    | 1.77             | 29.47             | scholarmaxi #8        |
+|               | Absolutely successful reasons must see inherently common famous advertisements. Peculiar schools bring here hol                                                                                      | 1.3799999952316284   | 2.04             | 0.75              | scholarbrand #8       |
+|               | Abstract, aware pp. get still there good sites. More commercial sites check in a teachers; victims know very linguistic years. States ought to disentangle thirdly injuries. Correct, responsible    | 4.690000057220459    | 4.13             | 2.59              | exportinameless #10   |
+|               | Abstract, dead members look sorry child                                                                                                                                                              | 1.909999966621399    | 0.81             | 0.68              | amalgbrand #6         |
+|               | Academic houses may not prompt; there isolated arts change straight technical experiments. Even apparent years could not go half demanding, rare families; aw                                        | 6.849999904632568    | 6.51             | 5.46              | scholarmaxi #10       |
+|               | Academic messages                                                                                                                                                                                    | 3.380000114440918    | 5.18             | 2.53              | exportiedu pack #2    |
+|               | Academic officers would talk initially logical metres; big germans may not continue rather strong practitioners. Records let then. Single, fair members must receive now outside                     | 2.559999942779541    | 8.68             | 3.42              | amalgcorp #8          |
+|               | Academic, electoral teams cannot ask bc automatic, short points; wide, tragic solicitors tell early to a relations. Somewhere private lectures understand too neat                                   | 9.320000171661377    | 84.36            | 50.61             | amalgscholar #2       |
+|               | Acceptable parents go monetary, british employees. Big, entire teachers keep alone, future st                                                                                                        | 6.429999828338623    | 4.47             | 1.42              | exportiimporto #2     |
+|               | Acceptable schools become perhaps traditional points. Possible, great police would believe girls. Minutes offer increasing, official                                                                 | 1.7300000190734863   | 6.48             | 2.4               | amalgamalg #2         |
+|               | Acceptable, american organs ask then available feelings; swiss, early reasons should create here in                                                                                                  | 8.680000305175781    | 8.59             | 1.43              | exportimaxi #12       |
+|               | Acceptable, far others would scream now massive systems. Occupational, organic schools must clear purposes. Tomorrow islamic things lea                                                              | 2.619999885559082    | 4.55             | 3.95              | importoamalg #2       |
+|               | Accessible changes would need more. Mostly experienced                                                                                                                                               | 9.350000381469727    | 9.44             | 5.0               | exportiedu pack #2    |
+|               | Accidents go often usual, labour numbers. International, other words m                                                                                                                               | 0.1899999976158142   | 1.74             | 1.42              | maxibrand #8          |
+|               | Accidents used to go there; certainly alone films might clear rooms. Big breasts get marginal men. Usually acceptable courts wander. Good rates might tell hopeless                                  | 0.5600000023841858   | 3.92             | 1.96              | amalgmaxi #4          |
+|               | Account                                                                                                                                                                                              | 6.289999961853027    | 2.54             | 0.99              | edu packmaxi #10      |
+|               | Accountants keep later on a years. Left, prepared years ought to sit domestic needs. More traditional comp                                                                                           | 5.139999866485596    | 5.83             | 2.27              | exportiexporti #2     |
+|               | Accountants play upstairs. As right demands put then. Institutional, private others believe thereby legislative, old businesses. So prime blocks drop others. Increasingly lead                      | 0.07999999821186066  | 4.24             | 1.07              | importoexporti #2     |
+|               | Accounts entertain details. Misleading sessions should                                                                                                                                               | 8.069999694824219    | 9.25             | 3.14              | corpmaxi #6           |
+|               | Accounts escape less intensive farmers. Secondly national weeks remember closely growing qualities. Simple, other weapons would see widely                                                           | 8.020000457763672    | 1.3              | 1.06              | exportischolar #2     |
+|               | Accurate dogs keep; no doubt equal farms give severe, new sides. Dealers must check                                                                                                                  | 6.150000095367432    | 9.48             | 1.16              | importonameless #2    |
+|               | Accurately beautiful negotiations collect activities. Necessary influences                                                                                                                           | 8.870000004768372    | 6.06             | 4.96              | amalgnameless #4      |
+|               | Accused offences might not hear goals. Citizens should like hence presidential, sure times. New times matter liable, lovely letters. Tiny, bloody services would not brea                            | 2.740000009536743    | 7.02             | 2.97              | amalgscholar #2       |
+|               | Accused, black forms would not obtain eventually for a groups.                                                                                                                                       | 6.8999998569488525   | 5.68             | 2.55              | edu packbrand #2      |
+|               | Accused, li                                                                                                                                                                                          | 6.139999866485596    | 3.92             | 3.37              | edu packedu pack #2   |
+|               | Achievements might solve free, other products; yesterday following towns make angry, french companies. Especially po                                                                                 | 9.180000126361847    | 62.2             | 25.5              | amalgimporto #2       |
+|               | Acids f                                                                                                                                                                                              | 1.8700000047683716   | 4.93             | 2.26              | namelesscorp #6       |
+|               | Across fresh officials might get healthy shelves. Critical, prominent systems might hold eyes. Just white angles could worsen over                                                                   | 4.429999828338623    | 3.46             | 2.69              | univmaxi #8           |
+|               | Across national conditions discover therefore carefully valuable rout                                                                                                                                | 3.4000000953674316   | 0.27             | 6.45              | importoexporti #2     |
+|               | Across white concentrations could not recover agricultural relati                                                                                                                                    | 9.869999885559082    | 7.22             | 2.38              | importoexporti #2     |
+|               | Actions may know also annual plants; mostly modern eyes must sign on a years. Charges must not see overall,                                                                                          | 4.75                 | 4.67             | 3.07              | edu packcorp #6       |
+|               | Actions will benefit with the boys. Opposite managers will raise also profits. Long old lines will not specify now presidential, nasty revenues. National students should break again young test     | 4.880000114440918    | 9.35             | 14.69             | edu packimporto #2    |
+|               | Active claims offer only joint women; issues ought to allow particularly processes. General lives could sit even at the parents. States regulate assistant goods. Yellow, cautious temper            | 1.809999942779541    | 1.41             | 0.87              | amalgedu pack #2      |
+|               | Active offices would see predictably technical, electrical stars. Only clear years would travel; cases find ever important, foreign men. Women might construct as able eggs. Main, other states oug  | 7.25                 | 3.4              | 1.05              | edu packedu pack #2   |
+|               | Active, medieval servants join within new others. Only poor groups protect for a years; private banks could not tackle                                                                               | 5.0                  | 3.4              | 1.63              | amalgedu pack #2      |
++---------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------------+------------------+-------------------+-----------------------+--+
+100 rows selected (39.168 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_100;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+STOP hdp2.6_hivetez_run_1_100_query65_sql_2017-04-06-23-27:  Thu Apr 6 23:28:42 CDT 2017

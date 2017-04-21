@@ -1,0 +1,80 @@
+START hdp2.6_hivetez_run_3_1000_query83_sql_2017-04-07-05-13:  Fri Apr 7 05:13:18 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2" -n hive --incremental=true -i settings/test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_1000;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+Connected to: Apache Hive (version 1.2.1000.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.04 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.exec.reducers.bytes.per.reducer=67108864;
+No rows affected (0.002 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> with sr_items as
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  (select i_item_id item_id,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         sum(sr_return_quantity) sr_item_qty
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from store_returns,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       item,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where sr_item_sk = i_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and   d_date    in 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         (select d_date
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         from date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         where d_week_seq in 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                 (select d_week_seq
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                 from date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           where d_date in ('1998-01-02','1998-10-15','1998-11-10')))
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and   sr_returned_date_sk   = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  group by i_item_id),
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  cr_items as
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  (select i_item_id item_id,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         sum(cr_return_quantity) cr_item_qty
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from catalog_returns,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       item,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where cr_item_sk = i_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and   d_date    in 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         (select d_date
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         from date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         where d_week_seq in 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                 (select d_week_seq
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                 from date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           where d_date in ('1998-01-02','1998-10-15','1998-11-10')))
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and   cr_returned_date_sk   = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  group by i_item_id),
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  wr_items as
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  (select i_item_id item_id,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         sum(wr_return_quantity) wr_item_qty
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from web_returns,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       item,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where wr_item_sk = i_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and   d_date    in 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         (select d_date
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         from date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         where d_week_seq in 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                 (select d_week_seq
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                 from date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                 where d_date in ('1998-01-02','1998-10-15','1998-11-10')))
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and   wr_returned_date_sk   = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  group by i_item_id)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   select  sr_items.item_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,sr_item_qty
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,sr_item_qty/(sr_item_qty+cr_item_qty+wr_item_qty)/3.0 * 100 sr_dev
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,cr_item_qty
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,cr_item_qty/(sr_item_qty+cr_item_qty+wr_item_qty)/3.0 * 100 cr_dev
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,wr_item_qty
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,wr_item_qty/(sr_item_qty+cr_item_qty+wr_item_qty)/3.0 * 100 wr_dev
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        ,(sr_item_qty+cr_item_qty+wr_item_qty)/3.0 average
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from sr_items
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      ,cr_items
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>      ,wr_items
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where sr_items.item_id=cr_items.item_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>    and sr_items.item_id=wr_items.item_id 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  order by sr_items.item_id
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          ,sr_item_qty
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  limit 100;
+Error: Error while compiling statement: FAILED: SemanticException [Error 10249]: Line 12:24 Unsupported SubQuery Expression 'd_week_seq': SubQuery cannot use the table alias: date_dim; this is also an alias in the Outer Query and SubQuery contains a unqualified column reference (state=42000,code=10249)
+
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_1000;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+STOP hdp2.6_hivetez_run_3_1000_query83_sql_2017-04-07-05-13:  Fri Apr 7 05:13:22 CDT 2017

@@ -1,0 +1,146 @@
+START hdp2.6_spark21_run_1000_3_query89_sql_2017-04-11-08-53:  Tue Apr 11 08:53:45 CDT 2017
+Connecting to jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_1000
+17/04/11 08:53:45 INFO Utils: Supplied authorities: h01hn02.hadoop:10016
+17/04/11 08:53:45 INFO Utils: Resolved authority: h01hn02.hadoop:10016
+17/04/11 08:53:45 INFO HiveConnection: Will try to open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_1000
+Connected to: Spark SQL (version 2.1.0.2.6.0.3-8)
+Driver: Hive JDBC (version 1.2.1.spark2.hdp)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script settings/spark.settings
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> select  *
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> from(
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> select i_category, i_class, i_brand,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        s_store_name, s_company_name,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        d_moy,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        sum(ss_sales_price) sum_sales,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        avg(sum(ss_sales_price)) over
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          (partition by i_category, i_brand, s_store_name, s_company_name)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          avg_monthly_sales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> from item, store_sales, date_dim, store
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> where store_sales.ss_item_sk = item.i_item_sk and
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>       store_sales.ss_sold_date_sk = date_dim.d_date_sk and
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>       store_sales.ss_store_sk = store.s_store_sk and
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>       d_year in (2000) and
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ((i_category in ('Home','Books','Electronics') and
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           i_class in ('wallpaper','parenting','musical')
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          )
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>       or (i_category in ('Shoes','Jewelry','Men') and
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           i_class in ('womens','birdal','pants') 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ))
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> group by i_category, i_class, i_brand,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          s_store_name, s_company_name, d_moy) tmp1
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> where case when (avg_monthly_sales <> 0) then (abs(sum_sales - avg_monthly_sales) / avg_monthly_sales) else null  end > 0.1
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> order by sum_sales - avg_monthly_sales, s_store_name
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> limit 100;
++-----------------+-----------------+-----------------+-----------------+-----------------+-------------+-----------------+-----------------+--+
+|   i_category    |     i_class     |     i_brand     |  s_store_name   | s_company_name  |    d_moy    |    sum_sales    | avg_monthly_sales |
++-----------------+-----------------+-----------------+-----------------+-----------------+-------------+-----------------+-----------------+--+
+| Shoes           | womens          | amalgedu pack #2 | bar             | Unknown         | 2           | 2040137.719901109 | 3706992.6801499035 |
+| Shoes           | womens          | amalgedu pack #2 | able            | Unknown         | 2           | 2043497.950290965 | 3705704.532427419 |
+| Shoes           | womens          | amalgedu pack #2 | eing            | Unknown         | 2           | 1989073.809539644 | 3650712.3816594705 |
+| Shoes           | womens          | amalgedu pack #2 | ese             | Unknown         | 2           | 2009858.4099432603 | 3652826.8042620607 |
+| Shoes           | womens          | amalgedu pack #2 | able            | Unknown         | 4           | 2073193.1196413524 | 3705704.532427419 |
+| Shoes           | womens          | amalgedu pack #2 | bar             | Unknown         | 6           | 2097341.969957834 | 3706992.6801499035 |
+| Men             | pants           | exportiimporto #2 | bar             | Unknown         | 2           | 1936164.5000944715 | 3545500.739110163 |
+| Men             | pants           | exportiimporto #2 | able            | Unknown         | 2           | 1951981.1603814214 | 3557077.851845944 |
+| Shoes           | womens          | amalgedu pack #2 | bar             | Unknown         | 4           | 2105064.1701955684 | 3706992.6801499035 |
+| Shoes           | womens          | amalgedu pack #2 | able            | Unknown         | 6           | 2116005.149912644 | 3705704.532427419 |
+| Shoes           | womens          | amalgedu pack #2 | cally           | Unknown         | 2           | 1901216.3803123366 | 3484099.3074139818 |
+| Shoes           | womens          | amalgedu pack #2 | ese             | Unknown         | 4           | 2074078.3298016042 | 3652826.8042620607 |
+| Men             | pants           | exportiimporto #2 | ese             | Unknown         | 2           | 1916393.8097503092 | 3494762.189029347 |
+| Shoes           | womens          | amalgedu pack #2 | eing            | Unknown         | 6           | 2073908.8003539946 | 3650712.3816594705 |
+| Shoes           | womens          | amalgedu pack #2 | ese             | Unknown         | 6           | 2080350.8705816977 | 3652826.8042620607 |
+| Men             | pants           | exportiimporto #2 | eing            | Unknown         | 2           | 1923334.7405739743 | 3491236.519978235 |
+| Shoes           | womens          | amalgedu pack #2 | eing            | Unknown         | 4           | 2094574.8799530268 | 3650712.3816594705 |
+| Shoes           | womens          | amalgedu pack #2 | bar             | Unknown         | 7           | 2154087.8797151186 | 3706992.6801499035 |
+| Men             | pants           | exportiimporto #2 | bar             | Unknown         | 4           | 1995556.0296506528 | 3545500.739110163 |
+| Shoes           | womens          | amalgedu pack #2 | able            | Unknown         | 7           | 2159271.0395262428 | 3705704.532427419 |
+| Men             | pants           | exportiimporto #2 | bar             | Unknown         | 6           | 1999868.950209342 | 3545500.739110163 |
+| Shoes           | womens          | amalgedu pack #2 | able            | Unknown         | 5           | 2166581.669629805 | 3705704.532427419 |
+| Men             | pants           | exportiimporto #2 | able            | Unknown         | 4           | 2020192.8900338653 | 3557077.851845944 |
+| Men             | pants           | exportiimporto #2 | ese             | Unknown         | 6           | 1963378.7497212961 | 3494762.189029347 |
+| Men             | pants           | exportiimporto #2 | eing            | Unknown         | 4           | 1960149.919838978 | 3491236.519978235 |
+| Men             | pants           | exportiimporto #2 | ese             | Unknown         | 4           | 1966556.9598723128 | 3494762.189029347 |
+| Men             | pants           | exportiimporto #2 | able            | Unknown         | 6           | 2029613.950354103 | 3557077.851845944 |
+| Shoes           | womens          | amalgedu pack #2 | able            | Unknown         | 3           | 2178848.640062716 | 3705704.532427419 |
+| Shoes           | womens          | amalgedu pack #2 | bar             | Unknown         | 5           | 2183443.4204346035 | 3706992.6801499035 |
+| Shoes           | womens          | amalgedu pack #2 | eing            | Unknown         | 3           | 2127993.419767339 | 3650712.3816594705 |
+| Shoes           | womens          | amalgedu pack #2 | bar             | Unknown         | 3           | 2187792.139874719 | 3706992.6801499035 |
+| Shoes           | womens          | amalgedu pack #2 | cally           | Unknown         | 6           | 1968223.269921312 | 3484099.3074139818 |
+| Shoes           | womens          | amalgedu pack #2 | eing            | Unknown         | 7           | 2135340.0999967605 | 3650712.3816594705 |
+| Shoes           | womens          | amalgedu pack #2 | eing            | Unknown         | 5           | 2135751.180259481 | 3650712.3816594705 |
+| Shoes           | womens          | amalgedu pack #2 | cally           | Unknown         | 4           | 1979390.759790318 | 3484099.3074139818 |
+| Men             | pants           | exportiimporto #2 | eing            | Unknown         | 6           | 1987136.309631303 | 3491236.519978235 |
+| Men             | pants           | exportiimporto #2 | cally           | Unknown         | 2           | 1834055.5596988592 | 3337511.256534396 |
+| Shoes           | womens          | amalgedu pack #2 | ese             | Unknown         | 3           | 2150864.269768942 | 3652826.8042620607 |
+| Shoes           | womens          | amalgedu pack #2 | ese             | Unknown         | 5           | 2154512.810976045 | 3652826.8042620607 |
+| Shoes           | womens          | amalgedu pack #2 | ese             | Unknown         | 7           | 2158974.54978564 | 3652826.8042620607 |
+| Men             | pants           | exportiimporto #2 | able            | Unknown         | 5           | 2077828.2001309488 | 3557077.851845944 |
+| Men             | pants           | exportiimporto #2 | able            | Unknown         | 7           | 2085925.9505180828 | 3557077.851845944 |
+| Men             | pants           | exportiimporto #2 | bar             | Unknown         | 5           | 2077768.5901307743 | 3545500.739110163 |
+| Men             | pants           | exportiimporto #2 | bar             | Unknown         | 7           | 2087174.0600157622 | 3545500.739110163 |
+| Shoes           | womens          | amalgedu pack #2 | cally           | Unknown         | 7           | 2029868.6194087993 | 3484099.3074139818 |
+| Men             | pants           | exportiimporto #2 | bar             | Unknown         | 3           | 2094535.6294795722 | 3545500.739110163 |
+| Men             | pants           | exportiimporto #2 | cally           | Unknown         | 4           | 1888655.5199728608 | 3337511.256534396 |
+| Men             | pants           | exportiimporto #2 | eing            | Unknown         | 7           | 2045059.04980731 | 3491236.519978235 |
+| Men             | pants           | exportiimporto #2 | eing            | Unknown         | 5           | 2048082.0502342675 | 3491236.519978235 |
+| Men             | pants           | exportiimporto #2 | able            | Unknown         | 3           | 2117322.2298184745 | 3557077.851845944 |
+| Shoes           | womens          | amalgedu pack #2 | cally           | Unknown         | 5           | 2044442.8400527276 | 3484099.3074139818 |
+| Men             | pants           | exportiimporto #2 | ese             | Unknown         | 5           | 2055785.7596885003 | 3494762.189029347 |
+| Men             | pants           | exportiimporto #2 | ese             | Unknown         | 7           | 2056143.260267157 | 3494762.189029347 |
+| Men             | pants           | exportiimporto #2 | ese             | Unknown         | 3           | 2058601.760304818 | 3494762.189029347 |
+| Men             | pants           | exportiimporto #2 | cally           | Unknown         | 6           | 1905713.5105465967 | 3337511.256534396 |
+| Shoes           | womens          | amalgedu pack #2 | cally           | Unknown         | 3           | 2057857.7796997353 | 3484099.3074139818 |
+| Men             | pants           | exportiimporto #2 | eing            | Unknown         | 3           | 2070765.3698552009 | 3491236.519978235 |
+| Men             | pants           | exportiimporto #2 | cally           | Unknown         | 7           | 1946236.7702240366 | 3337511.256534396 |
+| Men             | pants           | exportiimporto #2 | cally           | Unknown         | 3           | 1969117.6502041016 | 3337511.256534396 |
+| Men             | pants           | exportiimporto #2 | cally           | Unknown         | 5           | 1971815.4196451306 | 3337511.256534396 |
+| Shoes           | womens          | amalgedu pack #2 | able            | Unknown         | 1           | 2456009.780116027 | 3705704.532427419 |
+| Shoes           | womens          | amalgedu pack #2 | bar             | Unknown         | 1           | 2468498.000042662 | 3706992.6801499035 |
+| Shoes           | womens          | amalgedu pack #2 | ese             | Unknown         | 1           | 2426523.999820236 | 3652826.8042620607 |
+| Shoes           | womens          | amalgedu pack #2 | eing            | Unknown         | 1           | 2438786.3904574513 | 3650712.3816594705 |
+| Men             | pants           | exportiimporto #2 | ese             | Unknown         | 1           | 2312900.289900871 | 3494762.189029347 |
+| Men             | pants           | exportiimporto #2 | eing            | Unknown         | 1           | 2313295.9199123513 | 3491236.519978235 |
+| Men             | pants           | exportiimporto #2 | able            | Unknown         | 1           | 2379936.000791788 | 3557077.851845944 |
+| Men             | pants           | exportiimporto #2 | bar             | Unknown         | 1           | 2377260.409794621 | 3545500.739110163 |
+| Shoes           | womens          | amalgedu pack #2 | cally           | Unknown         | 1           | 2330851.1600793917 | 3484099.3074139818 |
+| Men             | pants           | exportiimporto #2 | cally           | Unknown         | 1           | 2205982.269680215 | 3337511.256534396 |
+| Shoes           | womens          | amalgedu pack #1 | able            | Unknown         | 2           | 1005225.9999487344 | 1855938.0058430787 |
+| Shoes           | womens          | amalgedu pack #1 | bar             | Unknown         | 2           | 1013035.5603994243 | 1862538.612430361 |
+| Shoes           | womens          | amalgedu pack #2 | ation           | Unknown         | 2           | 1029065.3103338517 | 1877636.8425482719 |
+| Men             | pants           | exportiimporto #1 | bar             | Unknown         | 2           | 999993.4899778292 | 1838682.6100570865 |
+| Shoes           | womens          | amalgedu pack #1 | ese             | Unknown         | 2           | 994774.7899077721 | 1832883.3024067555 |
+| Shoes           | womens          | amalgedu pack #1 | eing            | Unknown         | 2           | 992959.1102054119 | 1829128.1751730212 |
+| Men             | pants           | exportiimporto #1 | able            | Unknown         | 2           | 1006579.9996042252 | 1841758.7048717889 |
+| Shoes           | womens          | amalgedu pack #2 | pri             | Unknown         | 2           | 994172.4000423178 | 1829200.5840307456 |
+| Men             | pants           | exportiimporto #2 | ation           | Unknown         | 2           | 981548.0497852825 | 1805498.4633113083 |
+| Men             | pants           | exportiimporto #1 | eing            | Unknown         | 2           | 990728.0800978765 | 1814586.1101425819 |
+| Men             | pants           | exportiimporto #1 | ese             | Unknown         | 2           | 985720.2898717951 | 1808585.2817109227 |
+| Shoes           | womens          | amalgedu pack #2 | ought           | Unknown         | 2           | 1004669.559675375 | 1826436.1982952484 |
+| Shoes           | womens          | amalgedu pack #1 | bar             | Unknown         | 4           | 1042259.8699885942 | 1862538.612430361 |
+| Shoes           | womens          | amalgedu pack #2 | n st            | Unknown         | 2           | 1011081.5295285527 | 1827668.7831681387 |
+| Shoes           | womens          | amalgedu pack #2 | ation           | Unknown         | 6           | 1062669.3802010063 | 1877636.8425482719 |
+| Shoes           | womens          | amalgedu pack #1 | bar             | Unknown         | 6           | 1051087.8501699157 | 1862538.612430361 |
+| Shoes           | womens          | amalgedu pack #1 | eing            | Unknown         | 6           | 1020381.1401697434 | 1829128.1751730212 |
+| Shoes           | womens          | amalgedu pack #2 | ation           | Unknown         | 4           | 1069615.1896852367 | 1877636.8425482719 |
+| Shoes           | womens          | amalgedu pack #1 | able            | Unknown         | 4           | 1050391.1900201738 | 1855938.0058430787 |
+| Men             | pants           | exportiimporto #1 | able            | Unknown         | 6           | 1038761.2497480493 | 1841758.7048717889 |
+| Men             | pants           | exportiimporto #1 | bar             | Unknown         | 6           | 1037047.2098534349 | 1838682.6100570865 |
+| Shoes           | womens          | amalgedu pack #1 | ese             | Unknown         | 6           | 1033439.1501965802 | 1832883.3024067555 |
+| Shoes           | womens          | amalgedu pack #1 | able            | Unknown         | 6           | 1057866.6403889116 | 1855938.0058430787 |
+| Shoes           | womens          | amalgedu pack #2 | n st            | Unknown         | 6           | 1029615.9498089887 | 1827668.7831681387 |
+| Men             | pants           | exportiimporto #1 | able            | Unknown         | 4           | 1045029.3098917026 | 1841758.7048717889 |
+| Men             | pants           | exportiimporto #1 | eing            | Unknown         | 6           | 1020159.8102985546 | 1814586.1101425819 |
+| Men             | pants           | exportiimporto #2 | n st            | Unknown         | 2           | 960537.5101489685 | 1754148.501676868 |
+| Shoes           | womens          | amalgedu pack #1 | eing            | Unknown         | 4           | 1035902.6203229092 | 1829128.1751730212 |
+| Shoes           | womens          | amalgedu pack #1 | cally           | Unknown         | 2           | 959934.3100066651 | 1752657.762586313 |
+| Shoes           | womens          | amalgedu pack #2 | anti            | Unknown         | 2           | 976159.9099179264 | 1768322.6841187205 |
++-----------------+-----------------+-----------------+-----------------+-----------------+-------------+-----------------+-----------------+--+
+100 rows selected (41.916 seconds)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+Closing: 0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_1000
+STOP hdp2.6_spark21_run_1000_3_query89_sql_2017-04-11-08-53:  Tue Apr 11 08:54:28 CDT 2017

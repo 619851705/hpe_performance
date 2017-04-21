@@ -1,0 +1,243 @@
+START hdp2.5_10000_query98_sql_2016-11-16-11-57:  Wed Nov 16 11:57:10 CST 2016
+beeline -u jdbc:hiv2:// -i sample-queries-tpcds/testbench.settings-4g-container-tez --database tpcds_bin_partitioned_orc_10000 -f sample-queries-tpcds/query98.sql
+Connecting to jdbc:hive2://
+Connected to: Apache Hive (version 1.2.1000.2.5.1.0-43)
+Driver: Hive JDBC (version 1.2.1000.2.5.1.0-43)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script sample-queries-tpch/testbench.settings-4g-container
+0: jdbc:hive2://> --set ambari.hive.db.schema.name=hive;
+0: jdbc:hive2://> -- set fs.file.impl.disable.cache=true;
+0: jdbc:hive2://> -- set fs.hdfs.impl.disable.cache=true;
+0: jdbc:hive2://> -- set hive.auto.convert.join.noconditionaltask=true;
+0: jdbc:hive2://> -- set hive.auto.convert.join=true;
+0: jdbc:hive2://> --set hive.auto.convert.sortmerge.join.noconditionaltask=true;
+0: jdbc:hive2://> -- set hive.auto.convert.sortmerge.join=true;
+0: jdbc:hive2://> -- set hive.compactor.abortedtxn.threshold=1000;
+0: jdbc:hive2://> -- set hive.compactor.check.interval=300;
+0: jdbc:hive2://> -- set hive.compactor.delta.num.threshold=10;
+0: jdbc:hive2://> -- set hive.compactor.delta.pct.threshold=0.1f;
+0: jdbc:hive2://> -- set hive.compactor.initiator.on=false;
+0: jdbc:hive2://> -- set hive.compactor.worker.threads=0;
+0: jdbc:hive2://> -- set hive.compactor.worker.timeout=86400;
+0: jdbc:hive2://> -- set hive.compute.query.using.stats=true;
+0: jdbc:hive2://> -- set hive.enforce.bucketing=true;
+0: jdbc:hive2://> -- set hive.enforce.sorting=true;
+0: jdbc:hive2://> -- set hive.enforce.sortmergebucketmapjoin=true;
+0: jdbc:hive2://> -- set hive.execution.engine=mr;
+0: jdbc:hive2://> -- set hive.limit.pushdown.memory.usage=0.04;
+0: jdbc:hive2://> -- set hive.map.aggr=true;
+0: jdbc:hive2://> -- set hive.mapjoin.bucket.cache.size=10000;
+0: jdbc:hive2://> -- set hive.mapred.reduce.tasks.speculative.execution=false;
+0: jdbc:hive2://> -- set hive.metastore.cache.pinobjtypes=Table,Database,Type,FieldSchema,Order;
+0: jdbc:hive2://> -- set hive.metastore.client.socket.timeout=60;
+0: jdbc:hive2://> -- set hive.metastore.execute.setugi=true;
+0: jdbc:hive2://> -- set hive.metastore.warehouse.dir=/apps/hive/warehouse;
+0: jdbc:hive2://> -- set hive.optimize.bucketmapjoin.sortedmerge=false;
+0: jdbc:hive2://> -- set hive.optimize.bucketmapjoin=true;
+0: jdbc:hive2://> -- set hive.optimize.index.filter=true;
+0: jdbc:hive2://> --set hive.optimize.mapjoin.mapreduce=true;
+0: jdbc:hive2://> -- set hive.optimize.reducededuplication.min.reducer=4;
+0: jdbc:hive2://> -- set hive.optimize.reducededuplication=true;
+0: jdbc:hive2://> -- set hive.orc.splits.include.file.footer=false;
+0: jdbc:hive2://> -- set hive.security.authorization.enabled=false;
+0: jdbc:hive2://> -- set hive.security.metastore.authorization.manager=org.apache.hadoop.hive.ql.security.authorization.StorageBasedAuthorizationProvider;
+0: jdbc:hive2://> --set hive.semantic.analyzer.factory.impl=org.apache.hivealog.cli.HCatSemanticAnalyzerFactory;
+0: jdbc:hive2://> -- set hive.server2.enable.doAs=false;
+0: jdbc:hive2://> -- set hive.server2.tez.default.queues=default;
+0: jdbc:hive2://> -- set hive.server2.tez.initialize.default.sessions=false;
+0: jdbc:hive2://> -- set hive.server2.tez.sessions.per.default.queue=1;
+0: jdbc:hive2://> -- set hive.stats.autogather=true;
+0: jdbc:hive2://> -- set hive.tez.input.format=org.apache.hadoop.hive.ql.io.HiveInputFormat;
+0: jdbc:hive2://> -- set hive.txn.manager=org.apache.hadoop.hive.ql.lockmgr.DummyTxnManager;
+0: jdbc:hive2://> -- set hive.txn.max.open.batch=1000;
+0: jdbc:hive2://> -- set hive.txn.timeout=300;
+0: jdbc:hive2://> -- set hive.vectorized.execution.enabled=true;
+0: jdbc:hive2://> -- set hive.vectorized.groupby.checkinterval=1024;
+0: jdbc:hive2://> -- set hive.vectorized.groupby.flush.percent=1;
+0: jdbc:hive2://> -- set hive.vectorized.groupby.maxentries=1024;
+0: jdbc:hive2://> 
+0: jdbc:hive2://> -- These values need to be tuned appropriately to your cluster. These examples are for reference.
+0: jdbc:hive2://> -- set hive.tez.container.size=4096;
+0: jdbc:hive2://> -- set hive.tez.java.opts=-Xmx3800m;
+0: jdbc:hive2://> -- set hive.auto.convert.join.noconditionaltask.size=1252698795;
+0: jdbc:hive2://> 
+0: jdbc:hive2://> 
+0: jdbc:hive2://> select i_item_desc 
+0: jdbc:hive2://>       ,i_category 
+0: jdbc:hive2://>       ,i_class 
+0: jdbc:hive2://>       ,i_current_price
+0: jdbc:hive2://>       ,i_item_id
+0: jdbc:hive2://>       ,sum(ss_ext_sales_price) as itemrevenue 
+0: jdbc:hive2://>       ,sum(ss_ext_sales_price)*100/sum(sum(ss_ext_sales_price)) over
+0: jdbc:hive2://>           (partition by i_class) as revenueratio
+0: jdbc:hive2://> from
+0: jdbc:hive2://> store_sales
+0: jdbc:hive2://>     ,item 
+0: jdbc:hive2://>     ,date_dim
+0: jdbc:hive2://> where 
+0: jdbc:hive2://> store_sales.ss_item_sk = item.i_item_sk 
+0: jdbc:hive2://>   and i_category in ('Jewelry', 'Sports', 'Books')
+0: jdbc:hive2://>   and store_sales.ss_sold_date_sk = date_dim.d_date_sk
+0: jdbc:hive2://> and d_date between cast('2001-01-12' as date) 
+0: jdbc:hive2://> and (cast('2001-02-11' as date))
+0: jdbc:hive2://> group by 
+0: jdbc:hive2://> i_item_id
+0: jdbc:hive2://>         ,i_item_desc 
+0: jdbc:hive2://>         ,i_category
+0: jdbc:hive2://>         ,i_class
+0: jdbc:hive2://>         ,i_current_price
+0: jdbc:hive2://> order by 
+0: jdbc:hive2://> i_category
+0: jdbc:hive2://>         ,i_class
+0: jdbc:hive2://>         ,i_item_id
+0: jdbc:hive2://>         ,i_item_desc
+0: jdbc:hive2://>         ,revenueratio;
+16/11/16 11:57:14 [main]: ERROR parse.CalcitePlanner: org.apache.hadoop.hive.ql.parse.SemanticException: Line 10:0 Table not found 'store_sales'
+	at org.apache.hadoop.hive.ql.parse.SemanticAnalyzer.getMetaData(SemanticAnalyzer.java:1630)
+	at org.apache.hadoop.hive.ql.parse.SemanticAnalyzer.getMetaData(SemanticAnalyzer.java:1580)
+	at org.apache.hadoop.hive.ql.parse.SemanticAnalyzer.genResolvedParseTree(SemanticAnalyzer.java:10340)
+	at org.apache.hadoop.hive.ql.parse.SemanticAnalyzer.analyzeInternal(SemanticAnalyzer.java:10391)
+	at org.apache.hadoop.hive.ql.parse.CalcitePlanner.analyzeInternal(CalcitePlanner.java:216)
+	at org.apache.hadoop.hive.ql.parse.BaseSemanticAnalyzer.analyze(BaseSemanticAnalyzer.java:230)
+	at org.apache.hadoop.hive.ql.Driver.compile(Driver.java:464)
+	at org.apache.hadoop.hive.ql.Driver.compile(Driver.java:320)
+	at org.apache.hadoop.hive.ql.Driver.compileInternal(Driver.java:1219)
+	at org.apache.hadoop.hive.ql.Driver.compileAndRespond(Driver.java:1213)
+	at org.apache.hive.service.cli.operation.SQLOperation.prepare(SQLOperation.java:146)
+	at org.apache.hive.service.cli.operation.SQLOperation.runInternal(SQLOperation.java:226)
+	at org.apache.hive.service.cli.operation.Operation.run(Operation.java:276)
+	at org.apache.hive.service.cli.session.HiveSessionImpl.executeStatementInternal(HiveSessionImpl.java:468)
+	at org.apache.hive.service.cli.session.HiveSessionImpl.executeStatementAsync(HiveSessionImpl.java:456)
+	at org.apache.hive.service.cli.CLIService.executeStatementAsync(CLIService.java:298)
+	at org.apache.hive.service.cli.thrift.ThriftCLIService.ExecuteStatement(ThriftCLIService.java:506)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:483)
+	at org.apache.hive.jdbc.HiveConnection$SynchronizedHandler.invoke(HiveConnection.java:1363)
+	at com.sun.proxy.$Proxy16.ExecuteStatement(Unknown Source)
+	at org.apache.hive.jdbc.HiveStatement.runAsyncOnServer(HiveStatement.java:296)
+	at org.apache.hive.jdbc.HiveStatement.execute(HiveStatement.java:238)
+	at org.apache.hive.beeline.Commands.execute(Commands.java:863)
+	at org.apache.hive.beeline.Commands.sql(Commands.java:728)
+	at org.apache.hive.beeline.BeeLine.dispatch(BeeLine.java:993)
+	at org.apache.hive.beeline.BeeLine.execute(BeeLine.java:833)
+	at org.apache.hive.beeline.BeeLine.executeFile(BeeLine.java:814)
+	at org.apache.hive.beeline.BeeLine.begin(BeeLine.java:783)
+	at org.apache.hive.beeline.BeeLine.mainWithInputRedirection(BeeLine.java:491)
+	at org.apache.hive.beeline.BeeLine.main(BeeLine.java:474)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:483)
+	at org.apache.hadoop.util.RunJar.run(RunJar.java:233)
+	at org.apache.hadoop.util.RunJar.main(RunJar.java:148)
+
+FAILED: SemanticException [Error 10001]: Line 10:0 Table not found 'store_sales'
+16/11/16 11:57:14 [main]: ERROR ql.Driver: FAILED: SemanticException [Error 10001]: Line 10:0 Table not found 'store_sales'
+org.apache.hadoop.hive.ql.parse.SemanticException: Line 10:0 Table not found 'store_sales'
+	at org.apache.hadoop.hive.ql.parse.SemanticAnalyzer.getMetaData(SemanticAnalyzer.java:1908)
+	at org.apache.hadoop.hive.ql.parse.SemanticAnalyzer.getMetaData(SemanticAnalyzer.java:1580)
+	at org.apache.hadoop.hive.ql.parse.SemanticAnalyzer.genResolvedParseTree(SemanticAnalyzer.java:10340)
+	at org.apache.hadoop.hive.ql.parse.SemanticAnalyzer.analyzeInternal(SemanticAnalyzer.java:10391)
+	at org.apache.hadoop.hive.ql.parse.CalcitePlanner.analyzeInternal(CalcitePlanner.java:216)
+	at org.apache.hadoop.hive.ql.parse.BaseSemanticAnalyzer.analyze(BaseSemanticAnalyzer.java:230)
+	at org.apache.hadoop.hive.ql.Driver.compile(Driver.java:464)
+	at org.apache.hadoop.hive.ql.Driver.compile(Driver.java:320)
+	at org.apache.hadoop.hive.ql.Driver.compileInternal(Driver.java:1219)
+	at org.apache.hadoop.hive.ql.Driver.compileAndRespond(Driver.java:1213)
+	at org.apache.hive.service.cli.operation.SQLOperation.prepare(SQLOperation.java:146)
+	at org.apache.hive.service.cli.operation.SQLOperation.runInternal(SQLOperation.java:226)
+	at org.apache.hive.service.cli.operation.Operation.run(Operation.java:276)
+	at org.apache.hive.service.cli.session.HiveSessionImpl.executeStatementInternal(HiveSessionImpl.java:468)
+	at org.apache.hive.service.cli.session.HiveSessionImpl.executeStatementAsync(HiveSessionImpl.java:456)
+	at org.apache.hive.service.cli.CLIService.executeStatementAsync(CLIService.java:298)
+	at org.apache.hive.service.cli.thrift.ThriftCLIService.ExecuteStatement(ThriftCLIService.java:506)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:483)
+	at org.apache.hive.jdbc.HiveConnection$SynchronizedHandler.invoke(HiveConnection.java:1363)
+	at com.sun.proxy.$Proxy16.ExecuteStatement(Unknown Source)
+	at org.apache.hive.jdbc.HiveStatement.runAsyncOnServer(HiveStatement.java:296)
+	at org.apache.hive.jdbc.HiveStatement.execute(HiveStatement.java:238)
+	at org.apache.hive.beeline.Commands.execute(Commands.java:863)
+	at org.apache.hive.beeline.Commands.sql(Commands.java:728)
+	at org.apache.hive.beeline.BeeLine.dispatch(BeeLine.java:993)
+	at org.apache.hive.beeline.BeeLine.execute(BeeLine.java:833)
+	at org.apache.hive.beeline.BeeLine.executeFile(BeeLine.java:814)
+	at org.apache.hive.beeline.BeeLine.begin(BeeLine.java:783)
+	at org.apache.hive.beeline.BeeLine.mainWithInputRedirection(BeeLine.java:491)
+	at org.apache.hive.beeline.BeeLine.main(BeeLine.java:474)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:483)
+	at org.apache.hadoop.util.RunJar.run(RunJar.java:233)
+	at org.apache.hadoop.util.RunJar.main(RunJar.java:148)
+Caused by: org.apache.hadoop.hive.ql.parse.SemanticException: Line 10:0 Table not found 'store_sales'
+	at org.apache.hadoop.hive.ql.parse.SemanticAnalyzer.getMetaData(SemanticAnalyzer.java:1630)
+	... 38 more
+
+16/11/16 11:57:14 [main]: WARN thrift.ThriftCLIService: Error executing statement: 
+org.apache.hive.service.cli.HiveSQLException: Error while compiling statement: FAILED: SemanticException [Error 10001]: Line 10:0 Table not found 'store_sales'
+	at org.apache.hive.service.cli.operation.Operation.toSQLException(Operation.java:335)
+	at org.apache.hive.service.cli.operation.SQLOperation.prepare(SQLOperation.java:148)
+	at org.apache.hive.service.cli.operation.SQLOperation.runInternal(SQLOperation.java:226)
+	at org.apache.hive.service.cli.operation.Operation.run(Operation.java:276)
+	at org.apache.hive.service.cli.session.HiveSessionImpl.executeStatementInternal(HiveSessionImpl.java:468)
+	at org.apache.hive.service.cli.session.HiveSessionImpl.executeStatementAsync(HiveSessionImpl.java:456)
+	at org.apache.hive.service.cli.CLIService.executeStatementAsync(CLIService.java:298)
+	at org.apache.hive.service.cli.thrift.ThriftCLIService.ExecuteStatement(ThriftCLIService.java:506)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:483)
+	at org.apache.hive.jdbc.HiveConnection$SynchronizedHandler.invoke(HiveConnection.java:1363)
+	at com.sun.proxy.$Proxy16.ExecuteStatement(Unknown Source)
+	at org.apache.hive.jdbc.HiveStatement.runAsyncOnServer(HiveStatement.java:296)
+	at org.apache.hive.jdbc.HiveStatement.execute(HiveStatement.java:238)
+	at org.apache.hive.beeline.Commands.execute(Commands.java:863)
+	at org.apache.hive.beeline.Commands.sql(Commands.java:728)
+	at org.apache.hive.beeline.BeeLine.dispatch(BeeLine.java:993)
+	at org.apache.hive.beeline.BeeLine.execute(BeeLine.java:833)
+	at org.apache.hive.beeline.BeeLine.executeFile(BeeLine.java:814)
+	at org.apache.hive.beeline.BeeLine.begin(BeeLine.java:783)
+	at org.apache.hive.beeline.BeeLine.mainWithInputRedirection(BeeLine.java:491)
+	at org.apache.hive.beeline.BeeLine.main(BeeLine.java:474)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:483)
+	at org.apache.hadoop.util.RunJar.run(RunJar.java:233)
+	at org.apache.hadoop.util.RunJar.main(RunJar.java:148)
+Caused by: org.apache.hadoop.hive.ql.parse.SemanticException: Line 10:0 Table not found 'store_sales'
+	at org.apache.hadoop.hive.ql.parse.SemanticAnalyzer.getMetaData(SemanticAnalyzer.java:1908)
+	at org.apache.hadoop.hive.ql.parse.SemanticAnalyzer.getMetaData(SemanticAnalyzer.java:1580)
+	at org.apache.hadoop.hive.ql.parse.SemanticAnalyzer.genResolvedParseTree(SemanticAnalyzer.java:10340)
+	at org.apache.hadoop.hive.ql.parse.SemanticAnalyzer.analyzeInternal(SemanticAnalyzer.java:10391)
+	at org.apache.hadoop.hive.ql.parse.CalcitePlanner.analyzeInternal(CalcitePlanner.java:216)
+	at org.apache.hadoop.hive.ql.parse.BaseSemanticAnalyzer.analyze(BaseSemanticAnalyzer.java:230)
+	at org.apache.hadoop.hive.ql.Driver.compile(Driver.java:464)
+	at org.apache.hadoop.hive.ql.Driver.compile(Driver.java:320)
+	at org.apache.hadoop.hive.ql.Driver.compileInternal(Driver.java:1219)
+	at org.apache.hadoop.hive.ql.Driver.compileAndRespond(Driver.java:1213)
+	at org.apache.hive.service.cli.operation.SQLOperation.prepare(SQLOperation.java:146)
+	... 28 more
+Caused by: org.apache.hadoop.hive.ql.parse.SemanticException: Line 10:0 Table not found 'store_sales'
+	at org.apache.hadoop.hive.ql.parse.SemanticAnalyzer.getMetaData(SemanticAnalyzer.java:1630)
+	... 38 more
+Error: Error while compiling statement: FAILED: SemanticException [Error 10001]: Line 10:0 Table not found 'store_sales' (state=42S02,code=10001)
+
+Closing: 0: jdbc:hive2://
+STOP hdp2.5_10000_query98_sql_2016-11-16-11-57:  Wed Nov 16 11:57:15 CST 2016
+
+ South Results Number of Nodes:  9
+ Avg CPU Busy:   Peak Cpu Avg:  100.000 Count > 90% Busy:  0
+ Avg Disk Busy:   Peak Disk Avg:  0 Count > 90% busy 0
+ Avg Disk Reads per sec:   Avg Write per sec: 
+ Avg Net TX:    Peak TX Avg: 
+ Avg Net RX:    Peak RX Avg: 
+ Mem Utilized: 
+South CSV
+| 100.000 | 0 | | 0 | 0 | | | | | | |

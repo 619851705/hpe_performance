@@ -1,0 +1,609 @@
+START hdp2.6_hivetez_run_3_1000_query89_sql_2017-04-07-05-33:  Fri Apr 7 05:33:17 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2" -n hive --incremental=true -i settings/test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_1000;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+Connected to: Apache Hive (version 1.2.1000.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.043 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.exec.reducers.bytes.per.reducer=67108864;
+No rows affected (0.002 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> select  *
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> from(
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> select i_category, i_class, i_brand,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        s_store_name, s_company_name,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        d_moy,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        sum(ss_sales_price) sum_sales,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>        avg(sum(ss_sales_price)) over
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          (partition by i_category, i_brand, s_store_name, s_company_name)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          avg_monthly_sales
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> from item, store_sales, date_dim, store
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> where store_sales.ss_item_sk = item.i_item_sk and
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       store_sales.ss_sold_date_sk = date_dim.d_date_sk and
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       store_sales.ss_store_sk = store.s_store_sk and
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       d_year in (2000) and
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ((i_category in ('Home','Books','Electronics') and
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           i_class in ('wallpaper','parenting','musical')
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          )
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>       or (i_category in ('Shoes','Jewelry','Men') and
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>           i_class in ('womens','birdal','pants') 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>         ))
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> group by i_category, i_class, i_brand,
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>          s_store_name, s_company_name, d_moy) tmp1
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> where case when (avg_monthly_sales <> 0) then (abs(sum_sales - avg_monthly_sa les) / avg_monthly_sales) else null end > 0.1
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> order by sum_sales - avg_monthly_sales, s_store_name
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> limit 100;
+INFO  : Tez session hasn't been created yet. Opening session
+INFO  : Dag name: select  *
+from(
+select i_category, i_c...100(Stage-1)
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Status: Running (Executing on YARN cluster with App id application_1491366857972_0506)
+
+INFO  : Map 1: -/-	Map 5: 0/6	Map 6: 0/1	Map 7: 0/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                RUNNING    366          0        8      358       0       0
+Map 5 ..........   SUCCEEDED      6          6        0        0       0       0
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2             INITED      2          0        0        2       0       0
+Reducer 3             INITED      2          0        0        2       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 03/07  [>>--------------------------] 2%    ELAPSED TIME: 5.53 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[13A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                RUNNING    366         10      289       67       0       0
+Map 5 ..........   SUCCEEDED      6          6        0        0       0       0
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2             INITED      2          0        0        2       0       0
+Reducer 3             INITED      2          0        0        2       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 03/07  [=>>-------------------------] 4%    ELAPSED TIME: 10.53 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[13A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                RUNNING    366         11      355        0       0       0
+Map 5 ..........   SUCCEEDED      6          6        0        0       0       0
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2             INITED      2          0        0        2       0       0
+Reducer 3             INITED      2          0        0        2       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 03/07  [=>>-------------------------] 5%    ELAPSED TIME: 15.53 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[13A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 .              RUNNING    366         39      327        0       0       0
+Map 5 ..........   SUCCEEDED      6          6        0        0       0       0
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2             INITED      2          0        0        2       0       0
+Reducer 3             INITED      2          0        0        2       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 03/07  [===>>-----------------------] 12%   ELAPSED TIME: 20.53 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[13A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 .              RUNNING    366         51      315        0       0       0
+Map 5 ..........   SUCCEEDED      6          6        0        0       0       0
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2             INITED      2          0        0        2       0       0
+Reducer 3             INITED      2          0        0        2       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 03/07  [====>>----------------------] 15%   ELAPSED TIME: 25.54 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[13A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED    366        366        0        0       0       0
+Map 5 ..........   SUCCEEDED      6          6        0        0       0       0
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2            RUNNING      1          0        1        0       0       0
+Reducer 3             INITED      2          0        0        2       0       0
+Reducer 4             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 04/07  [=========================>>-] 98%   ELAPSED TIME: 30.54 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[13A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1 ..........   SUCCEEDED    366        366        0        0       0       0
+Map 5 ..........   SUCCEEDED      6          6        0        0       0       0
+Map 6 ..........   SUCCEEDED      1          1        0        0       0       0
+Map 7 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 2 ......   SUCCEEDED      1          1        0        0       0       0
+Reducer 3 ......   SUCCEEDED      1          1        0        0       0       0
+Reducer 4 ......   SUCCEEDED      1          1        0        0       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 07/07  [==========================>>] 100%  ELAPSED TIME: 32.37 s    
+[22;0m[2K--------------------------------------------------------------------------------
+INFO  : Map 1: -/-	Map 5: 0(+6)/6	Map 6: 0(+1)/1	Map 7: 0(+1)/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: -/-	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 0(+1)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 0(+8)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 0(+11)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 0(+14)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 0(+32)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 0(+44)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 0(+52)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 0(+78)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 0(+104)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 1(+126)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 2(+151)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 5(+181)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 7(+219)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 7(+246)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 10(+285)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 10(+289)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 10(+355)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 10(+356)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 11(+355)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 11(+355)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 12(+354)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 15(+351)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 17(+349)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 23(+343)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 27(+339)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 33(+333)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 38(+328)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 39(+327)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 39(+327)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 40(+326)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 41(+325)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 42(+324)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 44(+322)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 47(+319)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 51(+315)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 57(+309)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 62(+304)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 69(+297)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 73(+293)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 92(+274)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 104(+262)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 116(+250)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 132(+234)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 143(+223)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 162(+204)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 175(+191)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 188(+178)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 198(+168)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 209(+157)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 218(+148)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 232(+134)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 255(+110)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/2	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 284(+82)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0/1	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 305(+61)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 329(+37)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 339(+27)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 356(+10)/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 366/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 0(+1)/1	Reducer 3: 0/2	Reducer 4: 0/1	
+INFO  : Map 1: 366/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 1/1	Reducer 3: 0/1	Reducer 4: 0/1	
+INFO  : Map 1: 366/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 1/1	Reducer 3: 0(+1)/1	Reducer 4: 0/1	
+INFO  : Map 1: 366/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 1/1	Reducer 3: 1/1	Reducer 4: 0(+1)/1	
+INFO  : Map 1: 366/366	Map 5: 6/6	Map 6: 1/1	Map 7: 1/1	Reducer 2: 1/1	Reducer 3: 1/1	Reducer 4: 1/1	
+INFO  : Status: DAG finished successfully in 32.33 seconds
+INFO  : 
+INFO  : Query Execution Summary
+INFO  : --------------------------------------------------------------------------------
+INFO  : OPERATION                            DURATION
+INFO  : --------------------------------------------------------------------------------
+INFO  : Compile Query                           0.83s
+INFO  : Prepare Plan                            3.81s
+INFO  : Submit Plan                             0.27s
+INFO  : Start DAG                               0.40s
+INFO  : Run DAG                                32.33s
+INFO  : --------------------------------------------------------------------------------
+INFO  : 
+INFO  : Task Execution Summary
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  :   VERTICES  TOTAL_TASKS  FAILED_ATTEMPTS  KILLED_TASKS   DURATION(ms)  CPU_TIME(ms)  GC_TIME(ms)  INPUT_RECORDS  OUTPUT_RECORDS
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  :      Map 1          366                0             0       28263.00     6,766,110      302,608    553,041,680         223,191
+INFO  :      Map 5            6                0             0       30503.00        27,230          341        300,000          22,151
+INFO  :      Map 6            1                0             0       30503.00         3,750           29         10,000             366
+INFO  :      Map 7            1                0             0       30488.00         4,140           74          1,002           1,002
+INFO  :  Reducer 2            1                0             0        2978.00         6,910           25        223,191           7,923
+INFO  :  Reducer 3            1                0             0         936.00         2,000            0          7,923             100
+INFO  :  Reducer 4            1                0             0         330.00           780            0            100               0
+INFO  : ------------------------------------------------------------------------------------------------------------------
+INFO  : 
+INFO  : org.apache.tez.common.counters.DAGCounter:
+INFO  :    NUM_SUCCEEDED_TASKS: 377
+INFO  :    TOTAL_LAUNCHED_TASKS: 377
+INFO  :    DATA_LOCAL_TASKS: 352
+INFO  :    RACK_LOCAL_TASKS: 22
+INFO  :    AM_CPU_MILLISECONDS: 42180
+INFO  :    AM_GC_TIME_MILLIS: 536
+INFO  : File System Counters:
+INFO  :    FILE_BYTES_READ: 12628128
+INFO  :    FILE_BYTES_WRITTEN: 5186551
+INFO  :    HDFS_BYTES_READ: 3402191312
+INFO  :    HDFS_BYTES_WRITTEN: 8102
+INFO  :    HDFS_READ_OPS: 750
+INFO  :    HDFS_WRITE_OPS: 2
+INFO  :    HDFS_OP_CREATE: 1
+INFO  :    HDFS_OP_GET_FILE_STATUS: 2
+INFO  :    HDFS_OP_OPEN: 748
+INFO  :    HDFS_OP_RENAME: 1
+INFO  : org.apache.tez.common.counters.TaskCounter:
+INFO  :    REDUCE_INPUT_GROUPS: 8712
+INFO  :    REDUCE_INPUT_RECORDS: 231214
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    SPILLED_RECORDS: 466134
+INFO  :    NUM_SHUFFLED_INPUTS: 3663
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    MERGED_MAP_OUTPUTS: 735
+INFO  :    GC_TIME_MILLIS: 303077
+INFO  :    CPU_MILLISECONDS: 6810920
+INFO  :    PHYSICAL_MEMORY_BYTES: 811694292992
+INFO  :    VIRTUAL_MEMORY_BYTES: 2117209825280
+INFO  :    COMMITTED_HEAP_BYTES: 811694292992
+INFO  :    INPUT_RECORDS_PROCESSED: 9148580
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 24399760812
+INFO  :    OUTPUT_RECORDS: 254733
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_BYTES: 15411764
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 15637140
+INFO  :    OUTPUT_BYTES_PHYSICAL: 3598388
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 93969
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 2058724
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    SHUFFLE_CHUNK_COUNT: 368
+INFO  :    SHUFFLE_BYTES: 70612561
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 331344620
+INFO  :    SHUFFLE_BYTES_TO_MEM: 59839696
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 10772865
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    SHUFFLE_PHASE_TIME: 4114187
+INFO  :    MERGE_PHASE_TIME: 1340
+INFO  :    FIRST_EVENT_RECEIVED: 1332114
+INFO  :    LAST_EVENT_RECEIVED: 1370827
+INFO  : HIVE:
+INFO  :    CREATED_FILES: 1
+INFO  :    DESERIALIZE_ERRORS: 0
+INFO  :    RECORDS_IN_Map_1: 553018161
+INFO  :    RECORDS_IN_Map_5: 300000
+INFO  :    RECORDS_IN_Map_6: 10000
+INFO  :    RECORDS_IN_Map_7: 1002
+INFO  :    RECORDS_OUT_0: 100
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_1: 223191
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_5: 22151
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_6: 366
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_7: 1002
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_2: 7923
+INFO  :    RECORDS_OUT_INTERMEDIATE_Reducer_3: 100
+INFO  : Shuffle Errors:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_2_INPUT_Map_1:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_3_INPUT_Reducer_2:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : Shuffle Errors_Reducer_4_INPUT_Reducer_3:
+INFO  :    BAD_ID: 0
+INFO  :    CONNECTION: 0
+INFO  :    IO_ERROR: 0
+INFO  :    WRONG_LENGTH: 0
+INFO  :    WRONG_MAP: 0
+INFO  :    WRONG_REDUCE: 0
+INFO  : TaskCounter_Map_1_INPUT_Map_5:
+INFO  :    FIRST_EVENT_RECEIVED: 432501
+INFO  :    INPUT_RECORDS_PROCESSED: 8107266
+INFO  :    LAST_EVENT_RECEIVED: 470200
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 2196
+INFO  :    SHUFFLE_BYTES: 64411974
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 307712670
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 9855384
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 54556590
+INFO  :    SHUFFLE_PHASE_TIME: 1823232
+INFO  : TaskCounter_Map_1_INPUT_Map_6:
+INFO  :    FIRST_EVENT_RECEIVED: 456943
+INFO  :    INPUT_RECORDS_PROCESSED: 133956
+INFO  :    LAST_EVENT_RECEIVED: 456943
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 366
+INFO  :    SHUFFLE_BYTES: 556686
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 1207800
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 85176
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 471510
+INFO  :    SHUFFLE_PHASE_TIME: 906871
+INFO  : TaskCounter_Map_1_INPUT_Map_7:
+INFO  :    FIRST_EVENT_RECEIVED: 442630
+INFO  :    INPUT_RECORDS_PROCESSED: 366732
+INFO  :    LAST_EVENT_RECEIVED: 442630
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 366
+INFO  :    SHUFFLE_BYTES: 2229306
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 7651962
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 341096
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 1888210
+INFO  :    SHUFFLE_PHASE_TIME: 1383018
+INFO  : TaskCounter_Map_1_INPUT_store_sales:
+INFO  :    INPUT_RECORDS_PROCESSED: 540319
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 24380013785
+INFO  : TaskCounter_Map_1_OUTPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 14131990
+INFO  :    OUTPUT_BYTES_PHYSICAL: 3319369
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 14582764
+INFO  :    OUTPUT_RECORDS: 223191
+INFO  :    SHUFFLE_CHUNK_COUNT: 366
+INFO  :    SPILLED_RECORDS: 223191
+INFO  : TaskCounter_Map_5_INPUT_item:
+INFO  :    INPUT_RECORDS_PROCESSED: 296
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 19326997
+INFO  : TaskCounter_Map_5_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 796407
+INFO  :    OUTPUT_BYTES_PHYSICAL: 176133
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 840745
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 22151
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_6_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 10
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 361420
+INFO  : TaskCounter_Map_6_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 2562
+INFO  :    OUTPUT_BYTES_PHYSICAL: 1545
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 3300
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 366
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_7_INPUT_store:
+INFO  :    INPUT_RECORDS_PROCESSED: 1
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 58610
+INFO  : TaskCounter_Map_7_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 18897
+INFO  :    OUTPUT_BYTES_PHYSICAL: 6115
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 20907
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1002
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Reducer_2_INPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 1964755
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 20
+INFO  :    LAST_EVENT_RECEIVED: 1034
+INFO  :    MERGED_MAP_OUTPUTS: 732
+INFO  :    MERGE_PHASE_TIME: 1282
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 732
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 7923
+INFO  :    REDUCE_INPUT_RECORDS: 223191
+INFO  :    SHUFFLE_BYTES: 3319369
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 14582764
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 491209
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 2828160
+INFO  :    SHUFFLE_PHASE_TIME: 1036
+INFO  :    SPILLED_RECORDS: 226897
+INFO  : TaskCounter_Reducer_2_OUTPUT_Reducer_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 454815
+INFO  :    OUTPUT_BYTES_PHYSICAL: 92459
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 182125
+INFO  :    OUTPUT_RECORDS: 7923
+INFO  :    SHUFFLE_CHUNK_COUNT: 1
+INFO  :    SPILLED_RECORDS: 7923
+INFO  : TaskCounter_Reducer_3_INPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 91202
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 91202
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 10
+INFO  :    LAST_EVENT_RECEIVED: 10
+INFO  :    MERGED_MAP_OUTPUTS: 2
+INFO  :    MERGE_PHASE_TIME: 34
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 2
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 689
+INFO  :    REDUCE_INPUT_RECORDS: 7923
+INFO  :    SHUFFLE_BYTES: 92459
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 182125
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 0
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 92459
+INFO  :    SHUFFLE_PHASE_TIME: 15
+INFO  :    SPILLED_RECORDS: 7923
+INFO  : TaskCounter_Reducer_3_OUTPUT_Reducer_4:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 7093
+INFO  :    OUTPUT_BYTES_PHYSICAL: 2767
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 7299
+INFO  :    OUTPUT_RECORDS: 100
+INFO  :    SHUFFLE_CHUNK_COUNT: 1
+INFO  :    SPILLED_RECORDS: 100
+INFO  : TaskCounter_Reducer_4_INPUT_Reducer_3:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 2767
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 2767
+INFO  :    COMBINE_INPUT_RECORDS: 0
+INFO  :    FIRST_EVENT_RECEIVED: 10
+INFO  :    LAST_EVENT_RECEIVED: 10
+INFO  :    MERGED_MAP_OUTPUTS: 1
+INFO  :    MERGE_PHASE_TIME: 24
+INFO  :    NUM_DISK_TO_DISK_MERGES: 0
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_MEM_TO_DISK_MERGES: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 1
+INFO  :    NUM_SKIPPED_INPUTS: 0
+INFO  :    REDUCE_INPUT_GROUPS: 100
+INFO  :    REDUCE_INPUT_RECORDS: 100
+INFO  :    SHUFFLE_BYTES: 2767
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 7299
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 0
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 2767
+INFO  :    SHUFFLE_PHASE_TIME: 15
+INFO  :    SPILLED_RECORDS: 100
+INFO  : TaskCounter_Reducer_4_OUTPUT_out_Reducer_4:
+INFO  :    OUTPUT_RECORDS: 0
++------------------+---------------+--------------------+--------------------+----------------------+-------------+---------------------+-------------------------+--+
+| tmp1.i_category  | tmp1.i_class  |    tmp1.i_brand    | tmp1.s_store_name  | tmp1.s_company_name  | tmp1.d_moy  |   tmp1.sum_sales    | tmp1.avg_monthly_sales  |
++------------------+---------------+--------------------+--------------------+----------------------+-------------+---------------------+-------------------------+--+
+| Shoes            | womens        | amalgedu pack #2   | bar                | Unknown              | 2           | 2040137.719901109   | 3706992.680149903       |
+| Shoes            | womens        | amalgedu pack #2   | able               | Unknown              | 2           | 2043497.950290965   | 3705704.532427419       |
+| Shoes            | womens        | amalgedu pack #2   | eing               | Unknown              | 2           | 1989073.809539644   | 3650712.3816594705      |
+| Shoes            | womens        | amalgedu pack #2   | ese                | Unknown              | 2           | 2009858.4099432603  | 3652826.8042620607      |
+| Shoes            | womens        | amalgedu pack #2   | able               | Unknown              | 4           | 2073193.1196413524  | 3705704.532427419       |
+| Shoes            | womens        | amalgedu pack #2   | bar                | Unknown              | 6           | 2097341.969957834   | 3706992.680149903       |
+| Men              | pants         | exportiimporto #2  | bar                | Unknown              | 2           | 1936164.5000944715  | 3545500.739110164       |
+| Men              | pants         | exportiimporto #2  | able               | Unknown              | 2           | 1951981.1603814214  | 3557077.851845944       |
+| Shoes            | womens        | amalgedu pack #2   | bar                | Unknown              | 4           | 2105064.1701955684  | 3706992.680149903       |
+| Shoes            | womens        | amalgedu pack #2   | able               | Unknown              | 6           | 2116005.149912644   | 3705704.532427419       |
+| Shoes            | womens        | amalgedu pack #2   | cally              | Unknown              | 2           | 1901216.3803123366  | 3484099.3074139818      |
+| Shoes            | womens        | amalgedu pack #2   | ese                | Unknown              | 4           | 2074078.3298016042  | 3652826.8042620607      |
+| Men              | pants         | exportiimporto #2  | ese                | Unknown              | 2           | 1916393.8097503092  | 3494762.189029347       |
+| Shoes            | womens        | amalgedu pack #2   | eing               | Unknown              | 6           | 2073908.8003539946  | 3650712.3816594705      |
+| Shoes            | womens        | amalgedu pack #2   | ese                | Unknown              | 6           | 2080350.8705816977  | 3652826.8042620607      |
+| Men              | pants         | exportiimporto #2  | eing               | Unknown              | 2           | 1923334.7405739743  | 3491236.519978235       |
+| Shoes            | womens        | amalgedu pack #2   | eing               | Unknown              | 4           | 2094574.8799530268  | 3650712.3816594705      |
+| Shoes            | womens        | amalgedu pack #2   | bar                | Unknown              | 7           | 2154087.8797151186  | 3706992.680149903       |
+| Men              | pants         | exportiimporto #2  | bar                | Unknown              | 4           | 1995556.0296506528  | 3545500.739110164       |
+| Shoes            | womens        | amalgedu pack #2   | able               | Unknown              | 7           | 2159271.0395262428  | 3705704.532427419       |
+| Men              | pants         | exportiimporto #2  | bar                | Unknown              | 6           | 1999868.950209342   | 3545500.739110164       |
+| Shoes            | womens        | amalgedu pack #2   | able               | Unknown              | 5           | 2166581.669629805   | 3705704.532427419       |
+| Men              | pants         | exportiimporto #2  | able               | Unknown              | 4           | 2020192.8900338653  | 3557077.851845944       |
+| Men              | pants         | exportiimporto #2  | ese                | Unknown              | 6           | 1963378.7497212961  | 3494762.189029347       |
+| Men              | pants         | exportiimporto #2  | eing               | Unknown              | 4           | 1960149.919838978   | 3491236.519978235       |
+| Men              | pants         | exportiimporto #2  | ese                | Unknown              | 4           | 1966556.9598723128  | 3494762.189029347       |
+| Men              | pants         | exportiimporto #2  | able               | Unknown              | 6           | 2029613.950354103   | 3557077.851845944       |
+| Shoes            | womens        | amalgedu pack #2   | able               | Unknown              | 3           | 2178848.640062716   | 3705704.532427419       |
+| Shoes            | womens        | amalgedu pack #2   | bar                | Unknown              | 5           | 2183443.4204346035  | 3706992.680149903       |
+| Shoes            | womens        | amalgedu pack #2   | eing               | Unknown              | 3           | 2127993.419767339   | 3650712.3816594705      |
+| Shoes            | womens        | amalgedu pack #2   | bar                | Unknown              | 3           | 2187792.139874719   | 3706992.680149903       |
+| Shoes            | womens        | amalgedu pack #2   | cally              | Unknown              | 6           | 1968223.269921312   | 3484099.3074139818      |
+| Shoes            | womens        | amalgedu pack #2   | eing               | Unknown              | 7           | 2135340.0999967605  | 3650712.3816594705      |
+| Shoes            | womens        | amalgedu pack #2   | eing               | Unknown              | 5           | 2135751.180259481   | 3650712.3816594705      |
+| Shoes            | womens        | amalgedu pack #2   | cally              | Unknown              | 4           | 1979390.759790318   | 3484099.3074139818      |
+| Men              | pants         | exportiimporto #2  | eing               | Unknown              | 6           | 1987136.309631303   | 3491236.519978235       |
+| Men              | pants         | exportiimporto #2  | cally              | Unknown              | 2           | 1834055.5596988592  | 3337511.2565343957      |
+| Shoes            | womens        | amalgedu pack #2   | ese                | Unknown              | 3           | 2150864.269768942   | 3652826.8042620607      |
+| Shoes            | womens        | amalgedu pack #2   | ese                | Unknown              | 5           | 2154512.810976045   | 3652826.8042620607      |
+| Shoes            | womens        | amalgedu pack #2   | ese                | Unknown              | 7           | 2158974.54978564    | 3652826.8042620607      |
+| Men              | pants         | exportiimporto #2  | able               | Unknown              | 5           | 2077828.2001309488  | 3557077.851845944       |
+| Men              | pants         | exportiimporto #2  | able               | Unknown              | 7           | 2085925.9505180828  | 3557077.851845944       |
+| Men              | pants         | exportiimporto #2  | bar                | Unknown              | 5           | 2077768.5901307743  | 3545500.739110164       |
+| Men              | pants         | exportiimporto #2  | bar                | Unknown              | 7           | 2087174.0600157622  | 3545500.739110164       |
+| Shoes            | womens        | amalgedu pack #2   | cally              | Unknown              | 7           | 2029868.6194087993  | 3484099.3074139818      |
+| Men              | pants         | exportiimporto #2  | bar                | Unknown              | 3           | 2094535.6294795722  | 3545500.739110164       |
+| Men              | pants         | exportiimporto #2  | cally              | Unknown              | 4           | 1888655.5199728608  | 3337511.2565343957      |
+| Men              | pants         | exportiimporto #2  | eing               | Unknown              | 7           | 2045059.04980731    | 3491236.519978235       |
+| Men              | pants         | exportiimporto #2  | eing               | Unknown              | 5           | 2048082.0502342675  | 3491236.519978235       |
+| Men              | pants         | exportiimporto #2  | able               | Unknown              | 3           | 2117322.2298184745  | 3557077.851845944       |
+| Shoes            | womens        | amalgedu pack #2   | cally              | Unknown              | 5           | 2044442.8400527276  | 3484099.3074139818      |
+| Men              | pants         | exportiimporto #2  | ese                | Unknown              | 5           | 2055785.7596885003  | 3494762.189029347       |
+| Men              | pants         | exportiimporto #2  | ese                | Unknown              | 7           | 2056143.260267157   | 3494762.189029347       |
+| Men              | pants         | exportiimporto #2  | ese                | Unknown              | 3           | 2058601.760304818   | 3494762.189029347       |
+| Men              | pants         | exportiimporto #2  | cally              | Unknown              | 6           | 1905713.5105465967  | 3337511.2565343957      |
+| Shoes            | womens        | amalgedu pack #2   | cally              | Unknown              | 3           | 2057857.7796997353  | 3484099.3074139818      |
+| Men              | pants         | exportiimporto #2  | eing               | Unknown              | 3           | 2070765.3698552009  | 3491236.519978235       |
+| Men              | pants         | exportiimporto #2  | cally              | Unknown              | 7           | 1946236.7702240366  | 3337511.2565343957      |
+| Men              | pants         | exportiimporto #2  | cally              | Unknown              | 3           | 1969117.6502041016  | 3337511.2565343957      |
+| Men              | pants         | exportiimporto #2  | cally              | Unknown              | 5           | 1971815.4196451306  | 3337511.2565343957      |
+| Shoes            | womens        | amalgedu pack #2   | able               | Unknown              | 1           | 2456009.780116027   | 3705704.532427419       |
+| Shoes            | womens        | amalgedu pack #2   | bar                | Unknown              | 1           | 2468498.000042662   | 3706992.680149903       |
+| Shoes            | womens        | amalgedu pack #2   | ese                | Unknown              | 1           | 2426523.999820236   | 3652826.8042620607      |
+| Shoes            | womens        | amalgedu pack #2   | eing               | Unknown              | 1           | 2438786.3904574513  | 3650712.3816594705      |
+| Men              | pants         | exportiimporto #2  | ese                | Unknown              | 1           | 2312900.289900871   | 3494762.189029347       |
+| Men              | pants         | exportiimporto #2  | eing               | Unknown              | 1           | 2313295.9199123513  | 3491236.519978235       |
+| Men              | pants         | exportiimporto #2  | able               | Unknown              | 1           | 2379936.000791788   | 3557077.851845944       |
+| Men              | pants         | exportiimporto #2  | bar                | Unknown              | 1           | 2377260.409794621   | 3545500.739110164       |
+| Shoes            | womens        | amalgedu pack #2   | cally              | Unknown              | 1           | 2330851.1600793917  | 3484099.3074139818      |
+| Men              | pants         | exportiimporto #2  | cally              | Unknown              | 1           | 2205982.269680215   | 3337511.2565343957      |
+| Shoes            | womens        | amalgedu pack #1   | able               | Unknown              | 2           | 1005225.9999487344  | 1855938.0058430785      |
+| Shoes            | womens        | amalgedu pack #1   | bar                | Unknown              | 2           | 1013035.5603994243  | 1862538.612430361       |
+| Shoes            | womens        | amalgedu pack #2   | ation              | Unknown              | 2           | 1029065.3103338517  | 1877636.8425482723      |
+| Men              | pants         | exportiimporto #1  | bar                | Unknown              | 2           | 999993.4899778292   | 1838682.6100570865      |
+| Shoes            | womens        | amalgedu pack #1   | ese                | Unknown              | 2           | 994774.7899077721   | 1832883.3024067555      |
+| Shoes            | womens        | amalgedu pack #1   | eing               | Unknown              | 2           | 992959.1102054119   | 1829128.1751730219      |
+| Men              | pants         | exportiimporto #1  | able               | Unknown              | 2           | 1006579.9996042252  | 1841758.7048717893      |
+| Shoes            | womens        | amalgedu pack #2   | pri                | Unknown              | 2           | 994172.4000423178   | 1829200.5840307456      |
+| Men              | pants         | exportiimporto #2  | ation              | Unknown              | 2           | 981548.0497852825   | 1805498.4633113083      |
+| Men              | pants         | exportiimporto #1  | eing               | Unknown              | 2           | 990728.0800978765   | 1814586.1101425819      |
+| Men              | pants         | exportiimporto #1  | ese                | Unknown              | 2           | 985720.2898717951   | 1808585.2817109227      |
+| Shoes            | womens        | amalgedu pack #2   | ought              | Unknown              | 2           | 1004669.559675375   | 1826436.1982952484      |
+| Shoes            | womens        | amalgedu pack #1   | bar                | Unknown              | 4           | 1042259.8699885942  | 1862538.612430361       |
+| Shoes            | womens        | amalgedu pack #2   | n st               | Unknown              | 2           | 1011081.5295285527  | 1827668.783168139       |
+| Shoes            | womens        | amalgedu pack #2   | ation              | Unknown              | 6           | 1062669.3802010063  | 1877636.8425482723      |
+| Shoes            | womens        | amalgedu pack #1   | bar                | Unknown              | 6           | 1051087.8501699157  | 1862538.612430361       |
+| Shoes            | womens        | amalgedu pack #1   | eing               | Unknown              | 6           | 1020381.1401697434  | 1829128.1751730219      |
+| Shoes            | womens        | amalgedu pack #2   | ation              | Unknown              | 4           | 1069615.1896852367  | 1877636.8425482723      |
+| Shoes            | womens        | amalgedu pack #1   | able               | Unknown              | 4           | 1050391.1900201738  | 1855938.0058430785      |
+| Men              | pants         | exportiimporto #1  | able               | Unknown              | 6           | 1038761.2497480493  | 1841758.7048717893      |
+| Men              | pants         | exportiimporto #1  | bar                | Unknown              | 6           | 1037047.2098534349  | 1838682.6100570865      |
+| Shoes            | womens        | amalgedu pack #1   | ese                | Unknown              | 6           | 1033439.1501965802  | 1832883.3024067555      |
+| Shoes            | womens        | amalgedu pack #1   | able               | Unknown              | 6           | 1057866.6403889116  | 1855938.0058430785      |
+| Shoes            | womens        | amalgedu pack #2   | n st               | Unknown              | 6           | 1029615.9498089887  | 1827668.783168139       |
+| Men              | pants         | exportiimporto #1  | able               | Unknown              | 4           | 1045029.3098917026  | 1841758.7048717893      |
+| Men              | pants         | exportiimporto #1  | eing               | Unknown              | 6           | 1020159.8102985546  | 1814586.1101425819      |
+| Men              | pants         | exportiimporto #2  | n st               | Unknown              | 2           | 960537.5101489685   | 1754148.501676868       |
+| Shoes            | womens        | amalgedu pack #1   | eing               | Unknown              | 4           | 1035902.6203229092  | 1829128.1751730219      |
+| Shoes            | womens        | amalgedu pack #1   | cally              | Unknown              | 2           | 959934.3100066651   | 1752657.762586313       |
+| Shoes            | womens        | amalgedu pack #2   | anti               | Unknown              | 2           | 976159.9099179264   | 1768322.6841187205      |
++------------------+---------------+--------------------+--------------------+----------------------+-------------+---------------------+-------------------------+--+
+100 rows selected (37.737 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_1000;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+STOP hdp2.6_hivetez_run_3_1000_query89_sql_2017-04-07-05-33:  Fri Apr 7 05:33:58 CDT 2017

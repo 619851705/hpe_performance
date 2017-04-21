@@ -1,0 +1,786 @@
+START hdp2.6_hivetez_run_3_1000_query49_sql_2017-04-07-02-42:  Fri Apr 7 02:42:20 CDT 2017
+beeline -u "jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_$SF;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2" -n hive --incremental=true -i settings/test.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_1000;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+Connected to: Apache Hive (version 1.2.1000.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1000.2.6.0.0-598)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script test.settings
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.tez.exec.print.summary=true;
+No rows affected (0.041 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> set hive.exec.reducers.bytes.per.reducer=67108864;
+No rows affected (0.002 seconds)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha> select  
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  'web' as channel
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,web.item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,web.return_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,web.return_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,web.currency_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from (
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,return_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,currency_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,rank() over (order by return_ratio) as return_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,rank() over (order by currency_ratio) as currency_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  (select ws.ws_item_sk as item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,(cast(sum(coalesce(wr.wr_return_quantity,0)) as decimal(15,4))/
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  cast(sum(coalesce(ws.ws_quantity,0)) as decimal(15,4) )) as return_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,(cast(sum(coalesce(wr.wr_return_amt,0)) as decimal(15,4))/
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  cast(sum(coalesce(ws.ws_net_paid,0)) as decimal(15,4) )) as currency_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   web_sales ws left outer join web_returns wr 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  on (ws.ws_order_number = wr.wr_order_number and 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ws.ws_item_sk = wr.wr_item_sk)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                  ,date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  wr.wr_return_amt > 10000 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and ws.ws_net_profit > 1
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and ws.ws_net_paid > 0
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and ws.ws_quantity > 0
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and ws.ws_sold_date_sk = date_dim.d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and d_year = 2000
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and d_moy = 12
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  group by ws.ws_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ) in_web
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ) web
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  (
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  web.return_rank <= 10
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  or
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  web.currency_rank <= 10
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  )
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  union all
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  'catalog' as channel
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,catalog.item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,catalog.return_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,catalog.return_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,catalog.currency_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from (
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,return_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,currency_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,rank() over (order by return_ratio) as return_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,rank() over (order by currency_ratio) as currency_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  (select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  cs.cs_item_sk as item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,(cast(sum(coalesce(cr.cr_return_quantity,0)) as decimal(15,4))/
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  cast(sum(coalesce(cs.cs_quantity,0)) as decimal(15,4) )) as return_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,(cast(sum(coalesce(cr.cr_return_amount,0)) as decimal(15,4))/
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  cast(sum(coalesce(cs.cs_net_paid,0)) as decimal(15,4) )) as currency_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  catalog_sales cs left outer join catalog_returns cr
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  on (cs.cs_order_number = cr.cr_order_number and 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  cs.cs_item_sk = cr.cr_item_sk)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                 ,date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  cr.cr_return_amount > 10000 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and cs.cs_net_profit > 1
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and cs.cs_net_paid > 0
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and cs.cs_quantity > 0
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and cs_sold_date_sk = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and d_year = 2000
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and d_moy = 12
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                  group by cs.cs_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ) in_cat
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ) catalog
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  (
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  catalog.return_rank <= 10
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  or
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  catalog.currency_rank <=10
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  )
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  union all
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  'store' as channel
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,store.item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,store.return_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,store.return_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,store.currency_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from (
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  select 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>   item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,return_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,currency_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,rank() over (order by return_ratio) as return_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,rank() over (order by currency_ratio) as currency_rank
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  (select sts.ss_item_sk as item
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,(cast(sum(coalesce(sr.sr_return_quantity,0)) as decimal(15,4))/cast(sum(coa lesce(sts.ss_quantity,0)) as decimal(15,4) )) as return_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ,(cast(sum(coalesce(sr.sr_return_amt,0)) as decimal(15,4))/cast(sum(coalesce (sts.ss_net_paid,0)) as decimal(15,4) )) as currency_ratio
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  from 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  store_sales sts left outer join store_returns sr
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  on (sts.ss_ticket_number = sr.sr_ticket_number and sts.ss_item_sk = sr.sr_it em_sk)
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                 ,date_dim
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  sr.sr_return_amt > 10000 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  and sts.ss_net_profit > 1
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and sts.ss_net_paid > 0 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and sts.ss_quantity > 0
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and ss_sold_date_sk = d_date_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and d_year = 2000
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>                          and d_moy = 12
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  group by sts.ss_item_sk
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ) in_store
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  ) store
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  where  (
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  store.return_rank <= 10
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  or 
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  store.currency_rank <= 10
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  )
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  order by 1,4,5
+0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.ha>  limit 100;
+INFO  : Warning: Using constant number 1 in order by. If you try to use position alias when hive.groupby.orderby.position.alias is false, the position alias will be ignored.
+INFO  : Warning: Using constant number 4 in order by. If you try to use position alias when hive.groupby.orderby.position.alias is false, the position alias will be ignored.
+INFO  : Warning: Using constant number 5 in order by. If you try to use position alias when hive.groupby.orderby.position.alias is false, the position alias will be ignored.
+INFO  : Warning: Using constant number 1 in order by. If you try to use position alias when hive.groupby.orderby.position.alias is false, the position alias will be ignored.
+INFO  : Warning: Using constant number 4 in order by. If you try to use position alias when hive.groupby.orderby.position.alias is false, the position alias will be ignored.
+INFO  : Warning: Using constant number 5 in order by. If you try to use position alias when hive.groupby.orderby.position.alias is false, the position alias will be ignored.
+INFO  : Tez session hasn't been created yet. Opening session
+INFO  : Dag name: select
+ 'web' as channel
+ ,web.item
+ ,...100(Stage-1)
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Status: Running (Executing on YARN cluster with App id application_1491366857972_0419)
+
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: -/-	Map 16: -/-	Map 17: -/-	Map 22: -/-	Map 23: -/-	Map 8: -/-	Map 9: -/-	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1           INITIALIZING     -1          0        0       -1       0       0
+Map 10          INITIALIZING     -1          0        0       -1       0       0
+Map 15               RUNNING    649          0        8      641       0       0
+Map 16               RUNNING      1          0        1        0       0       0
+Map 17          INITIALIZING     -1          0        0       -1       0       0
+Map 22                INITED   1178          0        0     1178       0       0
+Map 23               RUNNING      1          0        1        0       0       0
+Map 8                 INITED    270          0        0      270       0       0
+Map 9                RUNNING      1          0        1        0       0       0
+Reducer 11            INITED    554          0        0      554       0       0
+Reducer 12            INITED      2          0        0        2       0       0
+Reducer 13            INITED      2          0        0        2       0       0
+Reducer 14            INITED      2          0        0        2       0       0
+Reducer 18            INITED    846          0        0      846       0       0
+Reducer 19            INITED      2          0        0        2       0       0
+Reducer 2             INITED    248          0        0      248       0       0
+Reducer 20            INITED      2          0        0        2       0       0
+Reducer 21            INITED      2          0        0        2       0       0
+Reducer 3             INITED      2          0        0        2       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      2          0        0        2       0       0
+Reducer 7             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 00/22  [>>--------------------------] 0%    ELAPSED TIME: 5.07 s     
+[22;0m[2K--------------------------------------------------------------------------------
+[28A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1           INITIALIZING     -1          0        0       -1       0       0
+Map 10          INITIALIZING     -1          0        0       -1       0       0
+Map 15               RUNNING    649          0      501      148       0       0
+Map 16               RUNNING      1          0        1        0       0       0
+Map 17          INITIALIZING     -1          0        0       -1       0       0
+Map 22                INITED   1178          0        0     1178       0       0
+Map 23 .........   SUCCEEDED      1          1        0        0       0       0
+Map 8                 INITED    270          0        0      270       0       0
+Map 9                RUNNING      1          0        1        0       0       0
+Reducer 11            INITED    554          0        0      554       0       0
+Reducer 12            INITED      2          0        0        2       0       0
+Reducer 13            INITED      2          0        0        2       0       0
+Reducer 14            INITED      2          0        0        2       0       0
+Reducer 18            INITED    846          0        0      846       0       0
+Reducer 19            INITED      2          0        0        2       0       0
+Reducer 2             INITED    248          0        0      248       0       0
+Reducer 20            INITED      2          0        0        2       0       0
+Reducer 21            INITED      2          0        0        2       0       0
+Reducer 3             INITED      2          0        0        2       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      2          0        0        2       0       0
+Reducer 7             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 01/22  [>>--------------------------] 0%    ELAPSED TIME: 10.07 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[28A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                 INITED     31          0        0       31       0       0
+Map 10                INITED     31          0        0       31       0       0
+Map 15               RUNNING    649          0      503      146       0       0
+Map 16 .........   SUCCEEDED      1          1        0        0       0       0
+Map 17                INITED     31          0        0       31       0       0
+Map 22                INITED   1178          0        0     1178       0       0
+Map 23 .........   SUCCEEDED      1          1        0        0       0       0
+Map 8                 INITED    270          0        0      270       0       0
+Map 9 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 11            INITED    554          0        0      554       0       0
+Reducer 12            INITED      2          0        0        2       0       0
+Reducer 13            INITED      2          0        0        2       0       0
+Reducer 14            INITED      2          0        0        2       0       0
+Reducer 18            INITED    846          0        0      846       0       0
+Reducer 19            INITED      2          0        0        2       0       0
+Reducer 2             INITED    248          0        0      248       0       0
+Reducer 20            INITED      2          0        0        2       0       0
+Reducer 21            INITED      2          0        0        2       0       0
+Reducer 3             INITED      2          0        0        2       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      2          0        0        2       0       0
+Reducer 7             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 03/22  [>>--------------------------] 0%    ELAPSED TIME: 15.07 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[28A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                 INITED     31          0        0       31       0       0
+Map 10                INITED     31          0        0       31       0       0
+Map 15               RUNNING    649         12      497      140       1       0
+Map 16 .........   SUCCEEDED      1          1        0        0       0       0
+Map 17                INITED     31          0        0       31       0       0
+Map 22                INITED   1178          0        0     1178       0       0
+Map 23 .........   SUCCEEDED      1          1        0        0       0       0
+Map 8                 INITED    270          0        0      270       0       0
+Map 9 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 11            INITED    554          0        0      554       0       0
+Reducer 12            INITED      2          0        0        2       0       0
+Reducer 13            INITED      2          0        0        2       0       0
+Reducer 14            INITED      2          0        0        2       0       0
+Reducer 18            INITED    846          0        0      846       0       0
+Reducer 19            INITED      2          0        0        2       0       0
+Reducer 2             INITED    248          0        0      248       0       0
+Reducer 20            INITED      2          0        0        2       0       0
+Reducer 21            INITED      2          0        0        2       0       0
+Reducer 3             INITED      2          0        0        2       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      2          0        0        2       0       0
+Reducer 7             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 03/22  [>>--------------------------] 0%    ELAPSED TIME: 20.08 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[28A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                 INITED     31          0        0       31       0       0
+Map 10                INITED     31          0        0       31       0       0
+Map 15 .....         RUNNING    649        399      245        5      27       0
+Map 16 .........   SUCCEEDED      1          1        0        0       0       0
+Map 17                INITED     31          0        0       31       0       0
+Map 22               RUNNING   1178          0      167     1011       1       0
+Map 23 .........   SUCCEEDED      1          1        0        0       0       0
+Map 8                 INITED    270          0        0      270       0       0
+Map 9 ..........   SUCCEEDED      1          1        0        0       0       0
+Reducer 11            INITED     70          0        0       70       0       0
+Reducer 12            INITED      2          0        0        2       0       0
+Reducer 13            INITED      2          0        0        2       0       0
+Reducer 14            INITED      2          0        0        2       0       0
+Reducer 18            INITED    846          0        0      846       0       0
+Reducer 19            INITED      2          0        0        2       0       0
+Reducer 2             INITED    248          0        0      248       0       0
+Reducer 20            INITED      2          0        0        2       0       0
+Reducer 21            INITED      2          0        0        2       0       0
+Reducer 3             INITED      2          0        0        2       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      2          0        0        2       0       0
+Reducer 7             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 03/22  [===>>-----------------------] 11%   ELAPSED TIME: 25.08 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[28A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                 INITED     31          0        0       31       0       0
+Map 10                INITED     31          0        0       31       0       0
+Map 15 ......        RUNNING    649        444       99      106      50      27
+Map 16                INITED      1          0        0        1       0       0
+Map 17                INITED     31          0        0       31       0       0
+Map 22               RUNNING   1178          5      320      853      33      75
+Map 23                INITED      1          0        0        1       0       0
+Map 8                 INITED    270          0        0      270       0       0
+Map 9                 INITED      1          0        0        1       0       0
+Reducer 11            INITED     70          0        0       70       0       0
+Reducer 12            INITED      2          0        0        2       0       0
+Reducer 13            INITED      2          0        0        2       0       0
+Reducer 14            INITED      2          0        0        2       0       0
+Reducer 18            INITED    846          0        0      846       0       0
+Reducer 19            INITED      2          0        0        2       0       0
+Reducer 2             INITED    248          0        0      248       0       0
+Reducer 20            INITED      2          0        0        2       0       0
+Reducer 21            INITED      2          0        0        2       0       0
+Reducer 3             INITED      2          0        0        2       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      2          0        0        2       0       0
+Reducer 7             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 00/22  [===>>-----------------------] 13%   ELAPSED TIME: 30.08 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[28A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                 INITED     31          0        0       31       0       0
+Map 10                INITED     31          0        0       31       0       0
+Map 15 ......        RUNNING    649        504       39      106      50      27
+Map 16                INITED      1          0        0        1       0       0
+Map 17                INITED     31          0        0       31       0       0
+Map 22 .             RUNNING   1178        197      440      541      87      75
+Map 23                INITED      1          0        0        1       0       0
+Map 8                 INITED    270          0        0      270       0       0
+Map 9                 INITED      1          0        0        1       0       0
+Reducer 11            INITED     70          0        0       70       0       0
+Reducer 12            INITED      2          0        0        2       0       0
+Reducer 13            INITED      2          0        0        2       0       0
+Reducer 14            INITED      2          0        0        2       0       0
+Reducer 18            INITED    846          0        0      846       0       0
+Reducer 19            INITED      2          0        0        2       0       0
+Reducer 2             INITED    248          0        0      248       0       0
+Reducer 20            INITED      2          0        0        2       0       0
+Reducer 21            INITED      2          0        0        2       0       0
+Reducer 3             INITED      2          0        0        2       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      2          0        0        2       0       0
+Reducer 7             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 00/22  [=====>>---------------------] 20%   ELAPSED TIME: 35.08 s    
+[22;0m[2K--------------------------------------------------------------------------------
+[28A[2K--------------------------------------------------------------------------------
+[2K[36;1m        VERTICES      STATUS  TOTAL  COMPLETED  RUNNING  PENDING  FAILED  KILLED
+[22;0m[2K--------------------------------------------------------------------------------
+[2KMap 1                 INITED     31          0        0       31       0       0
+Map 10                INITED     31          0        0       31       0       0
+Map 15 .......       RUNNING    649        513        0      136      50      27
+Map 16                INITED      1          0        0        1       0       0
+Map 17                INITED     31          0        0       31       0       0
+Map 22 ..            RUNNING   1178        349        0      829     194      75
+Map 23                INITED      1          0        0        1       0       0
+Map 8                 INITED    270          0        0      270       0       0
+Map 9                 INITED      1          0        0        1       0       0
+Reducer 11            INITED     70          0        0       70       0       0
+Reducer 12            INITED      2          0        0        2       0       0
+Reducer 13            INITED      2          0        0        2       0       0
+Reducer 14            INITED      2          0        0        2       0       0
+Reducer 18            INITED    106          0        0      106       0       0
+Reducer 19            INITED      2          0        0        2       0       0
+Reducer 2             INITED    248          0        0      248       0       0
+Reducer 20            INITED      2          0        0        2       0       0
+Reducer 21            INITED      2          0        0        2       0       0
+Reducer 3             INITED      2          0        0        2       0       0
+Reducer 4             INITED      2          0        0        2       0       0
+Reducer 5             INITED      2          0        0        2       0       0
+Reducer 7             INITED      1          0        0        1       0       0
+[2K--------------------------------------------------------------------------------
+[2K[31;1mVERTICES: 00/22  [========>>------------------] 32%   ELAPSED TIME: 39.58 s    
+[22;0m[2K--------------------------------------------------------------------------------
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: -/-	Map 16: -/-	Map 17: -/-	Map 22: -/-	Map 23: 0/1	Map 8: -/-	Map 9: 0/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0/649	Map 16: 0/1	Map 17: -/-	Map 22: -/-	Map 23: 0/1	Map 8: -/-	Map 9: 0/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0/649	Map 16: 0/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0/1	Map 8: -/-	Map 9: 0/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0/649	Map 16: 0/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+1)/649	Map 16: 0/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0(+1)/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+2)/649	Map 16: 0/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0(+1)/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+3)/649	Map 16: 0/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0(+1)/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+3)/649	Map 16: 0(+1)/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0(+1)/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+8)/649	Map 16: 0(+1)/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0(+1)/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+19)/649	Map 16: 0(+1)/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0(+1)/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+80)/649	Map 16: 0(+1)/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0(+1)/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+116)/649	Map 16: 0(+1)/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0(+1)/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+145)/649	Map 16: 0(+1)/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0(+1)/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+189)/649	Map 16: 0(+1)/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0(+1)/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+285)/649	Map 16: 0(+1)/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0(+1)/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+344)/649	Map 16: 0(+1)/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0(+1)/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+350)/649	Map 16: 0(+1)/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0(+1)/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+407)/649	Map 16: 0(+1)/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0(+1)/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+497)/649	Map 16: 0(+1)/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0(+1)/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+500)/649	Map 16: 0(+1)/1	Map 17: -/-	Map 22: 0/1178	Map 23: 0(+1)/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+500)/649	Map 16: 0(+1)/1	Map 17: -/-	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+501)/649	Map 16: 0(+1)/1	Map 17: -/-	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+501)/649	Map 16: 0(+1)/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 0(+1)/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+501)/649	Map 16: 0(+1)/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+502)/649	Map 16: 0(+1)/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+502)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 15: 0(+503)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: -/-	Map 15: 0(+503)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 0(+503)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 0(+503)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 1(+502)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 1(+503)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 2(+503)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 3(+502)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 4(+501)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 5(+502,-1)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 7(+500,-1)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 8(+500,-1)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 12(+497,-1)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 13(+500,-1)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 20(+496,-1)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 25(+495,-1)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 33(+491,-1)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 47(+481,-1)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 59(+482,-1)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 66(+486,-1)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 82(+480,-1)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 93(+480,-1)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 104(+480,-1)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0(+4)/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 124(+473,-3)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0(+5)/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 146(+460,-4)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0(+13)/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/554	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 172(+447,-5)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0(+27)/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 193(+429,-5)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0(+40)/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 220(+410,-7)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0(+52)/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 242(+400,-9)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0(+66)/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 276(+371,-10)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0(+83)/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 301(+346,-13)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0(+104)/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 329(+318,-18)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0(+141)/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 399(+245,-27)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0(+167,-1)/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 400(+244,-27)/649	Map 16: 1/1	Map 17: 0/31	Map 22: 0(+170,-1)/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 1/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 362(+196,-34)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 0(+233,-2)/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 383(+178,-39)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 0(+233,-2)/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 435(+158,-40)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 0(+238,-3)/1178	Map 23: 1/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 396(+147,-42)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 0(+313,-7)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 401(+142,-43)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 0(+313,-7)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 406(+137,-44)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 0(+313,-7)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 408(+135,-44)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 0(+313,-9)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 412(+131,-44)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 0(+313,-11)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 415(+128,-45)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 0(+315,-13)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 416(+127,-45)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 0(+316,-16)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 417(+126,-46)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 1(+315,-23)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 423(+120,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 4(+313,-33)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 429(+114,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 4(+313,-33)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 436(+107,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 5(+313,-33)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 444(+99,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 5(+320,-33)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 446(+97,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 5(+328,-33)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 451(+92,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 6(+335,-33)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 458(+85,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 6(+339,-33)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 465(+78,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 8(+354,-33)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 470(+73,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 9(+361,-33)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 474(+69,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 17(+360,-33)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 476(+67,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 21(+364,-33)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 481(+62,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 25(+373,-33)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 481(+62,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 34(+374,-33)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 483(+60,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 45(+374,-33)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 485(+58,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 60(+375,-33)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 486(+57,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 70(+379,-36)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 487(+56,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 84(+375,-39)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 489(+54,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 96(+388,-39)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 493(+50,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 107(+398,-42)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 493(+50,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 121(+406,-46)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 494(+49,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 131(+418,-48)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 495(+48,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 140(+420,-51)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 498(+45,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 150(+432,-57)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 499(+44,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 160(+429,-58)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 503(+40,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 186(+448,-77)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 504(+39,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 197(+440,-87)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 506(+37,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 215(+429,-96)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 507(+36,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 225(+433,-106)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 509(+34,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 237(+434,-111)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 511(+32,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 246(+439,-117)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 511(+32,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 252(+442,-127)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 512(+31,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 261(+441,-138)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 512(+31,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 272(+436,-149)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 512(+31,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 274(+435,-150)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 513(+30,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 298(+430,-168)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/846	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 513(+30,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 305(+427,-172)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/106	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 513(+30,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 315(+423,-181)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/106	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 513(+30,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 323(+421,-186)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/106	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 513(+30,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 336(+417,-190)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/106	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 513(+30,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 349(+416,-193)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/106	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 513(+30,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 349(+0,-194)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/106	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+INFO  : Map 1: 0/31	Map 10: 0/31	Map 15: 513(+0,-50)/649	Map 16: 0/1	Map 17: 0/31	Map 22: 349(+0,-194)/1178	Map 23: 0/1	Map 8: 0/270	Map 9: 0/1	Reducer 11: 0/70	Reducer 12: 0/2	Reducer 13: 0/2	Reducer 14: 0/2	Reducer 18: 0/106	Reducer 19: 0/2	Reducer 2: 0/248	Reducer 20: 0/2	Reducer 21: 0/2	Reducer 3: 0/2	Reducer 4: 0/2	Reducer 5: 0/2	Reducer 7: 0/1	
+ERROR : Status: Failed
+ERROR : Vertex re-running, vertexName=Map 9, vertexId=vertex_1491366857972_0419_1_00
+ERROR : Vertex re-running, vertexName=Map 16, vertexId=vertex_1491366857972_0419_1_07
+ERROR : Vertex re-running, vertexName=Map 23, vertexId=vertex_1491366857972_0419_1_04
+ERROR : Vertex failed, vertexName=Map 22, vertexId=vertex_1491366857972_0419_1_03, diagnostics=[Task failed, taskId=task_1491366857972_0419_1_03_000581, diagnostics=[TaskAttempt 0 failed, info=[Error: Failure while running task:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:159)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.run(TezProcessor.java:139)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask.run(LogicalIOProcessorRuntimeTask.java:347)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:194)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:185)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:185)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:181)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at java.nio.HeapByteBuffer.<init>(HeapByteBuffer.java:57)
+	at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.allocateSpace(PipelinedSorter.java:234)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.<init>(PipelinedSorter.java:185)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.start(OrderedPartitionedKVOutput.java:142)
+	at org.apache.hadoop.hive.ql.exec.tez.MapRecordProcessor.init(MapRecordProcessor.java:138)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:149)
+	... 14 more
+], TaskAttempt 1 failed, info=[Error: Failure while running task:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:159)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.run(TezProcessor.java:139)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask.run(LogicalIOProcessorRuntimeTask.java:347)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:194)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:185)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:185)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:181)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at java.nio.HeapByteBuffer.<init>(HeapByteBuffer.java:57)
+	at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.allocateSpace(PipelinedSorter.java:234)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.<init>(PipelinedSorter.java:185)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.start(OrderedPartitionedKVOutput.java:142)
+	at org.apache.hadoop.hive.ql.exec.tez.MapRecordProcessor.init(MapRecordProcessor.java:138)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:149)
+	... 14 more
+], TaskAttempt 2 failed, info=[Error: Failure while running task:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:159)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.run(TezProcessor.java:139)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask.run(LogicalIOProcessorRuntimeTask.java:347)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:194)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:185)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:185)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:181)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at java.nio.HeapByteBuffer.<init>(HeapByteBuffer.java:57)
+	at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.allocateSpace(PipelinedSorter.java:234)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.<init>(PipelinedSorter.java:185)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.start(OrderedPartitionedKVOutput.java:142)
+	at org.apache.hadoop.hive.ql.exec.tez.MapRecordProcessor.init(MapRecordProcessor.java:138)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:149)
+	... 14 more
+], TaskAttempt 3 failed, info=[Error: Failure while running task:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:159)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.run(TezProcessor.java:139)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask.run(LogicalIOProcessorRuntimeTask.java:347)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:194)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:185)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:185)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:181)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at java.nio.HeapByteBuffer.<init>(HeapByteBuffer.java:57)
+	at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.allocateSpace(PipelinedSorter.java:234)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.<init>(PipelinedSorter.java:185)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.start(OrderedPartitionedKVOutput.java:142)
+	at org.apache.hadoop.hive.ql.exec.tez.MapRecordProcessor.init(MapRecordProcessor.java:138)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:149)
+	... 14 more
+]], Vertex did not succeed due to OWN_TASK_FAILURE, failedTasks:1 killedTasks:828, Vertex vertex_1491366857972_0419_1_03 [Map 22] killed/failed due to:OWN_TASK_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 2, vertexId=vertex_1491366857972_0419_1_12, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:248, Vertex vertex_1491366857972_0419_1_12 [Reducer 2] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 13, vertexId=vertex_1491366857972_0419_1_10, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_10 [Reducer 13] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 14, vertexId=vertex_1491366857972_0419_1_11, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_11 [Reducer 14] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 12, vertexId=vertex_1491366857972_0419_1_09, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_09 [Reducer 12] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 5, vertexId=vertex_1491366857972_0419_1_20, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_20 [Reducer 5] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 7, vertexId=vertex_1491366857972_0419_1_21, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1, Vertex vertex_1491366857972_0419_1_21 [Reducer 7] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 3, vertexId=vertex_1491366857972_0419_1_18, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_18 [Reducer 3] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 4, vertexId=vertex_1491366857972_0419_1_19, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_19 [Reducer 4] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 20, vertexId=vertex_1491366857972_0419_1_16, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_16 [Reducer 20] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 21, vertexId=vertex_1491366857972_0419_1_17, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_17 [Reducer 21] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 19, vertexId=vertex_1491366857972_0419_1_15, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_15 [Reducer 19] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Map 23, vertexId=vertex_1491366857972_0419_1_04, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1, Vertex vertex_1491366857972_0419_1_04 [Map 23] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Map 15, vertexId=vertex_1491366857972_0419_1_05, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:136, Vertex vertex_1491366857972_0419_1_05 [Map 15] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Map 10, vertexId=vertex_1491366857972_0419_1_02, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:31, Vertex vertex_1491366857972_0419_1_02 [Map 10] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Map 9, vertexId=vertex_1491366857972_0419_1_00, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1, Vertex vertex_1491366857972_0419_1_00 [Map 9] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Map 8, vertexId=vertex_1491366857972_0419_1_01, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:270, Vertex vertex_1491366857972_0419_1_01 [Map 8] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Map 17, vertexId=vertex_1491366857972_0419_1_13, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:31, Vertex vertex_1491366857972_0419_1_13 [Map 17] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 11, vertexId=vertex_1491366857972_0419_1_08, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:70, Vertex vertex_1491366857972_0419_1_08 [Reducer 11] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Map 1, vertexId=vertex_1491366857972_0419_1_06, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:31, Vertex vertex_1491366857972_0419_1_06 [Map 1] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Map 16, vertexId=vertex_1491366857972_0419_1_07, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1, Vertex vertex_1491366857972_0419_1_07 [Map 16] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 18, vertexId=vertex_1491366857972_0419_1_14, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:106, Vertex vertex_1491366857972_0419_1_14 [Reducer 18] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : DAG did not succeed due to VERTEX_FAILURE. failedVertices:1 killedVertices:21
+INFO  : org.apache.tez.common.counters.DAGCounter:
+INFO  :    NUM_FAILED_TASKS: 244
+INFO  :    NUM_KILLED_TASKS: 1619
+INFO  :    NUM_SUCCEEDED_TASKS: 970
+INFO  :    TOTAL_LAUNCHED_TASKS: 1644
+INFO  :    DATA_LOCAL_TASKS: 797
+INFO  :    RACK_LOCAL_TASKS: 65
+INFO  :    AM_CPU_MILLISECONDS: 76620
+INFO  :    AM_GC_TIME_MILLIS: 2721
+INFO  : File System Counters:
+INFO  :    FILE_BYTES_READ: 13913840
+INFO  :    FILE_BYTES_WRITTEN: 3303734009
+INFO  :    HDFS_BYTES_READ: 2010513871
+INFO  :    HDFS_READ_OPS: 4386
+INFO  :    HDFS_OP_OPEN: 4386
+INFO  : org.apache.tez.common.counters.TaskCounter:
+INFO  :    SPILLED_RECORDS: 196960497
+INFO  :    GC_TIME_MILLIS: 1119806
+INFO  :    CPU_MILLISECONDS: 10160270
+INFO  :    PHYSICAL_MEMORY_BYTES: 1892822286336
+INFO  :    VIRTUAL_MEMORY_BYTES: 4834414043136
+INFO  :    COMMITTED_HEAP_BYTES: 1892822286336
+INFO  :    INPUT_RECORDS_PROCESSED: 193440
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 11271130875
+INFO  :    OUTPUT_RECORDS: 196960497
+INFO  :    OUTPUT_BYTES: 3329407754
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 3726805484
+INFO  :    OUTPUT_BYTES_PHYSICAL: 3289820169
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    SHUFFLE_CHUNK_COUNT: 862
+INFO  : HIVE:
+INFO  :    DESERIALIZE_ERRORS: 0
+INFO  :    RECORDS_IN_Map_15: 113532017
+INFO  :    RECORDS_IN_Map_22: 83428480
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_15: 113532017
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_22: 83428480
+INFO  : TaskCounter_Map_15_INPUT_cr:
+INFO  :    INPUT_RECORDS_PROCESSED: 111654
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 7131297558
+INFO  : TaskCounter_Map_15_OUTPUT_Reducer_11:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1918692410
+INFO  :    OUTPUT_BYTES_PHYSICAL: 1864212375
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 2147461656
+INFO  :    OUTPUT_RECORDS: 113532017
+INFO  :    SHUFFLE_CHUNK_COUNT: 513
+INFO  :    SPILLED_RECORDS: 113532017
+INFO  : TaskCounter_Map_22_INPUT_sr:
+INFO  :    INPUT_RECORDS_PROCESSED: 81786
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 4139833317
+INFO  : TaskCounter_Map_22_OUTPUT_Reducer_18:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1410715344
+INFO  :    OUTPUT_BYTES_PHYSICAL: 1425607794
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 1579343828
+INFO  :    OUTPUT_RECORDS: 83428480
+INFO  :    SHUFFLE_CHUNK_COUNT: 349
+INFO  :    SPILLED_RECORDS: 83428480
+Error: Error while processing statement: FAILED: Execution Error, return code 2 from org.apache.hadoop.hive.ql.exec.tez.TezTask. Vertex re-running, vertexName=Map 9, vertexId=vertex_1491366857972_0419_1_00Vertex re-running, vertexName=Map 16, vertexId=vertex_1491366857972_0419_1_07Vertex re-running, vertexName=Map 23, vertexId=vertex_1491366857972_0419_1_04Vertex failed, vertexName=Map 22, vertexId=vertex_1491366857972_0419_1_03, diagnostics=[Task failed, taskId=task_1491366857972_0419_1_03_000581, diagnostics=[TaskAttempt 0 failed, info=[Error: Failure while running task:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:159)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.run(TezProcessor.java:139)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask.run(LogicalIOProcessorRuntimeTask.java:347)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:194)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:185)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:185)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:181)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at java.nio.HeapByteBuffer.<init>(HeapByteBuffer.java:57)
+	at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.allocateSpace(PipelinedSorter.java:234)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.<init>(PipelinedSorter.java:185)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.start(OrderedPartitionedKVOutput.java:142)
+	at org.apache.hadoop.hive.ql.exec.tez.MapRecordProcessor.init(MapRecordProcessor.java:138)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:149)
+	... 14 more
+], TaskAttempt 1 failed, info=[Error: Failure while running task:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:159)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.run(TezProcessor.java:139)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask.run(LogicalIOProcessorRuntimeTask.java:347)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:194)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:185)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:185)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:181)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at java.nio.HeapByteBuffer.<init>(HeapByteBuffer.java:57)
+	at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.allocateSpace(PipelinedSorter.java:234)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.<init>(PipelinedSorter.java:185)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.start(OrderedPartitionedKVOutput.java:142)
+	at org.apache.hadoop.hive.ql.exec.tez.MapRecordProcessor.init(MapRecordProcessor.java:138)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:149)
+	... 14 more
+], TaskAttempt 2 failed, info=[Error: Failure while running task:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:159)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.run(TezProcessor.java:139)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask.run(LogicalIOProcessorRuntimeTask.java:347)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:194)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:185)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:185)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:181)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at java.nio.HeapByteBuffer.<init>(HeapByteBuffer.java:57)
+	at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.allocateSpace(PipelinedSorter.java:234)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.<init>(PipelinedSorter.java:185)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.start(OrderedPartitionedKVOutput.java:142)
+	at org.apache.hadoop.hive.ql.exec.tez.MapRecordProcessor.init(MapRecordProcessor.java:138)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:149)
+	... 14 more
+], TaskAttempt 3 failed, info=[Error: Failure while running task:java.lang.RuntimeException: java.lang.OutOfMemoryError: Java heap space
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:159)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.run(TezProcessor.java:139)
+	at org.apache.tez.runtime.LogicalIOProcessorRuntimeTask.run(LogicalIOProcessorRuntimeTask.java:347)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:194)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable$1.run(TezTaskRunner.java:185)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1866)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:185)
+	at org.apache.tez.runtime.task.TezTaskRunner$TaskRunnerCallable.callInternal(TezTaskRunner.java:181)
+	at org.apache.tez.common.CallableWithNdc.call(CallableWithNdc.java:36)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at java.nio.HeapByteBuffer.<init>(HeapByteBuffer.java:57)
+	at java.nio.ByteBuffer.allocate(ByteBuffer.java:335)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.allocateSpace(PipelinedSorter.java:234)
+	at org.apache.tez.runtime.library.common.sort.impl.PipelinedSorter.<init>(PipelinedSorter.java:185)
+	at org.apache.tez.runtime.library.output.OrderedPartitionedKVOutput.start(OrderedPartitionedKVOutput.java:142)
+	at org.apache.hadoop.hive.ql.exec.tez.MapRecordProcessor.init(MapRecordProcessor.java:138)
+	at org.apache.hadoop.hive.ql.exec.tez.TezProcessor.initializeAndRunProcessor(TezProcessor.java:149)
+	... 14 more
+]], Vertex did not succeed due to OWN_TASK_FAILURE, failedTasks:1 killedTasks:828, Vertex vertex_1491366857972_0419_1_03 [Map 22] killed/failed due to:OWN_TASK_FAILURE]Vertex killed, vertexName=Reducer 2, vertexId=vertex_1491366857972_0419_1_12, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:248, Vertex vertex_1491366857972_0419_1_12 [Reducer 2] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 13, vertexId=vertex_1491366857972_0419_1_10, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_10 [Reducer 13] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 14, vertexId=vertex_1491366857972_0419_1_11, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_11 [Reducer 14] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 12, vertexId=vertex_1491366857972_0419_1_09, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_09 [Reducer 12] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 5, vertexId=vertex_1491366857972_0419_1_20, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_20 [Reducer 5] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 7, vertexId=vertex_1491366857972_0419_1_21, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1, Vertex vertex_1491366857972_0419_1_21 [Reducer 7] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 3, vertexId=vertex_1491366857972_0419_1_18, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_18 [Reducer 3] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 4, vertexId=vertex_1491366857972_0419_1_19, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_19 [Reducer 4] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 20, vertexId=vertex_1491366857972_0419_1_16, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_16 [Reducer 20] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 21, vertexId=vertex_1491366857972_0419_1_17, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_17 [Reducer 21] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 19, vertexId=vertex_1491366857972_0419_1_15, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:2, Vertex vertex_1491366857972_0419_1_15 [Reducer 19] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Map 23, vertexId=vertex_1491366857972_0419_1_04, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1, Vertex vertex_1491366857972_0419_1_04 [Map 23] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Map 15, vertexId=vertex_1491366857972_0419_1_05, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:136, Vertex vertex_1491366857972_0419_1_05 [Map 15] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Map 10, vertexId=vertex_1491366857972_0419_1_02, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:31, Vertex vertex_1491366857972_0419_1_02 [Map 10] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Map 9, vertexId=vertex_1491366857972_0419_1_00, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1, Vertex vertex_1491366857972_0419_1_00 [Map 9] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Map 8, vertexId=vertex_1491366857972_0419_1_01, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:270, Vertex vertex_1491366857972_0419_1_01 [Map 8] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Map 17, vertexId=vertex_1491366857972_0419_1_13, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:31, Vertex vertex_1491366857972_0419_1_13 [Map 17] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 11, vertexId=vertex_1491366857972_0419_1_08, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:70, Vertex vertex_1491366857972_0419_1_08 [Reducer 11] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Map 1, vertexId=vertex_1491366857972_0419_1_06, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:31, Vertex vertex_1491366857972_0419_1_06 [Map 1] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Map 16, vertexId=vertex_1491366857972_0419_1_07, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1, Vertex vertex_1491366857972_0419_1_07 [Map 16] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 18, vertexId=vertex_1491366857972_0419_1_14, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:106, Vertex vertex_1491366857972_0419_1_14 [Reducer 18] killed/failed due to:OTHER_VERTEX_FAILURE]DAG did not succeed due to VERTEX_FAILURE. failedVertices:1 killedVertices:21 (state=08S01,code=2)
+
+Closing: 0: jdbc:hive2://h01mgt.hadoop:2181,h01hn01.hadoop:2181,h01hn02.hadoop:2181/tpcds_bin_partitioned_orc_1000;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2
+STOP hdp2.6_hivetez_run_3_1000_query49_sql_2017-04-07-02-42:  Fri Apr 7 02:43:12 CDT 2017

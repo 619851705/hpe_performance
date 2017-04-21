@@ -1,0 +1,894 @@
+Connecting to jdbc:hive2://h01hn02:10500/tpcds_bin_partitioned_orc_10000
+Connected to: Apache Hive (version 2.1.0.2.5.1.0-43)
+Driver: Hive JDBC (version 1.2.1000.2.5.1.0-43)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script bry.sql
+No rows affected (0.036 seconds)
+INFO  : Compiling command(queryId=hive_20161020172713_1084b215-7dde-4190-b847-e59a06516d13): select  ss_items.item_id
+       ,ss_item_rev
+       ,ss_item_rev/(ss_item_rev+cs_item_rev+ws_item_rev)/3 * 100 ss_dev
+       ,cs_item_rev
+       ,cs_item_rev/(ss_item_rev+cs_item_rev+ws_item_rev)/3 * 100 cs_dev
+       ,ws_item_rev
+       ,ws_item_rev/(ss_item_rev+cs_item_rev+ws_item_rev)/3 * 100 ws_dev
+       ,(ss_item_rev+cs_item_rev+ws_item_rev)/3 average
+FROM
+( select i_item_id item_id ,sum(ss_ext_sales_price) as ss_item_rev 
+ from store_sales
+     JOIN item ON store_sales.ss_item_sk = item.i_item_sk
+     JOIN date_dim ON store_sales.ss_sold_date_sk = date_dim.d_date_sk
+     JOIN (select d1.d_date
+                 from date_dim d1 JOIN date_dim d2 ON d1.d_week_seq = d2.d_week_seq
+                 where d2.d_date = '1998-08-04') sub ON date_dim.d_date = sub.d_date
+ group by i_item_id ) ss_items
+JOIN
+( select i_item_id item_id ,sum(cs_ext_sales_price) as cs_item_rev 
+ from catalog_sales
+     JOIN item ON catalog_sales.cs_item_sk = item.i_item_sk
+     JOIN date_dim ON catalog_sales.cs_sold_date_sk = date_dim.d_date_sk
+     JOIN (select d1.d_date
+                 from date_dim d1 JOIN date_dim d2 ON d1.d_week_seq = d2.d_week_seq
+                 where d2.d_date = '1998-08-04') sub ON date_dim.d_date = sub.d_date
+ group by i_item_id ) cs_items
+ON ss_items.item_id=cs_items.item_id
+JOIN
+( select i_item_id item_id ,sum(ws_ext_sales_price) as ws_item_rev 
+ from web_sales
+     JOIN item ON web_sales.ws_item_sk = item.i_item_sk
+     JOIN date_dim ON web_sales.ws_sold_date_sk = date_dim.d_date_sk
+     JOIN (select d1.d_date
+                 from date_dim d1 JOIN date_dim d2 ON d1.d_week_seq = d2.d_week_seq
+                 where d2.d_date = '1998-08-04') sub ON date_dim.d_date = sub.d_date
+ group by i_item_id ) ws_items
+ON ss_items.item_id=ws_items.item_id 
+ where
+       ss_item_rev between 0.9 * cs_item_rev and 1.1 * cs_item_rev
+   and ss_item_rev between 0.9 * ws_item_rev and 1.1 * ws_item_rev
+   and cs_item_rev between 0.9 * ss_item_rev and 1.1 * ss_item_rev
+   and cs_item_rev between 0.9 * ws_item_rev and 1.1 * ws_item_rev
+   and ws_item_rev between 0.9 * ss_item_rev and 1.1 * ss_item_rev
+   and ws_item_rev between 0.9 * cs_item_rev and 1.1 * cs_item_rev
+ order by item_id ,ss_item_rev
+ limit 100
+INFO  : Semantic Analysis Completed
+INFO  : Returning Hive schema: Schema(fieldSchemas:[FieldSchema(name:ss_items.item_id, type:string, comment:null), FieldSchema(name:ss_item_rev, type:double, comment:null), FieldSchema(name:ss_dev, type:double, comment:null), FieldSchema(name:cs_item_rev, type:double, comment:null), FieldSchema(name:cs_dev, type:double, comment:null), FieldSchema(name:ws_item_rev, type:double, comment:null), FieldSchema(name:ws_dev, type:double, comment:null), FieldSchema(name:average, type:double, comment:null)], properties:null)
+INFO  : Completed compiling command(queryId=hive_20161020172713_1084b215-7dde-4190-b847-e59a06516d13); Time taken: 1.708 seconds
+INFO  : Concurrency mode is disabled, not creating a lock manager
+INFO  : Executing command(queryId=hive_20161020172713_1084b215-7dde-4190-b847-e59a06516d13): select  ss_items.item_id
+       ,ss_item_rev
+       ,ss_item_rev/(ss_item_rev+cs_item_rev+ws_item_rev)/3 * 100 ss_dev
+       ,cs_item_rev
+       ,cs_item_rev/(ss_item_rev+cs_item_rev+ws_item_rev)/3 * 100 cs_dev
+       ,ws_item_rev
+       ,ws_item_rev/(ss_item_rev+cs_item_rev+ws_item_rev)/3 * 100 ws_dev
+       ,(ss_item_rev+cs_item_rev+ws_item_rev)/3 average
+FROM
+( select i_item_id item_id ,sum(ss_ext_sales_price) as ss_item_rev 
+ from store_sales
+     JOIN item ON store_sales.ss_item_sk = item.i_item_sk
+     JOIN date_dim ON store_sales.ss_sold_date_sk = date_dim.d_date_sk
+     JOIN (select d1.d_date
+                 from date_dim d1 JOIN date_dim d2 ON d1.d_week_seq = d2.d_week_seq
+                 where d2.d_date = '1998-08-04') sub ON date_dim.d_date = sub.d_date
+ group by i_item_id ) ss_items
+JOIN
+( select i_item_id item_id ,sum(cs_ext_sales_price) as cs_item_rev 
+ from catalog_sales
+     JOIN item ON catalog_sales.cs_item_sk = item.i_item_sk
+     JOIN date_dim ON catalog_sales.cs_sold_date_sk = date_dim.d_date_sk
+     JOIN (select d1.d_date
+                 from date_dim d1 JOIN date_dim d2 ON d1.d_week_seq = d2.d_week_seq
+                 where d2.d_date = '1998-08-04') sub ON date_dim.d_date = sub.d_date
+ group by i_item_id ) cs_items
+ON ss_items.item_id=cs_items.item_id
+JOIN
+( select i_item_id item_id ,sum(ws_ext_sales_price) as ws_item_rev 
+ from web_sales
+     JOIN item ON web_sales.ws_item_sk = item.i_item_sk
+     JOIN date_dim ON web_sales.ws_sold_date_sk = date_dim.d_date_sk
+     JOIN (select d1.d_date
+                 from date_dim d1 JOIN date_dim d2 ON d1.d_week_seq = d2.d_week_seq
+                 where d2.d_date = '1998-08-04') sub ON date_dim.d_date = sub.d_date
+ group by i_item_id ) ws_items
+ON ss_items.item_id=ws_items.item_id 
+ where
+       ss_item_rev between 0.9 * cs_item_rev and 1.1 * cs_item_rev
+   and ss_item_rev between 0.9 * ws_item_rev and 1.1 * ws_item_rev
+   and cs_item_rev between 0.9 * ss_item_rev and 1.1 * ss_item_rev
+   and cs_item_rev between 0.9 * ws_item_rev and 1.1 * ws_item_rev
+   and ws_item_rev between 0.9 * ss_item_rev and 1.1 * ss_item_rev
+   and ws_item_rev between 0.9 * cs_item_rev and 1.1 * cs_item_rev
+ order by item_id ,ss_item_rev
+ limit 100
+INFO  : Query ID = hive_20161020172713_1084b215-7dde-4190-b847-e59a06516d13
+INFO  : Total jobs = 1
+INFO  : Launching Job 1 out of 1
+INFO  : Starting task [Stage-1:MAPRED] in serial mode
+INFO  : Session is already open
+INFO  : Dag name: select  ss_items.item_id
+       ,ss_it...100(Stage-1)
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : Setting tez.task.scale.memory.reserve-fraction to 0.30000001192092896
+INFO  : 
+
+INFO  : Status: Running (Executing on YARN cluster with App id application_1476988466894_0245)
+
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 0(+7)/7	Map 13: 0(+1)/1	Map 14: 0(+1)/1	Map 15: 0(+1)/1	Map 16: -/-	Map 18: 0(+7)/7	Map 19: 0(+1)/1	Map 20: 0(+1)/1	Map 21: 0(+1)/1	Map 6: 0(+7)/7	Map 7: 0(+1)/1	Map 8: 0(+1)/1	Map 9: 0(+1)/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 2(+5)/7	Map 13: 0(+1)/1	Map 14: 0(+1)/1	Map 15: 0(+1)/1	Map 16: -/-	Map 18: 2(+5)/7	Map 19: 0(+1)/1	Map 20: 0(+1)/1	Map 21: 0(+1)/1	Map 6: 2(+5)/7	Map 7: 0(+1)/1	Map 8: 0(+1)/1	Map 9: 0(+1)/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 3(+4)/7	Map 13: 0(+1)/1	Map 14: 0(+1)/1	Map 15: 0(+1)/1	Map 16: -/-	Map 18: 3(+4)/7	Map 19: 0(+1)/1	Map 20: 0(+1)/1	Map 21: 0(+1)/1	Map 6: 3(+4)/7	Map 7: 0(+1)/1	Map 8: 0(+1)/1	Map 9: 0(+1)/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 4(+3)/7	Map 13: 0(+1)/1	Map 14: 0(+1)/1	Map 15: 0(+1)/1	Map 16: -/-	Map 18: 4(+3)/7	Map 19: 0(+1)/1	Map 20: 0(+1)/1	Map 21: 0(+1)/1	Map 6: 4(+3)/7	Map 7: 0(+1)/1	Map 8: 0(+1)/1	Map 9: 0(+1)/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 6(+1)/7	Map 13: 0(+1)/1	Map 14: 0(+1)/1	Map 15: 0(+1)/1	Map 16: -/-	Map 18: 6(+1)/7	Map 19: 0(+1)/1	Map 20: 0(+1)/1	Map 21: 0(+1)/1	Map 6: 6(+1)/7	Map 7: 0(+1)/1	Map 8: 0(+1)/1	Map 9: 0(+1)/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 0(+1)/1	Map 14: 0(+1)/1	Map 15: 0(+1)/1	Map 16: -/-	Map 18: 7/7	Map 19: 0(+1)/1	Map 20: 0(+1)/1	Map 21: 0(+1)/1	Map 6: 7/7	Map 7: 0(+1)/1	Map 8: 0(+1)/1	Map 9: 0(+1)/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: -/-	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: -/-	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 0(+1)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 0(+293)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 0(+293)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 1(+292)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 2(+291)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 4(+289)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 5(+288)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 14(+279)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 20(+273)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 30(+263)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 47(+246)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 55(+238)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 66(+227)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 78(+215)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 87(+206)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 101(+192)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 112(+181)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 117(+176)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 133(+160)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 142(+151)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 151(+142)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 157(+136)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 167(+126)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 181(+112)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 189(+104)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 196(+97)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 199(+94)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 203(+90)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 205(+88)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 209(+84)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 213(+80)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0/1009	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 220(+73)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+2)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 221(+72)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 229(+64)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 232(+61)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 233(+60)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 234(+59)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 235(+58)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 236(+57)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 237(+56)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: -/-	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 238(+55)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 0(+1)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 238(+55)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 0(+21)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 238(+55)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 0(+288)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 238(+55)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 0(+288)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 239(+54)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 0(+288)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 240(+53)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 0(+288)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 240(+53)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 0(+288)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 241(+52)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 0(+288)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 242(+51)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 1(+287)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 242(+51)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 1(+287)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 243(+50)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 2(+286)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 243(+50)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 2(+286)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 243(+50)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 21(+267)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 23(+265,-5)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-1)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 24(+264,-5)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-1)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 26(+262,-41)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-3)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 27(+261,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-22)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 28(+260,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 29(+259,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 31(+257,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 32(+256,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 33(+255,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 36(+252,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 39(+249,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 44(+244,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 45(+243,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 48(+240,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 53(+235,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 55(+233,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 59(+229,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 63(+225,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 70(+218,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 73(+215,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 74(+214,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: -/-	Map 10: 76(+212,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 248(+45,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+7,-1)/284	Map 10: 79(+209,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 249(+44,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+16,-3)/284	Map 10: 81(+207,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 249(+44,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+116,-32)/284	Map 10: 82(+206,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 249(+44,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+122,-36)/284	Map 10: 84(+204,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 250(+43,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+125,-38)/284	Map 10: 87(+201,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 250(+43,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+128,-40)/284	Map 10: 91(+197,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 250(+43,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+131,-42)/284	Map 10: 95(+193,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 250(+43,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+131,-42)/284	Map 10: 100(+188,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 250(+43,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+134,-44)/284	Map 10: 101(+187,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 250(+43,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+138,-47)/284	Map 10: 104(+184,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 250(+43,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+142,-51)/284	Map 10: 107(+181,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 250(+43,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+145,-54)/284	Map 10: 108(+180,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+147,-56)/284	Map 10: 109(+179,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+149,-58)/284	Map 10: 110(+178,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+153,-60)/284	Map 10: 110(+178,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+154,-60)/284	Map 10: 111(+177,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+154,-60)/284	Map 10: 114(+174,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/1009	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+154,-60)/284	Map 10: 115(+173,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+154,-60)/284	Map 10: 118(+170,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+154,-60)/284	Map 10: 120(+168,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+154,-60)/284	Map 10: 122(+166,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+154,-60)/284	Map 10: 124(+164,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+155,-60)/284	Map 10: 128(+160,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+157,-60)/284	Map 10: 129(+159,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+159,-60)/284	Map 10: 129(+159,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+165,-61)/284	Map 10: 131(+157,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+236,-67)/284	Map 10: 133(+155,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+238,-67)/284	Map 10: 133(+155,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+240,-67)/284	Map 10: 134(+154,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+256,-67)/284	Map 10: 134(+154,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+257,-67)/284	Map 10: 134(+154,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+262,-67)/284	Map 10: 136(+152,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+266,-67)/284	Map 10: 137(+151,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+269,-67)/284	Map 10: 138(+150,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+275,-67)/284	Map 10: 143(+145,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+281,-67)/284	Map 10: 145(+143,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 251(+42,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 146(+142,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 147(+141,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 149(+139,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 150(+138,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 151(+137,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 152(+136,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 154(+134,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 155(+133,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 156(+132,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 157(+131,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 158(+130,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 159(+129,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 160(+128,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 161(+127,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 162(+126,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 163(+125,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 164(+124,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 165(+123,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 166(+122,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 167(+121,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 168(+120,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 169(+119,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 252(+41,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 0(+284,-67)/284	Map 10: 170(+118,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 253(+40,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 170(+118,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 253(+40,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 171(+117,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 253(+40,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 172(+116,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 253(+40,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 173(+115,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 253(+40,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 174(+114,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 253(+40,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 175(+113,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 253(+40,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 176(+112,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 253(+40,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 176(+112,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 254(+39,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 177(+111,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 254(+39,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 177(+111,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 255(+38,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 177(+111,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 256(+37,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 178(+110,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 256(+37,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 179(+109,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 256(+37,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 180(+108,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 256(+37,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 181(+107,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 256(+37,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 182(+106,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 256(+37,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 184(+104,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 256(+37,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 185(+103,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 257(+36,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 186(+102,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 257(+36,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 187(+101,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 257(+36,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 188(+100,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 257(+36,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 189(+99,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 257(+36,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 191(+97,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 257(+36,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 192(+96,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 257(+36,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 193(+95,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 257(+36,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 1(+283,-67)/284	Map 10: 194(+94,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 257(+36,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 2(+282,-67)/284	Map 10: 194(+94,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 258(+35,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 3(+281,-67)/284	Map 10: 194(+94,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 258(+35,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 3(+281,-67)/284	Map 10: 198(+90,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 258(+35,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 4(+280,-67)/284	Map 10: 200(+88,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 258(+35,-14)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 4(+280,-67)/284	Map 10: 203(+85,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 259(+34,-15)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+145,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 4(+0,-67)/284	Map 10: 203(+0,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 259(+0,-16)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+0,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+INFO  : Map 1: 4(+0,-67)/284	Map 10: 204(+0,-70)/288	Map 12: 7/7	Map 13: 1/1	Map 14: 1/1	Map 15: 1/1	Map 16: 259(+0,-16)/293	Map 18: 7/7	Map 19: 1/1	Map 20: 1/1	Map 21: 1/1	Map 6: 7/7	Map 7: 1/1	Map 8: 1/1	Map 9: 1/1	Reducer 11: 0/253	Reducer 17: 0(+0,-23)/145	Reducer 2: 0/1009	Reducer 3: 0/1009	Reducer 4: 0/1009	Reducer 5: 0/1	
+ERROR : Status: Failed
+ERROR : Vertex failed, vertexName=Map 16, vertexId=vertex_1476988466894_0245_4_17, diagnostics=[Task failed, taskId=task_1476988466894_0245_4_17_000006, diagnostics=[TaskAttempt 0 killed, TaskAttempt 1 failed, info=[org.apache.hadoop.ipc.RemoteException(java.lang.RuntimeException): Dag select  ss_items.item_id
+       ,ss_it...100(Stage-1) already complete. Rejecting fragment [Map 16, 6, 1]
+	at org.apache.hadoop.hive.llap.daemon.impl.QueryTracker.registerFragment(QueryTracker.java:149)
+	at org.apache.hadoop.hive.llap.daemon.impl.ContainerRunnerImpl.submitWork(ContainerRunnerImpl.java:225)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapDaemon.submitWork(LlapDaemon.java:478)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapProtocolServerImpl.submitWork(LlapProtocolServerImpl.java:101)
+	at org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos$LlapDaemonProtocol$2.callBlockingMethod(LlapDaemonProtocolProtos.java:16563)
+	at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:640)
+	at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:982)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2313)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2309)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1724)
+	at org.apache.hadoop.ipc.Server$Handler.run(Server.java:2307)
+], TaskAttempt 2 failed, info=[org.apache.hadoop.ipc.RemoteException(java.lang.RuntimeException): Dag select  ss_items.item_id
+       ,ss_it...100(Stage-1) already complete. Rejecting fragment [Map 16, 6, 2]
+	at org.apache.hadoop.hive.llap.daemon.impl.QueryTracker.registerFragment(QueryTracker.java:149)
+	at org.apache.hadoop.hive.llap.daemon.impl.ContainerRunnerImpl.submitWork(ContainerRunnerImpl.java:225)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapDaemon.submitWork(LlapDaemon.java:478)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapProtocolServerImpl.submitWork(LlapProtocolServerImpl.java:101)
+	at org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos$LlapDaemonProtocol$2.callBlockingMethod(LlapDaemonProtocolProtos.java:16563)
+	at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:640)
+	at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:982)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2313)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2309)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1724)
+	at org.apache.hadoop.ipc.Server$Handler.run(Server.java:2307)
+], TaskAttempt 3 killed, TaskAttempt 4 failed, info=[org.apache.hadoop.ipc.RemoteException(java.lang.RuntimeException): Dag select  ss_items.item_id
+       ,ss_it...100(Stage-1) already complete. Rejecting fragment [Map 16, 6, 4]
+	at org.apache.hadoop.hive.llap.daemon.impl.QueryTracker.registerFragment(QueryTracker.java:149)
+	at org.apache.hadoop.hive.llap.daemon.impl.ContainerRunnerImpl.submitWork(ContainerRunnerImpl.java:225)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapDaemon.submitWork(LlapDaemon.java:478)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapProtocolServerImpl.submitWork(LlapProtocolServerImpl.java:101)
+	at org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos$LlapDaemonProtocol$2.callBlockingMethod(LlapDaemonProtocolProtos.java:16563)
+	at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:640)
+	at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:982)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2313)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2309)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1724)
+	at org.apache.hadoop.ipc.Server$Handler.run(Server.java:2307)
+], TaskAttempt 5 failed, info=[org.apache.hadoop.ipc.RemoteException(java.lang.RuntimeException): Dag select  ss_items.item_id
+       ,ss_it...100(Stage-1) already complete. Rejecting fragment [Map 16, 6, 5]
+	at org.apache.hadoop.hive.llap.daemon.impl.QueryTracker.registerFragment(QueryTracker.java:149)
+	at org.apache.hadoop.hive.llap.daemon.impl.ContainerRunnerImpl.submitWork(ContainerRunnerImpl.java:225)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapDaemon.submitWork(LlapDaemon.java:478)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapProtocolServerImpl.submitWork(LlapProtocolServerImpl.java:101)
+	at org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos$LlapDaemonProtocol$2.callBlockingMethod(LlapDaemonProtocolProtos.java:16563)
+	at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:640)
+	at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:982)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2313)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2309)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1724)
+	at org.apache.hadoop.ipc.Server$Handler.run(Server.java:2307)
+]], Vertex did not succeed due to OWN_TASK_FAILURE, failedTasks:1 killedTasks:33, Vertex vertex_1476988466894_0245_4_17 [Map 16] killed/failed due to:OWN_TASK_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 4, vertexId=vertex_1476988466894_0245_4_19, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1009, Vertex vertex_1476988466894_0245_4_19 [Reducer 4] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 5, vertexId=vertex_1476988466894_0245_4_20, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1, Vertex vertex_1476988466894_0245_4_20 [Reducer 5] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 2, vertexId=vertex_1476988466894_0245_4_13, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1009, Vertex vertex_1476988466894_0245_4_13 [Reducer 2] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 3, vertexId=vertex_1476988466894_0245_4_14, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1009, Vertex vertex_1476988466894_0245_4_14 [Reducer 3] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 17, vertexId=vertex_1476988466894_0245_4_18, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:145, Vertex vertex_1476988466894_0245_4_18 [Reducer 17] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Map 1, vertexId=vertex_1476988466894_0245_4_08, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:280, Vertex vertex_1476988466894_0245_4_08 [Map 1] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Map 10, vertexId=vertex_1476988466894_0245_4_11, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:84, Vertex vertex_1476988466894_0245_4_11 [Map 10] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : Vertex killed, vertexName=Reducer 11, vertexId=vertex_1476988466894_0245_4_12, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:253, Vertex vertex_1476988466894_0245_4_12 [Reducer 11] killed/failed due to:OTHER_VERTEX_FAILURE]
+ERROR : DAG did not succeed due to VERTEX_FAILURE. failedVertices:1 killedVertices:8
+INFO  : org.apache.tez.common.counters.DAGCounter:
+INFO  :    NUM_FAILED_TASKS: 176
+INFO  :    NUM_KILLED_TASKS: 1752
+INFO  :    NUM_SUCCEEDED_TASKS: 497
+INFO  :    TOTAL_LAUNCHED_TASKS: 2016
+INFO  :    DATA_LOCAL_TASKS: 482
+INFO  :    RACK_LOCAL_TASKS: 15
+INFO  :    AM_CPU_MILLISECONDS: 794560
+INFO  :    AM_GC_TIME_MILLIS: 20253
+INFO  : File System Counters:
+INFO  :    FILE_BYTES_READ: 22625216
+INFO  :    FILE_BYTES_WRITTEN: 313426274
+INFO  :    FILE_READ_OPS: 0
+INFO  :    FILE_LARGE_READ_OPS: 0
+INFO  :    FILE_WRITE_OPS: 0
+INFO  :    HDFS_BYTES_READ: 94518245509
+INFO  :    HDFS_BYTES_WRITTEN: 0
+INFO  :    HDFS_READ_OPS: 18312
+INFO  :    HDFS_LARGE_READ_OPS: 0
+INFO  :    HDFS_WRITE_OPS: 0
+INFO  : org.apache.tez.common.counters.TaskCounter:
+INFO  :    SPILLED_RECORDS: 46884034
+INFO  :    NUM_SHUFFLED_INPUTS: 119
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    INPUT_RECORDS_PROCESSED: 20162891
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 1106070827106
+INFO  :    OUTPUT_RECORDS: 48309205
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_BYTES: 1343252166
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 570723030
+INFO  :    OUTPUT_BYTES_PHYSICAL: 302113426
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    SHUFFLE_CHUNK_COUNT: 467
+INFO  :    SHUFFLE_BYTES: 41965380
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 147307181
+INFO  :    SHUFFLE_BYTES_TO_MEM: 38473008
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 3492372
+INFO  :    SHUFFLE_PHASE_TIME: 2173
+INFO  :    FIRST_EVENT_RECEIVED: 448
+INFO  :    LAST_EVENT_RECEIVED: 459
+INFO  : HIVE:
+INFO  :    DESERIALIZE_ERRORS: 0
+INFO  :    RECORDS_IN_Map_1: 84463486
+INFO  :    RECORDS_IN_Map_10: 10087309609
+INFO  :    RECORDS_IN_Map_12: 402000
+INFO  :    RECORDS_IN_Map_13: 73049
+INFO  :    RECORDS_IN_Map_14: 73049
+INFO  :    RECORDS_IN_Map_15: 10000
+INFO  :    RECORDS_IN_Map_16: 3885826327
+INFO  :    RECORDS_IN_Map_18: 402000
+INFO  :    RECORDS_IN_Map_19: 73049
+INFO  :    RECORDS_IN_Map_20: 73049
+INFO  :    RECORDS_IN_Map_21: 10000
+INFO  :    RECORDS_IN_Map_6: 402000
+INFO  :    RECORDS_IN_Map_7: 73049
+INFO  :    RECORDS_IN_Map_8: 73049
+INFO  :    RECORDS_IN_Map_9: 10000
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_1: 409785
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_10: 44598194
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_12: 402000
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_13: 73049
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_14: 7
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_15: 1
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_16: 1876055
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_18: 402000
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_19: 73049
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_20: 7
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_21: 1
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_6: 402000
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_7: 73049
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_8: 7
+INFO  :    RECORDS_OUT_INTERMEDIATE_Map_9: 1
+INFO  : TaskCounter_Map_10_INPUT_Map_12:
+INFO  :    FIRST_EVENT_RECEIVED: 112
+INFO  :    INPUT_RECORDS_PROCESSED: 2010000
+INFO  :    LAST_EVENT_RECEIVED: 118
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 35
+INFO  :    SHUFFLE_BYTES: 13707645
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 50250210
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 1150878
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 12556767
+INFO  :    SHUFFLE_PHASE_TIME: 823
+INFO  : TaskCounter_Map_10_INPUT_Map_13:
+INFO  :    FIRST_EVENT_RECEIVED: 2
+INFO  :    INPUT_RECORDS_PROCESSED: 438294
+INFO  :    LAST_EVENT_RECEIVED: 2
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 6
+INFO  :    SHUFFLE_BYTES: 3162282
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 8327622
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 0
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 3162282
+INFO  :    SHUFFLE_PHASE_TIME: 158
+INFO  : TaskCounter_Map_10_INPUT_Map_14:
+INFO  :    FIRST_EVENT_RECEIVED: 4
+INFO  :    INPUT_RECORDS_PROCESSED: 42
+INFO  :    LAST_EVENT_RECEIVED: 4
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 6
+INFO  :    SHUFFLE_BYTES: 396
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 624
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 0
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 396
+INFO  :    SHUFFLE_PHASE_TIME: 47
+INFO  : TaskCounter_Map_10_INPUT_catalog_sales:
+INFO  :    INPUT_RECORDS_PROCESSED: 10087632
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 775259315360
+INFO  : TaskCounter_Map_10_OUTPUT_Reducer_11:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1247860624
+INFO  :    OUTPUT_BYTES_PHYSICAL: 270555473
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 503814142
+INFO  :    OUTPUT_RECORDS: 44598194
+INFO  :    SHUFFLE_CHUNK_COUNT: 204
+INFO  :    SPILLED_RECORDS: 44598194
+INFO  : TaskCounter_Map_12_INPUT_item:
+INFO  :    INPUT_RECORDS_PROCESSED: 405
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 38092338
+INFO  : TaskCounter_Map_12_OUTPUT_Map_10:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 9246000
+INFO  :    OUTPUT_BYTES_PHYSICAL: 2741697
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 10050042
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 402000
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_13_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 73
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 759177
+INFO  : TaskCounter_Map_13_OUTPUT_Map_10:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1241833
+INFO  :    OUTPUT_BYTES_PHYSICAL: 527071
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 1387937
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 73049
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_14_INPUT_Map_15:
+INFO  :    FIRST_EVENT_RECEIVED: 105
+INFO  :    INPUT_RECORDS_PROCESSED: 1
+INFO  :    LAST_EVENT_RECEIVED: 105
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 1
+INFO  :    SHUFFLE_BYTES: 27
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 13
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 27
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 0
+INFO  :    SHUFFLE_PHASE_TIME: 105
+INFO  : TaskCounter_Map_14_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 73
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 759177
+INFO  : TaskCounter_Map_14_OUTPUT_Map_10:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 84
+INFO  :    OUTPUT_BYTES_PHYSICAL: 90
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 104
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 7
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_15_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 10
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 759177
+INFO  : TaskCounter_Map_15_OUTPUT_Map_14:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 5
+INFO  :    OUTPUT_BYTES_PHYSICAL: 51
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 13
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_16_INPUT_Map_18:
+INFO  :    FIRST_EVENT_RECEIVED: 9
+INFO  :    INPUT_RECORDS_PROCESSED: 3216000
+INFO  :    LAST_EVENT_RECEIVED: 14
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 56
+INFO  :    SHUFFLE_BYTES: 21932232
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 80400336
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 2341347
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 19590885
+INFO  :    SHUFFLE_PHASE_TIME: 235
+INFO  : TaskCounter_Map_16_INPUT_Map_19:
+INFO  :    FIRST_EVENT_RECEIVED: 4
+INFO  :    INPUT_RECORDS_PROCESSED: 438294
+INFO  :    LAST_EVENT_RECEIVED: 4
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 6
+INFO  :    SHUFFLE_BYTES: 3162282
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 8327622
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 0
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 3162282
+INFO  :    SHUFFLE_PHASE_TIME: 275
+INFO  : TaskCounter_Map_16_INPUT_Map_20:
+INFO  :    FIRST_EVENT_RECEIVED: 5
+INFO  :    INPUT_RECORDS_PROCESSED: 49
+INFO  :    LAST_EVENT_RECEIVED: 5
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 7
+INFO  :    SHUFFLE_BYTES: 462
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 728
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 66
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 396
+INFO  :    SHUFFLE_PHASE_TIME: 321
+INFO  : TaskCounter_Map_16_INPUT_web_sales:
+INFO  :    INPUT_RECORDS_PROCESSED: 3886380
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 325972990548
+INFO  : TaskCounter_Map_16_OUTPUT_Reducer_17:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 52527788
+INFO  :    OUTPUT_BYTES_PHYSICAL: 17660722
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 24748252
+INFO  :    OUTPUT_RECORDS: 1876055
+INFO  :    SHUFFLE_CHUNK_COUNT: 259
+INFO  :    SPILLED_RECORDS: 1876055
+INFO  : TaskCounter_Map_18_INPUT_item:
+INFO  :    INPUT_RECORDS_PROCESSED: 405
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 38092338
+INFO  : TaskCounter_Map_18_OUTPUT_Map_16:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 9246000
+INFO  :    OUTPUT_BYTES_PHYSICAL: 2741697
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 10050042
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 402000
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_19_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 73
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 759177
+INFO  : TaskCounter_Map_19_OUTPUT_Map_16:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1241833
+INFO  :    OUTPUT_BYTES_PHYSICAL: 527071
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 1387937
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 73049
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_1_INPUT_Map_6:
+INFO  :    INPUT_RECORDS_PROCESSED: 0
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 0
+INFO  : TaskCounter_Map_1_INPUT_Map_7:
+INFO  :    INPUT_RECORDS_PROCESSED: 0
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 0
+INFO  : TaskCounter_Map_1_INPUT_Map_8:
+INFO  :    INPUT_RECORDS_PROCESSED: 0
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 0
+INFO  : TaskCounter_Map_1_INPUT_store_sales:
+INFO  :    INPUT_RECORDS_PROCESSED: 84514
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 4717411591
+INFO  : TaskCounter_Map_1_OUTPUT_Reducer_2:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 11399988
+INFO  :    OUTPUT_BYTES_PHYSICAL: 4090504
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 7846348
+INFO  :    OUTPUT_RECORDS: 409785
+INFO  :    SHUFFLE_CHUNK_COUNT: 4
+INFO  :    SPILLED_RECORDS: 409785
+INFO  : TaskCounter_Map_20_INPUT_Map_21:
+INFO  :    FIRST_EVENT_RECEIVED: 104
+INFO  :    INPUT_RECORDS_PROCESSED: 1
+INFO  :    LAST_EVENT_RECEIVED: 104
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 1
+INFO  :    SHUFFLE_BYTES: 27
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 13
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 27
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 0
+INFO  :    SHUFFLE_PHASE_TIME: 105
+INFO  : TaskCounter_Map_20_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 73
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 759177
+INFO  : TaskCounter_Map_20_OUTPUT_Map_16:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 84
+INFO  :    OUTPUT_BYTES_PHYSICAL: 90
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 104
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 7
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_21_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 10
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 759177
+INFO  : TaskCounter_Map_21_OUTPUT_Map_20:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 5
+INFO  :    OUTPUT_BYTES_PHYSICAL: 51
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 13
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_6_INPUT_item:
+INFO  :    INPUT_RECORDS_PROCESSED: 405
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 38092338
+INFO  : TaskCounter_Map_6_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 9246000
+INFO  :    OUTPUT_BYTES_PHYSICAL: 2741697
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 10050042
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 402000
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_7_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 73
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 759177
+INFO  : TaskCounter_Map_7_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 1241833
+INFO  :    OUTPUT_BYTES_PHYSICAL: 527071
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 1387937
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 73049
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_8_INPUT_Map_9:
+INFO  :    FIRST_EVENT_RECEIVED: 103
+INFO  :    INPUT_RECORDS_PROCESSED: 1
+INFO  :    LAST_EVENT_RECEIVED: 103
+INFO  :    NUM_FAILED_SHUFFLE_INPUTS: 0
+INFO  :    NUM_SHUFFLED_INPUTS: 1
+INFO  :    SHUFFLE_BYTES: 27
+INFO  :    SHUFFLE_BYTES_DECOMPRESSED: 13
+INFO  :    SHUFFLE_BYTES_DISK_DIRECT: 27
+INFO  :    SHUFFLE_BYTES_TO_DISK: 0
+INFO  :    SHUFFLE_BYTES_TO_MEM: 0
+INFO  :    SHUFFLE_PHASE_TIME: 104
+INFO  : TaskCounter_Map_8_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 73
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 759177
+INFO  : TaskCounter_Map_8_OUTPUT_Map_1:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 84
+INFO  :    OUTPUT_BYTES_PHYSICAL: 90
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 104
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 7
+INFO  :    SPILLED_RECORDS: 0
+INFO  : TaskCounter_Map_9_INPUT_date_dim:
+INFO  :    INPUT_RECORDS_PROCESSED: 10
+INFO  :    INPUT_SPLIT_LENGTH_BYTES: 759177
+INFO  : TaskCounter_Map_9_OUTPUT_Map_8:
+INFO  :    ADDITIONAL_SPILLS_BYTES_READ: 0
+INFO  :    ADDITIONAL_SPILLS_BYTES_WRITTEN: 0
+INFO  :    ADDITIONAL_SPILL_COUNT: 0
+INFO  :    OUTPUT_BYTES: 5
+INFO  :    OUTPUT_BYTES_PHYSICAL: 51
+INFO  :    OUTPUT_BYTES_WITH_OVERHEAD: 13
+INFO  :    OUTPUT_LARGE_RECORDS: 0
+INFO  :    OUTPUT_RECORDS: 1
+INFO  :    SPILLED_RECORDS: 0
+INFO  : org.apache.hadoop.hive.llap.counters.LlapIOCounters:
+INFO  :    ALLOCATED_BYTES: 100410458112
+INFO  :    ALLOCATED_USED_BYTES: 94408707154
+INFO  :    CACHE_HIT_BYTES: 4052841781
+INFO  :    CACHE_MISS_BYTES: 94364591021
+INFO  :    CONSUMER_TIME_NS: 6836087436943
+INFO  :    DECODE_TIME_NS: 924021372780
+INFO  :    HDFS_TIME_NS: 6375833769665
+INFO  :    METADATA_CACHE_HIT: 1397
+INFO  :    METADATA_CACHE_MISS: 25211
+INFO  :    NUM_DECODED_BATCHES: 1411066
+INFO  :    NUM_VECTOR_BATCHES: 14060211
+INFO  :    ROWS_EMITTED: 14059273716
+INFO  :    SELECTED_ROWGROUPS: 1411066
+INFO  :    TOTAL_IO_TIME_NS: 7143058121941
+ERROR : FAILED: Execution Error, return code 2 from org.apache.hadoop.hive.ql.exec.tez.TezTask. Vertex failed, vertexName=Map 16, vertexId=vertex_1476988466894_0245_4_17, diagnostics=[Task failed, taskId=task_1476988466894_0245_4_17_000006, diagnostics=[TaskAttempt 0 killed, TaskAttempt 1 failed, info=[org.apache.hadoop.ipc.RemoteException(java.lang.RuntimeException): Dag select  ss_items.item_id
+       ,ss_it...100(Stage-1) already complete. Rejecting fragment [Map 16, 6, 1]
+	at org.apache.hadoop.hive.llap.daemon.impl.QueryTracker.registerFragment(QueryTracker.java:149)
+	at org.apache.hadoop.hive.llap.daemon.impl.ContainerRunnerImpl.submitWork(ContainerRunnerImpl.java:225)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapDaemon.submitWork(LlapDaemon.java:478)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapProtocolServerImpl.submitWork(LlapProtocolServerImpl.java:101)
+	at org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos$LlapDaemonProtocol$2.callBlockingMethod(LlapDaemonProtocolProtos.java:16563)
+	at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:640)
+	at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:982)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2313)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2309)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1724)
+	at org.apache.hadoop.ipc.Server$Handler.run(Server.java:2307)
+], TaskAttempt 2 failed, info=[org.apache.hadoop.ipc.RemoteException(java.lang.RuntimeException): Dag select  ss_items.item_id
+       ,ss_it...100(Stage-1) already complete. Rejecting fragment [Map 16, 6, 2]
+	at org.apache.hadoop.hive.llap.daemon.impl.QueryTracker.registerFragment(QueryTracker.java:149)
+	at org.apache.hadoop.hive.llap.daemon.impl.ContainerRunnerImpl.submitWork(ContainerRunnerImpl.java:225)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapDaemon.submitWork(LlapDaemon.java:478)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapProtocolServerImpl.submitWork(LlapProtocolServerImpl.java:101)
+	at org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos$LlapDaemonProtocol$2.callBlockingMethod(LlapDaemonProtocolProtos.java:16563)
+	at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:640)
+	at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:982)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2313)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2309)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1724)
+	at org.apache.hadoop.ipc.Server$Handler.run(Server.java:2307)
+], TaskAttempt 3 killed, TaskAttempt 4 failed, info=[org.apache.hadoop.ipc.RemoteException(java.lang.RuntimeException): Dag select  ss_items.item_id
+       ,ss_it...100(Stage-1) already complete. Rejecting fragment [Map 16, 6, 4]
+	at org.apache.hadoop.hive.llap.daemon.impl.QueryTracker.registerFragment(QueryTracker.java:149)
+	at org.apache.hadoop.hive.llap.daemon.impl.ContainerRunnerImpl.submitWork(ContainerRunnerImpl.java:225)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapDaemon.submitWork(LlapDaemon.java:478)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapProtocolServerImpl.submitWork(LlapProtocolServerImpl.java:101)
+	at org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos$LlapDaemonProtocol$2.callBlockingMethod(LlapDaemonProtocolProtos.java:16563)
+	at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:640)
+	at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:982)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2313)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2309)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1724)
+	at org.apache.hadoop.ipc.Server$Handler.run(Server.java:2307)
+], TaskAttempt 5 failed, info=[org.apache.hadoop.ipc.RemoteException(java.lang.RuntimeException): Dag select  ss_items.item_id
+       ,ss_it...100(Stage-1) already complete. Rejecting fragment [Map 16, 6, 5]
+	at org.apache.hadoop.hive.llap.daemon.impl.QueryTracker.registerFragment(QueryTracker.java:149)
+	at org.apache.hadoop.hive.llap.daemon.impl.ContainerRunnerImpl.submitWork(ContainerRunnerImpl.java:225)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapDaemon.submitWork(LlapDaemon.java:478)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapProtocolServerImpl.submitWork(LlapProtocolServerImpl.java:101)
+	at org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos$LlapDaemonProtocol$2.callBlockingMethod(LlapDaemonProtocolProtos.java:16563)
+	at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:640)
+	at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:982)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2313)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2309)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1724)
+	at org.apache.hadoop.ipc.Server$Handler.run(Server.java:2307)
+]], Vertex did not succeed due to OWN_TASK_FAILURE, failedTasks:1 killedTasks:33, Vertex vertex_1476988466894_0245_4_17 [Map 16] killed/failed due to:OWN_TASK_FAILURE]Vertex killed, vertexName=Reducer 4, vertexId=vertex_1476988466894_0245_4_19, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1009, Vertex vertex_1476988466894_0245_4_19 [Reducer 4] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 5, vertexId=vertex_1476988466894_0245_4_20, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1, Vertex vertex_1476988466894_0245_4_20 [Reducer 5] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 2, vertexId=vertex_1476988466894_0245_4_13, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1009, Vertex vertex_1476988466894_0245_4_13 [Reducer 2] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 3, vertexId=vertex_1476988466894_0245_4_14, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1009, Vertex vertex_1476988466894_0245_4_14 [Reducer 3] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 17, vertexId=vertex_1476988466894_0245_4_18, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:145, Vertex vertex_1476988466894_0245_4_18 [Reducer 17] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Map 1, vertexId=vertex_1476988466894_0245_4_08, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:280, Vertex vertex_1476988466894_0245_4_08 [Map 1] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Map 10, vertexId=vertex_1476988466894_0245_4_11, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:84, Vertex vertex_1476988466894_0245_4_11 [Map 10] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 11, vertexId=vertex_1476988466894_0245_4_12, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:253, Vertex vertex_1476988466894_0245_4_12 [Reducer 11] killed/failed due to:OTHER_VERTEX_FAILURE]DAG did not succeed due to VERTEX_FAILURE. failedVertices:1 killedVertices:8
+INFO  : Completed executing command(queryId=hive_20161020172713_1084b215-7dde-4190-b847-e59a06516d13); Time taken: 87.628 seconds
+Error: Error while processing statement: FAILED: Execution Error, return code 2 from org.apache.hadoop.hive.ql.exec.tez.TezTask. Vertex failed, vertexName=Map 16, vertexId=vertex_1476988466894_0245_4_17, diagnostics=[Task failed, taskId=task_1476988466894_0245_4_17_000006, diagnostics=[TaskAttempt 0 killed, TaskAttempt 1 failed, info=[org.apache.hadoop.ipc.RemoteException(java.lang.RuntimeException): Dag select  ss_items.item_id
+       ,ss_it...100(Stage-1) already complete. Rejecting fragment [Map 16, 6, 1]
+	at org.apache.hadoop.hive.llap.daemon.impl.QueryTracker.registerFragment(QueryTracker.java:149)
+	at org.apache.hadoop.hive.llap.daemon.impl.ContainerRunnerImpl.submitWork(ContainerRunnerImpl.java:225)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapDaemon.submitWork(LlapDaemon.java:478)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapProtocolServerImpl.submitWork(LlapProtocolServerImpl.java:101)
+	at org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos$LlapDaemonProtocol$2.callBlockingMethod(LlapDaemonProtocolProtos.java:16563)
+	at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:640)
+	at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:982)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2313)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2309)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1724)
+	at org.apache.hadoop.ipc.Server$Handler.run(Server.java:2307)
+], TaskAttempt 2 failed, info=[org.apache.hadoop.ipc.RemoteException(java.lang.RuntimeException): Dag select  ss_items.item_id
+       ,ss_it...100(Stage-1) already complete. Rejecting fragment [Map 16, 6, 2]
+	at org.apache.hadoop.hive.llap.daemon.impl.QueryTracker.registerFragment(QueryTracker.java:149)
+	at org.apache.hadoop.hive.llap.daemon.impl.ContainerRunnerImpl.submitWork(ContainerRunnerImpl.java:225)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapDaemon.submitWork(LlapDaemon.java:478)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapProtocolServerImpl.submitWork(LlapProtocolServerImpl.java:101)
+	at org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos$LlapDaemonProtocol$2.callBlockingMethod(LlapDaemonProtocolProtos.java:16563)
+	at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:640)
+	at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:982)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2313)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2309)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1724)
+	at org.apache.hadoop.ipc.Server$Handler.run(Server.java:2307)
+], TaskAttempt 3 killed, TaskAttempt 4 failed, info=[org.apache.hadoop.ipc.RemoteException(java.lang.RuntimeException): Dag select  ss_items.item_id
+       ,ss_it...100(Stage-1) already complete. Rejecting fragment [Map 16, 6, 4]
+	at org.apache.hadoop.hive.llap.daemon.impl.QueryTracker.registerFragment(QueryTracker.java:149)
+	at org.apache.hadoop.hive.llap.daemon.impl.ContainerRunnerImpl.submitWork(ContainerRunnerImpl.java:225)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapDaemon.submitWork(LlapDaemon.java:478)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapProtocolServerImpl.submitWork(LlapProtocolServerImpl.java:101)
+	at org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos$LlapDaemonProtocol$2.callBlockingMethod(LlapDaemonProtocolProtos.java:16563)
+	at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:640)
+	at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:982)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2313)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2309)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1724)
+	at org.apache.hadoop.ipc.Server$Handler.run(Server.java:2307)
+], TaskAttempt 5 failed, info=[org.apache.hadoop.ipc.RemoteException(java.lang.RuntimeException): Dag select  ss_items.item_id
+       ,ss_it...100(Stage-1) already complete. Rejecting fragment [Map 16, 6, 5]
+	at org.apache.hadoop.hive.llap.daemon.impl.QueryTracker.registerFragment(QueryTracker.java:149)
+	at org.apache.hadoop.hive.llap.daemon.impl.ContainerRunnerImpl.submitWork(ContainerRunnerImpl.java:225)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapDaemon.submitWork(LlapDaemon.java:478)
+	at org.apache.hadoop.hive.llap.daemon.impl.LlapProtocolServerImpl.submitWork(LlapProtocolServerImpl.java:101)
+	at org.apache.hadoop.hive.llap.daemon.rpc.LlapDaemonProtocolProtos$LlapDaemonProtocol$2.callBlockingMethod(LlapDaemonProtocolProtos.java:16563)
+	at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:640)
+	at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:982)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2313)
+	at org.apache.hadoop.ipc.Server$Handler$1.run(Server.java:2309)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at javax.security.auth.Subject.doAs(Subject.java:422)
+	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1724)
+	at org.apache.hadoop.ipc.Server$Handler.run(Server.java:2307)
+]], Vertex did not succeed due to OWN_TASK_FAILURE, failedTasks:1 killedTasks:33, Vertex vertex_1476988466894_0245_4_17 [Map 16] killed/failed due to:OWN_TASK_FAILURE]Vertex killed, vertexName=Reducer 4, vertexId=vertex_1476988466894_0245_4_19, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1009, Vertex vertex_1476988466894_0245_4_19 [Reducer 4] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 5, vertexId=vertex_1476988466894_0245_4_20, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1, Vertex vertex_1476988466894_0245_4_20 [Reducer 5] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 2, vertexId=vertex_1476988466894_0245_4_13, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1009, Vertex vertex_1476988466894_0245_4_13 [Reducer 2] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 3, vertexId=vertex_1476988466894_0245_4_14, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:1009, Vertex vertex_1476988466894_0245_4_14 [Reducer 3] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 17, vertexId=vertex_1476988466894_0245_4_18, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:145, Vertex vertex_1476988466894_0245_4_18 [Reducer 17] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Map 1, vertexId=vertex_1476988466894_0245_4_08, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:280, Vertex vertex_1476988466894_0245_4_08 [Map 1] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Map 10, vertexId=vertex_1476988466894_0245_4_11, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:84, Vertex vertex_1476988466894_0245_4_11 [Map 10] killed/failed due to:OTHER_VERTEX_FAILURE]Vertex killed, vertexName=Reducer 11, vertexId=vertex_1476988466894_0245_4_12, diagnostics=[Vertex received Kill while in RUNNING state., Vertex did not succeed due to OTHER_VERTEX_FAILURE, failedTasks:0 killedTasks:253, Vertex vertex_1476988466894_0245_4_12 [Reducer 11] killed/failed due to:OTHER_VERTEX_FAILURE]DAG did not succeed due to VERTEX_FAILURE. failedVertices:1 killedVertices:8 (state=08S01,code=2)
+Closing: 0: jdbc:hive2://h01hn02:10500/tpcds_bin_partitioned_orc_10000

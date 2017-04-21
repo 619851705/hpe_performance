@@ -1,0 +1,194 @@
+START hdp2.6_spark21_run_1000_2_query60_sql_2017-04-08-20-17:  Sat Apr 8 20:17:10 CDT 2017
+ /usr/hdp/current/spark2-client/bin/beeline -u "jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_$SF" -n hive --incremental=true  -i settings/spark.settings -f sample-queries-tpcds/$1
+Connecting to jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_1000
+17/04/08 20:17:11 INFO Utils: Supplied authorities: h01hn02.hadoop:10016
+17/04/08 20:17:11 INFO Utils: Resolved authority: h01hn02.hadoop:10016
+17/04/08 20:17:11 INFO HiveConnection: Will try to open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_1000
+Connected to: Spark SQL (version 2.1.0.2.6.0.0-598)
+Driver: Hive JDBC (version 1.2.1.spark2.hdp)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script settings/spark.settings
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> with ss as (
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  select
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           i_item_id,sum(ss_ext_sales_price) total_sales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  from
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         store_sales,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         date_dim,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          customer_address,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          item
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  where
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          item.i_item_id in (select
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   i.i_item_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> from
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  item i
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> where i_category in ('Children'))
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     ss_item_sk              = i_item_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     ss_sold_date_sk         = d_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     d_year                  = 1999
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     d_moy                   = 9
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     ss_addr_sk              = ca_address_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     ca_gmt_offset           = -6 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  group by i_item_id),
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  cs as (
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  select
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           i_item_id,sum(cs_ext_sales_price) total_sales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  from
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         catalog_sales,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         date_dim,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          customer_address,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          item
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  where
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          item.i_item_id               in (select
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   i.i_item_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> from
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  item i
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> where i_category in ('Children'))
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     cs_item_sk              = i_item_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     cs_sold_date_sk         = d_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     d_year                  = 1999
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     d_moy                   = 9
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     cs_bill_addr_sk         = ca_address_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     ca_gmt_offset           = -6 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  group by i_item_id),
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  ws as (
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  select
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           i_item_id,sum(ws_ext_sales_price) total_sales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  from
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         web_sales,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         date_dim,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          customer_address,
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          item
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  where
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>          item.i_item_id               in (select
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   i.i_item_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> from
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  item i
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> where i_category in ('Children'))
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     ws_item_sk              = i_item_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     ws_sold_date_sk         = d_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     d_year                  = 1999
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     d_moy                   = 9
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     ws_bill_addr_sk         = ca_address_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  and     ca_gmt_offset           = -6
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  group by i_item_id)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   select   
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>   i_item_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> ,sum(total_sales) total_sales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  from  (select * from ss 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         union all
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         select * from cs 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         union all
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         select * from ws) tmp1
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  group by i_item_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  order by i_item_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>       ,total_sales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>  limit 100;
++-----------------+-----------------+--+
+|    i_item_id    |   total_sales   |
++-----------------+-----------------+--+
+| AAAAAAAAAAAABAAA | 648077.690538168 |
+| AAAAAAAAAAAEDAAA | 625440.4600770473 |
+| AAAAAAAAAAAGEAAA | 610705.1298165321 |
+| AAAAAAAAAAAHAAAA | 720246.2193442583 |
+| AAAAAAAAAAAHBAAA | 725451.4504666254 |
+| AAAAAAAAAAAHEAAA | 709828.8113366961 |
+| AAAAAAAAAAAJEAAA | 555838.8198051453 |
+| AAAAAAAAAAANAAAA | 718168.0696458817 |
+| AAAAAAAAAAAOAAAA | 619919.7793822289 |
+| AAAAAAAAAABAAAAA | 741533.8802680969 |
+| AAAAAAAAAABCEAAA | 677988.888541162 |
+| AAAAAAAAAABFEAAA | 675680.13123703 |
+| AAAAAAAAAABLBAAA | 708298.8424850702 |
+| AAAAAAAAAABMBAAA | 790313.0018897057 |
+| AAAAAAAAAABMDAAA | 637052.8595991135 |
+| AAAAAAAAAABOBAAA | 672701.8694171906 |
+| AAAAAAAAAABOCAAA | 566067.2918827534 |
+| AAAAAAAAAABPBAAA | 639469.427075386 |
+| AAAAAAAAAACEBAAA | 684956.4884084463 |
+| AAAAAAAAAACECAAA | 648422.8694420829 |
+| AAAAAAAAAACFBAAA | 594780.0097682476 |
+| AAAAAAAAAACFEAAA | 596334.4393184185 |
+| AAAAAAAAAACGDAAA | 666530.0099973679 |
+| AAAAAAAAAACIDAAA | 709450.9802576303 |
+| AAAAAAAAAACMDAAA | 713356.4815859087 |
+| AAAAAAAAAACOAAAA | 708829.1476454735 |
+| AAAAAAAAAACODAAA | 651734.241071701 |
+| AAAAAAAAAADBEAAA | 757931.5412782431 |
+| AAAAAAAAAADDCAAA | 657779.8482663631 |
+| AAAAAAAAAADFAAAA | 560871.4691489935 |
+| AAAAAAAAAADGBAAA | 731263.9491956234 |
+| AAAAAAAAAADGEAAA | 692846.8202313185 |
+| AAAAAAAAAADICAAA | 754389.8308569193 |
+| AAAAAAAAAADKDAAA | 663118.5871580839 |
+| AAAAAAAAAADLCAAA | 623212.5297336578 |
+| AAAAAAAAAADNDAAA | 703005.0612678528 |
+| AAAAAAAAAAEABAAA | 801807.5911821127 |
+| AAAAAAAAAAEADAAA | 751387.0294983387 |
+| AAAAAAAAAAEBDAAA | 734161.8220812082 |
+| AAAAAAAAAAECCAAA | 851336.8603253365 |
+| AAAAAAAAAAEDDAAA | 636306.5223457813 |
+| AAAAAAAAAAEECAAA | 665379.8583245277 |
+| AAAAAAAAAAEFEAAA | 665653.1086653471 |
+| AAAAAAAAAAEIBAAA | 782733.2512159348 |
+| AAAAAAAAAAEJDAAA | 629769.6103994846 |
+| AAAAAAAAAAEMAAAA | 754060.0313777924 |
+| AAAAAAAAAAENAAAA | 663393.6482851505 |
+| AAAAAAAAAAEOBAAA | 587161.889654398 |
+| AAAAAAAAAAEPAAAA | 632964.2885742188 |
+| AAAAAAAAAAFAAAAA | 604078.8195338249 |
+| AAAAAAAAAAFADAAA | 571504.2204456329 |
+| AAAAAAAAAAFCAAAA | 794518.0902752876 |
+| AAAAAAAAAAFCEAAA | 692983.3610191345 |
+| AAAAAAAAAAFFBAAA | 705856.4290548563 |
+| AAAAAAAAAAFFEAAA | 683665.6390675306 |
+| AAAAAAAAAAFHBAAA | 805665.956696868 |
+| AAAAAAAAAAFMDAAA | 584258.479169488 |
+| AAAAAAAAAAFNBAAA | 652299.0816427469 |
+| AAAAAAAAAAFNCAAA | 641340.0400455892 |
+| AAAAAAAAAAFODAAA | 679327.1575202942 |
+| AAAAAAAAAAFPAAAA | 710302.1429326534 |
+| AAAAAAAAAAGCCAAA | 665754.2323012352 |
+| AAAAAAAAAAGEAAAA | 679471.4016013145 |
+| AAAAAAAAAAGEBAAA | 668908.0791394413 |
+| AAAAAAAAAAGHBAAA | 596533.2692558467 |
+| AAAAAAAAAAGJBAAA | 693385.1302359104 |
+| AAAAAAAAAAGKBAAA | 684232.31128788 |
+| AAAAAAAAAAGKDAAA | 640775.3426856995 |
+| AAAAAAAAAAGLAAAA | 688359.3116621971 |
+| AAAAAAAAAAGMBAAA | 649045.1497147083 |
+| AAAAAAAAAAHCBAAA | 751633.1695536673 |
+| AAAAAAAAAAHCCAAA | 694854.569991529 |
+| AAAAAAAAAAHFEAAA | 695087.4003243446 |
+| AAAAAAAAAAHGDAAA | 777645.7584376335 |
+| AAAAAAAAAAHHDAAA | 762851.70900774 |
+| AAAAAAAAAAHIBAAA | 710738.9799454212 |
+| AAAAAAAAAAHICAAA | 619911.6681476831 |
+| AAAAAAAAAAHKCAAA | 622332.4497404099 |
+| AAAAAAAAAAHMDAAA | 670532.2818465233 |
+| AAAAAAAAAAHPBAAA | 761425.817862153 |
+| AAAAAAAAAAIAAAAA | 784470.8690447807 |
+| AAAAAAAAAAIACAAA | 721231.002774477 |
+| AAAAAAAAAAIADAAA | 649512.7902035117 |
+| AAAAAAAAAAIBCAAA | 692097.8996917009 |
+| AAAAAAAAAAICDAAA | 593456.5001615286 |
+| AAAAAAAAAAIDCAAA | 713695.2980527878 |
+| AAAAAAAAAAIDDAAA | 616429.2609729767 |
+| AAAAAAAAAAIEEAAA | 605728.707950294 |
+| AAAAAAAAAAIFBAAA | 734793.5594940186 |
+| AAAAAAAAAAIFDAAA | 752477.4594774246 |
+| AAAAAAAAAAIHBAAA | 653943.5388908386 |
+| AAAAAAAAAAIHCAAA | 533513.8514184952 |
+| AAAAAAAAAAIIAAAA | 575438.1001396179 |
+| AAAAAAAAAAIKCAAA | 713680.4993011951 |
+| AAAAAAAAAAILDAAA | 789011.1004673094 |
+| AAAAAAAAAAIMCAAA | 581142.9203548431 |
+| AAAAAAAAAAIODAAA | 682989.4782373905 |
+| AAAAAAAAAAJABAAA | 726075.2779942751 |
+| AAAAAAAAAAJBAAAA | 593699.8600726128 |
+| AAAAAAAAAAJBDAAA | 780186.6998283863 |
++-----------------+-----------------+--+
+100 rows selected (12.103 seconds)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+Closing: 0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_parquet_1000
+STOP hdp2.6_spark21_run_1000_2_query60_sql_2017-04-08-20-17:  Sat Apr 8 20:17:23 CDT 2017

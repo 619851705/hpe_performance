@@ -1,0 +1,162 @@
+START hdp2.6_spark21_run_1000_2_query67_sql_2017-04-10-23-35:  Mon Apr 10 23:35:25 CDT 2017
+Connecting to jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_orc_1000
+17/04/10 23:35:26 INFO Utils: Supplied authorities: h01hn02.hadoop:10016
+17/04/10 23:35:26 INFO Utils: Resolved authority: h01hn02.hadoop:10016
+17/04/10 23:35:26 INFO HiveConnection: Will try to open client transport with JDBC Uri: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_orc_1000
+Connected to: Spark SQL (version 2.1.0.2.6.0.3-8)
+Driver: Hive JDBC (version 1.2.1.spark2.hdp)
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+Running init script settings/spark.settings
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> select  *
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> from (select i_category
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,i_class
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,i_brand
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,i_product_name
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,d_year
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,d_qoy
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,d_moy
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,s_store_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,sumsales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             ,rank() over (partition by i_category order by sumsales desc) rk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>       from (select i_category
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                   ,i_class
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                   ,i_brand
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                   ,i_product_name
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                   ,d_year
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                   ,d_qoy
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                   ,d_moy
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                   ,s_store_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                   ,sum(coalesce(ss_sales_price*ss_quantity,0)) sumsales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>             from store_sales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                 ,date_dim
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                 ,store
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>                 ,item
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        where  store_sales.ss_sold_date_sk=date_dim.d_date_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           and store_sales.ss_item_sk=item.i_item_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           and store_sales.ss_store_sk = store.s_store_sk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>           and d_month_seq between 1193 and 1193+11
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>        group by i_category, i_class, i_brand, i_product_name, d_year, d_qoy, d_moy,s_store_id with rollup)dw1) d w2
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> where rk <= 100
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> order by i_category
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,i_class
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,i_brand
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,i_product_name
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,d_year
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,d_qoy
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,d_moy
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,s_store_id
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,sumsales
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi>         ,rk
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> limit 100;
++-----------------+-----------------+-----------------+-----------------+-------------+-------------+-------------+-----------------+-----------------+-------------+--+
+|   i_category    |     i_class     |     i_brand     | i_product_name  |   d_year    |    d_qoy    |    d_moy    |   s_store_id    |    sumsales     |     rk      |
++-----------------+-----------------+-----------------+-----------------+-------------+-------------+-------------+-----------------+-----------------+-------------+--+
+| NULL            | NULL            | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1.0114938012958684E12 | 1           |
+|                 | NULL            | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2.3949869069922795E9 | 1           |
+|                 |                 | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1.23207618685768E9 | 2           |
+|                 |                 |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 6.057355364265691E8 | 3           |
+|                 |                 |                 |                 | NULL        | NULL        | NULL        | NULL            | 2.9348472038950294E8 | 4           |
+|                 |                 |                 |                 | 1999        | NULL        | NULL        | NULL            | 2.142262810074594E8 | 5           |
+|                 |                 |                 |                 | 1999        | 2           | NULL        | NULL            | 1.3851297858486429E7 | 88          |
+|                 |                 |                 |                 | 1999        | 3           | NULL        | NULL            | 7.638614258045588E7 | 8           |
+|                 |                 |                 |                 | 1999        | 3           | 8           | NULL            | 3.1000711862647682E7 | 26          |
+|                 |                 |                 |                 | 1999        | 3           | 9           | NULL            | 3.1097835140713796E7 | 24          |
+|                 |                 |                 |                 | 1999        | 4           | NULL        | NULL            | 1.239888405685171E8 | 6           |
+|                 |                 |                 |                 | 1999        | 4           | 10          | NULL            | 3.1001426716904014E7 | 25          |
+|                 |                 |                 |                 | 1999        | 4           | 11          | NULL            | 4.523769295163747E7 | 14          |
+|                 |                 |                 |                 | 1999        | 4           | 12          | NULL            | 4.774972089997561E7 | 12          |
+|                 |                 |                 |                 | 2000        | NULL        | NULL        | NULL            | 7.92584393820435E7 | 7           |
+|                 |                 |                 |                 | 2000        | 1           | NULL        | NULL            | 4.8974708765538156E7 | 11          |
+|                 |                 |                 |                 | 2000        | 1           | 1           | NULL            | 1.8590326184090525E7 | 56          |
+|                 |                 |                 |                 | 2000        | 1           | 2           | NULL            | 1.4649647213398807E7 | 82          |
+|                 |                 |                 |                 | 2000        | 1           | 3           | NULL            | 1.5734735368048828E7 | 61          |
+|                 |                 |                 |                 | 2000        | 2           | NULL        | NULL            | 3.0283730616505332E7 | 27          |
+|                 |                 |                 |                 | 2000        | 2           | 4           | NULL            | 1.4834308542386264E7 | 81          |
+|                 |                 |                 |                 | 2000        | 2           | 5           | NULL            | 1.5449422074119069E7 | 67          |
+|                 |                 | amalgedu pack #2 | NULL            | NULL        | NULL        | NULL        | NULL            | 2.0074485212363392E7 | 46          |
+|                 |                 | amalgimporto #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.3630121475825615E7 | 93          |
+|                 |                 | amalgimporto #2 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.5531185991633147E7 | 64          |
+|                 |                 | amalgscholar #2 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.5301089474466302E7 | 70          |
+|                 |                 | exportiedu pack #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.3587355378842711E7 | 96          |
+|                 |                 | exportiedu pack #1 |                 | NULL        | NULL        | NULL        | NULL            | 1.3587355378842711E7 | 96          |
+|                 |                 | importoedu pack #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.8695489722862415E7 | 52          |
+|                 |                 | importoedu pack #1 |                 | NULL        | NULL        | NULL        | NULL            | 1.8695489722862415E7 | 52          |
+|                 |                 | importoedu pack #1 |                 | 1999        | NULL        | NULL        | NULL            | 1.527328160331177E7 | 72          |
+|                 |                 | importoexporti #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.5370505982576847E7 | 68          |
+|                 |                 | importoexporti #2 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.5047878634901881E7 | 78          |
+|                 |                 | importoscholar #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 2.214909252885299E7 | 38          |
+|                 |                 | importoscholar #1 |                 | NULL        | NULL        | NULL        | NULL            | 1.5566524699622534E7 | 62          |
+|                 |                 | importoscholar #1 |                 | 1999        | NULL        | NULL        | NULL            | 1.5467513449775122E7 | 66          |
+|                 | archery         | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1.3485439576638699E7 | 99          |
+|                 | athletic        | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 3.8331530639357954E7 | 16          |
+|                 | athletic        |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 3.003471141287152E7 | 28          |
+|                 | audio           | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1.3583821033412471E7 | 98          |
+|                 | basketball      | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2.561710590508941E7 | 33          |
+|                 | basketball      | exportinameless #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.3483630168135852E7 | 100         |
+|                 | bracelets       | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1.527278343412514E7 | 73          |
+|                 | classical       | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1.5204848128564276E7 | 75          |
+|                 | country         | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 4.355121799441182E7 | 15          |
+|                 | country         |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.8629374695713386E7 | 55          |
+|                 | country         | importoscholar #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.6585223483806945E7 | 60          |
+|                 | diamonds        | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1.3924960657039493E7 | 87          |
+|                 | disk drives     | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1.5212305489024237E7 | 74          |
+|                 | dresses         | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 4.597671905583425E7 | 13          |
+|                 | dresses         |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 2.04911479866703E7 | 44          |
+|                 | dresses         |                 |                 | NULL        | NULL        | NULL        | NULL            | 1.3845078317428052E7 | 89          |
+|                 | dresses         | amalgamalg #2   | NULL            | NULL        | NULL        | NULL        | NULL            | 1.4949155681351751E7 | 80          |
+|                 | dvd/vcr players | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2.0000933561287165E7 | 47          |
+|                 | earings         | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1.899848522222501E7 | 49          |
+|                 | earings         |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.3973771664829195E7 | 85          |
+|                 | earings         |                 |                 | NULL        | NULL        | NULL        | NULL            | 1.3973771664829195E7 | 85          |
+|                 | fragrances      | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 3.201451009572792E7 | 22          |
+|                 | history         | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2.556343933440669E7 | 34          |
+|                 | history         |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.8785382621188626E7 | 50          |
+|                 | history         |                 |                 | NULL        | NULL        | NULL        | NULL            | 1.8785382621188626E7 | 50          |
+|                 | history         |                 |                 | 1999        | NULL        | NULL        | NULL            | 1.5292608084375545E7 | 71          |
+|                 | infants         | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 3.3195631319114417E7 | 21          |
+|                 | infants         |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.974896931196204E7 | 48          |
+|                 | memory          | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 3.7420065134687185E7 | 17          |
+|                 | memory          |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.8579388834382355E7 | 57          |
+|                 | mens            | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1.867170964957574E7 | 54          |
+|                 | mens            |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.5307450923691303E7 | 69          |
+|                 | newborn         | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 3.6469715465648435E7 | 18          |
+|                 | newborn         |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 2.1433821155321307E7 | 39          |
+|                 | newborn         | amalgexporti #2 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.5035894310327128E7 | 79          |
+|                 | pants           | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2.895309901867146E7 | 29          |
+|                 | pants           | exportiimporto #2 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.5554381909606881E7 | 63          |
+|                 | pendants        | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1.5197862275339618E7 | 76          |
+|                 | pop             | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2.033300813545937E7 | 45          |
+|                 | rock            | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 3.6130638003846504E7 | 19          |
+|                 | rock            |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 3.1130009881623693E7 | 23          |
+|                 | rock            |                 |                 | NULL        | NULL        | NULL        | NULL            | 2.4037237452739097E7 | 35          |
+|                 | rock            |                 |                 | 1999        | NULL        | NULL        | NULL            | 2.0755349055652596E7 | 40          |
+|                 | school-uniforms | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2.220807077877581E7 | 37          |
+|                 | school-uniforms |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.5472241523965627E7 | 65          |
+|                 | science         | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 1.7195005743323863E7 | 58          |
+|                 | shirts          | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 5.470059682231107E7 | 9           |
+|                 | shirts          |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 2.2608089652430892E7 | 36          |
+|                 | shirts          |                 |                 | NULL        | NULL        | NULL        | NULL            | 1.407096932445997E7 | 84          |
+|                 | shirts          | importoimporto #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.6895263891675904E7 | 59          |
+|                 | shirts          | importoimporto #2 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.5197243278204277E7 | 77          |
+|                 | shirts          | importoimporto #2 |                 | NULL        | NULL        | NULL        | NULL            | 1.3596858645822123E7 | 95          |
+|                 | sports-apparel  | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2.871252053461601E7 | 30          |
+|                 | sports-apparel  |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.3663669313478395E7 | 91          |
+|                 | swimwear        | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 4.980604861110231E7 | 10          |
+|                 | swimwear        |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 2.762746965276876E7 | 32          |
+|                 | swimwear        | edu packamalg #1 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.3800088454825342E7 | 90          |
+|                 | televisions     | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2.0731035743464142E7 | 41          |
+|                 | televisions     |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 2.0731035743464142E7 | 41          |
+|                 | toddlers        | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 3.4241218396186635E7 | 20          |
+|                 | toddlers        |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 2.0613095440253183E7 | 43          |
+|                 | toddlers        | exportiexporti #2 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.3628122955933452E7 | 94          |
+|                 | womens          | NULL            | NULL            | NULL        | NULL        | NULL        | NULL            | 2.7959268926540583E7 | 31          |
+|                 | womens          |                 | NULL            | NULL        | NULL        | NULL        | NULL            | 1.365799372230208E7 | 92          |
++-----------------+-----------------+-----------------+-----------------+-------------+-------------+-------------+-----------------+-----------------+-------------+--+
+100 rows selected (550.111 seconds)
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bi> 
+Closing: 0: jdbc:hive2://h01hn02.hadoop:10016/tpcds_bin_partitioned_orc_1000
+STOP hdp2.6_spark21_run_1000_2_query67_sql_2017-04-10-23-35:  Mon Apr 10 23:44:36 CDT 2017
